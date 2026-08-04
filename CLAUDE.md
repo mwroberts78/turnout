@@ -37,6 +37,7 @@ Corporate volunteerism portal. Multi-tenant SaaS. Master's capstone project, may
 
 - `created_by` (not null, references `users`) and `updated_by` (nullable) + `updated_at` (auto-updating via Drizzle's `$onUpdate()`) on tables that are created/edited by an acting admin user (`opportunities`, `projects`).
 - `signups` does not need `created_by` — `user_id` already identifies the acting user.
+- `users.updated_by` (nullable, self-referencing FK to `users.id` — needs `(): AnyPgColumn =>` return type annotation) + `updated_at` tracks who last changed a user's role. Role changes are security-sensitive, so this audit trail matters more here than on most tables.
 - `tenants.created_by` is nullable — the creating user's `users` row may not exist yet at the moment the Clerk webhook fires; ordering needs confirming when Phase 2 is built.
 - Schema lives in `src/db/schema/` as one file per table, re-exported through `src/db/schema/index.ts`. `drizzle.config.ts` points at the index file.
 
