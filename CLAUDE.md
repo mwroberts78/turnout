@@ -14,6 +14,7 @@ Corporate volunteerism portal. Multi-tenant SaaS. Master's capstone project, may
 - **Error tracking**: Sentry
 - **Product analytics**: PostHog
 - **Transactional email**: Resend (verified domain, not the shared resend.dev sender)
+- **File storage**: Vercel Blob (opportunity images) — not yet wired up
 - **Background jobs** (not yet wired up): Inngest, when needed
 
 ## Multi-Tenancy & RLS
@@ -35,8 +36,7 @@ Corporate volunteerism portal. Multi-tenant SaaS. Master's capstone project, may
 
 ## Database Conventions
 
-- `created_by` (not null, references `users`) and `updated_by` (nullable) + `updated_at` (auto-updating via Drizzle's `$onUpdate()`) on tables that are created/edited by an acting admin user (`opportunities`, `projects`).
-- `signups` does not need `created_by` — `user_id` already identifies the acting user.
+- `created_by` (not null, references `users`) and `updated_by` (nullable) + `updated_at` (auto-updating via Drizzle's `$onUpdate()`) on tables that are created/edited by an acting admin user (`opportunities`, `meal_options`, `signups`, `projects`) — applied uniformly even where `user_id`/similar already identifies the acting user, for consistency.
 - `users.updated_by` (nullable, self-referencing FK to `users.id` — needs `(): AnyPgColumn =>` return type annotation) + `updated_at` tracks who last changed a user's role. Role changes are security-sensitive, so this audit trail matters more here than on most tables.
 - `tenants.created_by` is nullable — the creating user's `users` row may not exist yet at the moment the Clerk webhook fires; ordering needs confirming when Phase 2 is built.
 - Schema lives in `src/db/schema/` as one file per table, re-exported through `src/db/schema/index.ts`. `drizzle.config.ts` points at the index file.
@@ -61,6 +61,7 @@ Corporate volunteerism portal. Multi-tenant SaaS. Master's capstone project, may
 - Tenant-context middleware (`SET app.current_tenant_id` per request) — Phase 2
 - Automated migrations in the Vercel build pipeline — deliberately deferred until schema stabilizes post Phase 1–2 (Chunk 7.7)
 - SSO, billing, SMS — all deliberately out of scope for MVP; designed to be additive later, not blocking current build
+- Local/test blob storage strategy for `opportunities.image_url` — Vercel Blob has no local emulator. Resolve in Phase 2, ahead of Phase 3 (opportunity management, where image upload gets built): either a separate dev-scoped Blob store (real network calls, matches prod exactly) or a filesystem-backed adapter swapped in for dev/test. Leaning toward the separate dev store for simplicity.
 
 ## Development Plan
 
