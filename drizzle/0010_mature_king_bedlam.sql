@@ -1,0 +1,1 @@
+ALTER TABLE "sign_ups" ALTER COLUMN "comments" DROP NOT NULL;

@@ -15,6 +15,83 @@
       "when": 1785629874045,
       "tag": "0001_dazzling_gargoyle",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1785856373636,
+      "tag": "0002_sparkling_supernaut",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1785864014142,
+      "tag": "0003_tricky_guardsmen",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1785866379134,
+      "tag": "0004_previous_mac_gargan",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1785866780663,
+      "tag": "0005_polite_devos",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1785868325158,
+      "tag": "0006_tired_smasher",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1785870384448,
+      "tag": "0007_uneven_the_phantom",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1785870478158,
+      "tag": "0008_spooky_orphan",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1785970950600,
+      "tag": "0009_grant_authenticated_access",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1786041738994,
+      "tag": "0010_mature_king_bedlam",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1786045819699,
+      "tag": "0011_fix_missing_users_tenant_fk",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1786058594163,
+      "tag": "0012_tenants_updated_at_not_null",
+      "breakpoints": true
     }
   ]
 }
