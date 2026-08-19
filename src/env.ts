@@ -5,7 +5,10 @@ export const env = createEnv({
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
   server: {
     DATABASE_URL: z.url(),
+    WEBHOOK_SERVICE_DATABASE_URL: z.url(),
     CLERK_SECRET_KEY: z.string(),
+    CLERK_WEBHOOK_SECRET: z.string(),
+    PLATFORM_ADMIN_ORG_ID: z.string(),
     RESEND_API_KEY: z.string(),
   },
   client: {
@@ -15,7 +18,10 @@ export const env = createEnv({
   },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
+    WEBHOOK_SERVICE_DATABASE_URL: process.env.WEBHOOK_SERVICE_DATABASE_URL,
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
+    CLERK_WEBHOOK_SECRET: process.env.CLERK_WEBHOOK_SECRET,
+    PLATFORM_ADMIN_ORG_ID: process.env.PLATFORM_ADMIN_ORG_ID,
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN:

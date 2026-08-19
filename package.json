@@ -20,7 +20,9 @@
     "db:migrate:prod": "dotenv -e .env.neon.production -- drizzle-kit migrate",
     "db:studio:prod": "dotenv -e .env.neon.production -- drizzle-kit studio",
     "test": "pnpm db:migrate:test && vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:coverage": "pnpm vitest run --coverage",
+    "tunnel": "cloudflared tunnel run turnout-dev"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -39,6 +41,7 @@
     "react-dom": "19.2.4",
     "resend": "^6.18.1",
     "shadcn": "^4.16.0",
+    "svix": "^1.99.1",
     "tailwind-merge": "^3.6.0",
     "tw-animate-css": "^1.4.0",
     "zod": "^4.4.3"
@@ -49,6 +52,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "^4.1.11",
     "babel-plugin-react-compiler": "1.0.0",
     "dotenv-cli": "^11.0.0",
     "drizzle-kit": "^0.31.10",
