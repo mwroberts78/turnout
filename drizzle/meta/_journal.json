@@ -92,6 +92,41 @@
       "when": 1786058594163,
       "tag": "0012_tenants_updated_at_not_null",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1786473755665,
+      "tag": "0013_lively_frank_castle",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1786568017751,
+      "tag": "0014_handy_flatman",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1786927011447,
+      "tag": "0015_vengeful_hawkeye",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1786988589196,
+      "tag": "0016_create_webhook_service_role",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1786995015603,
+      "tag": "0017_living_molecule_man",
+      "breakpoints": true
     }
   ]
 }
