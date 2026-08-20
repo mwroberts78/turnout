@@ -25,19 +25,12 @@ export const tenants = pgTable(
       .defaultNow()
       .notNull()
       .$onUpdate(() => new Date()),
-    deletedBy: uuid('deleted_by').references((): AnyPgColumn => users.id),
-    deletedAt: timestamp('deleted_at'),
   },
-
   (table) => [
     crudPolicy({
       role: authenticatedRole,
-      read: sql`${table.id} = current_setting('app.current_tenant_id', true)::uuid AND ${table.deletedAt} IS NULL`,
-      modify: sql`${table.id} = current_setting('app.current_tenant_id', true)::uuid`,
+      read: sql`${table.id} = current_setting('app.current_tenant_id')::uuid`,
+      modify: sql`${table.id} = current_setting('app.current_tenant_id')::uuid`,
     }),
   ],
 );
-
-export type Tenant = typeof tenants.$inferSelect;
-export type NewTenant = typeof tenants.$inferInsert;
-export type UpdateTenant = Pick<NewTenant, 'name'>;

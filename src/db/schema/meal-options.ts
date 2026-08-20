@@ -37,8 +37,8 @@ export const mealOptions = pgTable(
   (table) => [
     crudPolicy({
       role: authenticatedRole,
-      read: sql`${table.tenantId} = current_setting('app.current_tenant_id', true)::uuid`,
-      modify: sql`${table.tenantId} = current_setting('app.current_tenant_id', true)::uuid`,
+      read: sql`${table.tenantId} = current_setting('app.current_tenant_id')::uuid`,
+      modify: sql`${table.tenantId} = current_setting('app.current_tenant_id')::uuid`,
     }),
   ],
 );

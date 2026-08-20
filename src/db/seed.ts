@@ -12,9 +12,21 @@ async function seed() {
   const [tenant] = await db
     .insert(tenants)
     .values({
-      name: 'Test Org',
+      name: 'Turnout Internal',
       clerkOrgId: 'org_3HN2oWAXPQiFBJdxG9BduWD08U2',
       tier: 'free',
+    })
+    .returning();
+
+  const [adminUser] = await db
+    .insert(users)
+    .values({
+      tenantId: tenant.id,
+      clerkUserId: 'user_3HN2AM43xFDHU5OFR8YErBWkdoE',
+      email: 'matt.w.roberts78@gmail.com',
+      firstName: 'Matt',
+      lastName: 'Roberts',
+      role: 'super_user',
     })
     .returning();
 
@@ -41,7 +53,7 @@ async function seed() {
       endTime: new Date('2026-09-01T13:00:00-04:00'),
       mealProvided: true,
       tshirtProvided: true,
-      createdBy: employee.id,
+      createdBy: adminUser.id,
     })
     .returning();
 
@@ -52,19 +64,19 @@ async function seed() {
         tenantId: tenant.id,
         opportunityId: opportunity.id,
         mealName: 'Vegetarian',
-        createdBy: employee.id,
+        createdBy: adminUser.id,
       },
       {
         tenantId: tenant.id,
         opportunityId: opportunity.id,
         mealName: 'Vegan',
-        createdBy: employee.id,
+        createdBy: adminUser.id,
       },
       {
         tenantId: tenant.id,
         opportunityId: opportunity.id,
         mealName: 'Standard',
-        createdBy: employee.id,
+        createdBy: adminUser.id,
       },
     ])
     .returning();

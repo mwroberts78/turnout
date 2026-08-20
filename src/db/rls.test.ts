@@ -1,13 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
-import {
-  mealOptions,
-  opportunities,
-  signUps,
-  tenants,
-  users,
-} from '../../db/schema';
-import { withRollback } from '../test-utils';
+import { mealOptions, opportunities, signUps, tenants, users } from './schema';
+import { withRollback } from './test-utils';
 
 describe('tenants RLS', () => {
   it('a tenant can read its own row', async () => {

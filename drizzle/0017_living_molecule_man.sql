@@ -1,1 +1,0 @@
-CREATE POLICY "self-lookup-by-clerk-user-id" ON "users" AS PERMISSIVE FOR SELECT TO "authenticated" USING ("users"."clerk_user_id" = current_setting('app.current_clerk_user_id', true) AND "users"."deleted_at" IS NULL);
