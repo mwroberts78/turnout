@@ -10,6 +10,7 @@ export const env = createEnv({
     CLERK_WEBHOOK_SECRET: z.string(),
     PLATFORM_ADMIN_ORG_ID: z.string(),
     RESEND_API_KEY: z.string(),
+    BLOB_READ_WRITE_TOKEN: z.string(),
   },
   client: {
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
@@ -28,5 +29,6 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN,
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
+    BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
   },
 });
