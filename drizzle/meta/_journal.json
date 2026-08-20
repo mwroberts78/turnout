@@ -127,6 +127,13 @@
       "when": 1786995015603,
       "tag": "0017_living_molecule_man",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1787181810476,
+      "tag": "0018_add_authenticated_role_login",
+      "breakpoints": true
     }
   ]
 }
