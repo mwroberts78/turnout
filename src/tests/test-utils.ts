@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { db } from './index';
+import { db } from '../db/index';
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
@@ -23,8 +23,22 @@ export async function asTenant<T>(
   });
 }
 
+export async function asWebhookService<T>(
+  callback: (tx: Tx) => Promise<T>,
+): Promise<T> {
+  return db.transaction(async (tx) => {
+    await tx.execute(sql`SET LOCAL ROLE webhook_service`);
+
+    return callback(tx);
+  });
+}
+
 export async function withRollback<T>(
-  callback: (tx: Tx, actAs: (tenantId: string) => Promise<void>) => Promise<T>,
+  callback: (
+    tx: Tx,
+    actAs: (tenantId: string) => Promise<void>,
+    actAsWebhookService: () => Promise<void>,
+  ) => Promise<T>,
 ): Promise<T> {
   try {
     await db.transaction(async (tx) => {
@@ -34,7 +48,12 @@ export async function withRollback<T>(
           sql`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`,
         );
       };
-      const result = await callback(tx, actAs);
+
+      const actAsWebhookService = async () => {
+        await tx.execute(sql`SET LOCAL ROLE webhook_service`);
+      };
+
+      const result = await callback(tx, actAs, actAsWebhookService);
       throw new RollbackSignal(result);
     });
     throw new Error('Expected transaction to roll back');
