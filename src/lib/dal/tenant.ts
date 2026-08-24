@@ -42,24 +42,24 @@ export async function deleteTenant(
     .where(eq(tenants.id, tenantId));
 }
 
-export const findTenantByClerkOrgId = async (
+export async function findTenantByClerkOrgId(
   clerkOrgId: string,
   client: DbClient = dbService,
-): Promise<Tenant | undefined> => {
+): Promise<Tenant | undefined> {
   const result = await client.query.tenants.findFirst({
     where: eq(tenants.clerkOrgId, clerkOrgId),
   });
 
   return result;
-};
+}
 
-export const findTenantById = async (
+export async function findTenantById(
   tenantId: string,
   client: DbClient = dbService,
-): Promise<Tenant | undefined> => {
+): Promise<Tenant | undefined> {
   const result = await client.query.tenants.findFirst({
     where: eq(tenants.id, tenantId),
   });
 
   return result;
-};
+}

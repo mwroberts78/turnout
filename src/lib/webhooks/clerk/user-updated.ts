@@ -8,10 +8,10 @@ import { reportError } from '@/lib/utils/reportError';
 import { clerkWebhookUser } from './schemas';
 import type { RawClerkUserEvent, WebhookHandlerResult } from './types';
 
-export const handleUserUpdated = async (
+export async function handleUserUpdated(
   rawEvent: RawClerkUserEvent,
   client: DbClient = dbService,
-): Promise<WebhookHandlerResult> => {
+): Promise<WebhookHandlerResult> {
   const parsedData = clerkWebhookUser.safeParse(rawEvent);
 
   if (!parsedData.success) {
@@ -61,4 +61,4 @@ export const handleUserUpdated = async (
   }
 
   return { ok: true, skipped: false };
-};
+}

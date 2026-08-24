@@ -7,10 +7,10 @@ import { reportError } from '@/lib/utils/reportError';
 import { clerkWebhookUserDelete } from './schemas';
 import type { RawClerkUserDeleteEvent, WebhookHandlerResult } from './types';
 
-export const handleUserDeleted = async (
+export async function handleUserDeleted(
   rawEvent: RawClerkUserDeleteEvent,
   client: DbClient = dbService,
-): Promise<WebhookHandlerResult> => {
+): Promise<WebhookHandlerResult> {
   const parsedData = clerkWebhookUserDelete.safeParse(rawEvent);
 
   if (!parsedData.success) {
@@ -47,4 +47,4 @@ export const handleUserDeleted = async (
   }
 
   return { ok: true, skipped: false };
-};
+}
