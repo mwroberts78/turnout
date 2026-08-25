@@ -1,6 +1,5 @@
 'use client';
 
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { SearchIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -14,7 +13,6 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/ui/command';
-import { DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Kbd, KbdGroup } from '@/components/ui/kbd';
 import { Label } from '@/components/ui/label';
 import {

@@ -1,6 +1,5 @@
 'use client';
 
-import { DownloadIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
@@ -9,13 +8,6 @@ import { useThemeConfig } from '@/components/active-theme';
 import Logo from '@/components/appLayout/logo';
 import { NavMain } from '@/components/appLayout/sidebar/nav-main';
 import Search from '@/components/appLayout/sidebar/search';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardTitle,
-} from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Sidebar,
@@ -31,7 +23,7 @@ import { useIsTablet } from '@/hooks/use-mobile';
 import type { SidebarCollapsible, SidebarVariant } from '@/lib/themes';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const pathname = usePathname();
+  const _pathname = usePathname();
   const { setOpen, setOpenMobile, isMobile } = useSidebar();
   const { theme } = useThemeConfig();
   const isTablet = useIsTablet();
@@ -73,7 +65,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <Search />
       </SidebarHeader>
       <SidebarContent>
-        <ScrollArea className="h-full [&>[data-slot=scroll-area-viewport]]:scroll-fade">
+        <ScrollArea className="h-full *:data-[slot=scroll-area-viewport]:scroll-fade">
           <NavMain />
         </ScrollArea>
       </SidebarContent>

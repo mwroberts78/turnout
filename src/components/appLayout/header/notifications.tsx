@@ -24,7 +24,7 @@ const Notifications = () => {
         render={<Button size="icon-sm" variant="ghost" className="relative" />}
       >
         <BellIcon />
-        <span className="bg-destructive absolute end-0.5 top-0.5 block size-1.5 shrink-0 rounded-full"></span>
+        <span className="bg-destructive absolute inset-e-0.5 top-0.5 block size-1.5 shrink-0 rounded-full"></span>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
@@ -47,7 +47,7 @@ const Notifications = () => {
           </DropdownMenuLabel>
         </DropdownMenuGroup>
 
-        <ScrollArea className="h-[350px]">
+        <ScrollArea className="h-87.5">
           {notifications.map((item: Notification, _key) => (
             <DropdownMenuItem
               key={item.title}

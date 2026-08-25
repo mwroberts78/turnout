@@ -1,9 +1,7 @@
 'use client';
 
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
-import Link from 'next/link';
 import Notifications from '@/components/appLayout/header/notifications';
-import StoreSwitcher from '@/components/appLayout/header/store-switcher';
 import UserMenu from '@/components/appLayout/header/user-menu';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
