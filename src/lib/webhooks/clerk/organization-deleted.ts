@@ -6,10 +6,10 @@ import { reportError } from '@/lib/utils/reportError';
 import { clerkWebhookOrgDelete } from './schemas';
 import type { RawClerkOrgDeleteEvent, WebhookHandlerResult } from './types';
 
-export const handleOrganizationDeleted = async (
+export async function handleOrganizationDeleted(
   rawEvent: RawClerkOrgDeleteEvent,
   client: DbClient = dbService,
-): Promise<WebhookHandlerResult> => {
+): Promise<WebhookHandlerResult> {
   const parsedData = clerkWebhookOrgDelete.safeParse(rawEvent);
   if (!parsedData.success) {
     return { ok: false, reason: 'invalid_payload' };
@@ -36,4 +36,4 @@ export const handleOrganizationDeleted = async (
     throw err;
   }
   return { ok: true, skipped: false };
-};
+}

@@ -6,10 +6,10 @@ import { reportError } from '@/lib/utils/reportError';
 import { clerkWebhookOrgSchema } from './schemas';
 import type { RawClerkOrgEvent, WebhookHandlerResult } from './types';
 
-export const handleOrganizationUpdated = async (
+export async function handleOrganizationUpdated(
   rawEvent: RawClerkOrgEvent,
   client: DbClient = dbService,
-): Promise<WebhookHandlerResult> => {
+): Promise<WebhookHandlerResult> {
   const parsedData = clerkWebhookOrgSchema.safeParse(rawEvent);
   if (!parsedData.success) {
     return { ok: false, reason: 'invalid_payload' };
@@ -36,4 +36,4 @@ export const handleOrganizationUpdated = async (
     throw err;
   }
   return { ok: true, skipped: false };
-};
+}

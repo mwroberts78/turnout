@@ -4,6 +4,7 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
+  allowedDevOrigins: ['turnout-dev.roberts-lab.dev'],
 };
 
 export default withSentryConfig(nextConfig, {

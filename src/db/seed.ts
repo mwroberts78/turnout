@@ -8,7 +8,7 @@ import {
   users,
 } from './schema/index';
 
-async function seed() {
+const seed = async () => {
   const [tenant] = await db
     .insert(tenants)
     .values({
@@ -84,7 +84,7 @@ async function seed() {
 
   console.log('Seed complete.');
   process.exit(0);
-}
+};
 
 seed().catch((err) => {
   console.error(err);

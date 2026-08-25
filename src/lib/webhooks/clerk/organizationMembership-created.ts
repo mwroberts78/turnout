@@ -7,10 +7,10 @@ import { reportError } from '@/lib/utils/reportError';
 import { clerkWebhookOrgMembership } from './schemas';
 import type { RawClerkOrgMembershipEvent, WebhookHandlerResult } from './types';
 
-export const handleOrganizationMembershipCreated = async (
+export async function handleOrganizationMembershipCreated(
   rawEvent: RawClerkOrgMembershipEvent,
   client: DbClient = dbService,
-): Promise<WebhookHandlerResult> => {
+): Promise<WebhookHandlerResult> {
   const parsedData = clerkWebhookOrgMembership.safeParse(rawEvent);
 
   if (!parsedData.success) {
@@ -54,4 +54,4 @@ export const handleOrganizationMembershipCreated = async (
   }
 
   return { ok: true as const, skipped: false as const };
-};
+}

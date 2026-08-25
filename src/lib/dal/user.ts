@@ -38,13 +38,13 @@ export async function deleteUser(
     .where(eq(users.id, userToDeleteId));
 }
 
-export const findUserByClerkId = async (
+export async function findUserByClerkId(
   clerkUserId: string,
   client: DbClient = dbService,
-): Promise<User | undefined> => {
+): Promise<User | undefined> {
   const result = await client.query.users.findFirst({
     where: eq(users.clerkUserId, clerkUserId),
   });
 
   return result;
-};
+}

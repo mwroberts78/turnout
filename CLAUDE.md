@@ -61,20 +61,21 @@ Corporate volunteerism portal. Multi-tenant SaaS. Master's capstone project, may
 - Tenant-context middleware (`SET app.current_tenant_id` per request) — Phase 2
 - Automated migrations in the Vercel build pipeline — deliberately deferred until schema stabilizes post Phase 1–2 (Chunk 7.7)
 - SSO, billing, SMS — all deliberately out of scope for MVP; designed to be additive later, not blocking current build
-- Local/test blob storage strategy for `opportunities.image_url` — Vercel Blob has no local emulator. Resolve in Phase 2, ahead of Phase 3 (opportunity management, where image upload gets built): either a separate dev-scoped Blob store (real network calls, matches prod exactly) or a filesystem-backed adapter swapped in for dev/test. Leaning toward the separate dev store for simplicity.
+- Local/test blob storage strategy for `opportunities.image_url` — Vercel Blob has no local emulator. Resolve in Phase 2, ahead of Phase 4 (opportunity management, where image upload gets built): either a separate dev-scoped Blob store (real network calls, matches prod exactly) or a filesystem-backed adapter swapped in for dev/test. Leaning toward the separate dev store for simplicity.
 
 ## Development Plan
 
 Build order is phase-based, each phase ending in an E2E test checkpoint:
 1. Core data model (opportunities, signups, role field)
 2. Tenant onboarding + platform admin split (Clerk webhook sync, invitation flow)
-3. Admin: opportunity management
-4. Employee: discovery and signup
-5. Personal tracking + basic reporting
-6. Projects (multi-opportunity containers)
-7. Polish pass
+3. Base UI (design system / shared layout, nav, and UI scaffolding for both marketing and app)
+4. Admin: opportunity management
+5. Employee: discovery and signup
+6. Personal tracking + basic reporting
+7. Projects (multi-opportunity containers)
+8. Polish pass
 
-Phases 1–5 are the MVP. Phases 6–7 are stretch goals for the first draft.
+Phases 1–6 are the MVP. Phases 7–8 are stretch goals for the first draft.
 
 ## Naming
 
