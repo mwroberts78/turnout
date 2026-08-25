@@ -6,8 +6,9 @@ import UserMenu from '@/components/appLayout/header/user-menu';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useSidebar } from '@/components/ui/sidebar';
+import type { AppUser } from '@/lib/types/appUser';
 
-export function SiteHeader() {
+export function SiteHeader({ appUser }: { appUser: AppUser }) {
   const { toggleSidebar, open } = useSidebar();
 
   return (
@@ -23,7 +24,7 @@ export function SiteHeader() {
             orientation="vertical"
             className="mx-2 data-[orientation=vertical]:h-4 data-[orientation=vertical]:self-center"
           />
-          <UserMenu />
+          <UserMenu appUser={appUser} />
         </div>
       </div>
     </header>

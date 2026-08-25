@@ -50,7 +50,7 @@ export const navItems: NavGroup[] = [
     title: 'Dashboards',
     items: [
       {
-        title: 'Classic Dashboard',
+        title: 'Opportunity Management',
         href: '/dashboard/default',
         icon: ChartPieIcon,
       },

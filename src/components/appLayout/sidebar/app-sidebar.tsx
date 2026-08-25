@@ -1,13 +1,14 @@
 'use client';
 
+import { useOrganization } from '@clerk/nextjs';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
 import { useEffect } from 'react';
 import { useThemeConfig } from '@/components/active-theme';
-import Logo from '@/components/appLayout/logo';
 import { NavMain } from '@/components/appLayout/sidebar/nav-main';
 import Search from '@/components/appLayout/sidebar/search';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Sidebar,
@@ -27,6 +28,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { setOpen, setOpenMobile, isMobile } = useSidebar();
   const { theme } = useThemeConfig();
   const isTablet = useIsTablet();
+  const { organization } = useOrganization();
 
   useEffect(() => {
     if (isMobile) setOpenMobile(false);
@@ -53,11 +55,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               className="hover:text-foreground h-10 group-data-[collapsible=icon]:px-0!"
-              render={<Link href="/dashboard/default" />}
+              render={<Link href="/dashboard" />}
             >
-              <Logo />
+              <Avatar className="size-6 rounded-md">
+                <AvatarImage
+                  src={organization?.imageUrl}
+                  alt={organization?.name ?? 'Turnout'}
+                />
+                <AvatarFallback className="rounded-md text-xs">
+                  {organization?.name?.charAt(0) ?? 'T'}
+                </AvatarFallback>
+              </Avatar>
               <span className="text-foreground font-semibold">
-                Shadcn UI Kit
+                {organization?.name ?? 'Turnout'}
               </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
