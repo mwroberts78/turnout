@@ -6,8 +6,8 @@ import { usePathname } from 'next/navigation';
 import * as React from 'react';
 import { useEffect } from 'react';
 import { useThemeConfig } from '@/components/active-theme';
-import { NavMain } from '@/components/appLayout/sidebar/nav-main';
-import Search from '@/components/appLayout/sidebar/search';
+import { NavMain } from '@/components/app-layout/sidebar/nav-main';
+import Search from '@/components/app-layout/sidebar/search';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -23,7 +23,10 @@ import {
 import { useIsTablet } from '@/hooks/use-mobile';
 import type { SidebarCollapsible, SidebarVariant } from '@/lib/themes';
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({
+  isAdmin,
+  ...props
+}: React.ComponentProps<typeof Sidebar> & { isAdmin: boolean }) {
   const _pathname = usePathname();
   const { setOpen, setOpenMobile, isMobile } = useSidebar();
   const { theme } = useThemeConfig();
@@ -76,7 +79,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <ScrollArea className="h-full *:data-[slot=scroll-area-viewport]:scroll-fade">
-          <NavMain />
+          <NavMain isAdmin={isAdmin} />
         </ScrollArea>
       </SidebarContent>
       <SidebarFooter></SidebarFooter>

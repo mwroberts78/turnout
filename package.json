@@ -12,6 +12,7 @@
     "db:migrate": "dotenv -e .env.local -- drizzle-kit migrate",
     "db:studio": "dotenv -e .env.local -- drizzle-kit studio",
     "db:seed": "dotenv -e .env.local -- tsx src/db/seed.ts",
+    "db:seed:opportunities": "dotenv -e .env.local -- tsx src/db/seedOpportunities.ts",
     "db:generate:test": "dotenv -e .env.test -- drizzle-kit generate",
     "db:migrate:test": "dotenv -e .env.test -- drizzle-kit migrate",
     "db:studio:test": "dotenv -e .env.test -- drizzle-kit studio",
@@ -31,6 +32,7 @@
     "@radix-ui/react-visually-hidden": "^1.2.11",
     "@sentry/nextjs": "^10.69.0",
     "@t3-oss/env-nextjs": "^0.13.11",
+    "@tanstack/react-table": "^9.1.2",
     "@vercel/blob": "^2.8.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -66,5 +68,5 @@
     "typescript": "^5",
     "vitest": "^4.1.10"
   },
-  "packageManager": "pnpm@11.20.0+sha512.9a6f330a95b66446ea088faf1521405a8a01f07fde7124cc9958dfed52d4bb436737e65b08f85f37b46fcba375092558ac51262b816844b22f63406ed166bfee"
+  "packageManager": "pnpm@11.24.0+sha512.bd27e345e976dcb0be0b7a1228217b049a817e21b1f355c90dbe7dc46671895a8bc1e6d06c24554505ea93ea0b45f489a27ec1bfbc8de6a9659fca0f16fa0000"
 }

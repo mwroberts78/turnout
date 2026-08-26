@@ -54,3 +54,5 @@ export const opportunities = pgTable(
     }),
   ],
 );
+
+export type Opportunity = typeof opportunities.$inferSelect;

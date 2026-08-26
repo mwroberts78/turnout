@@ -2,10 +2,11 @@ import { auth } from '@clerk/nextjs/server';
 import { cookies } from 'next/headers';
 import type React from 'react';
 import { ActiveThemeProvider } from '@/components/active-theme';
-import { SiteHeader } from '@/components/appLayout/header';
-import { AppSidebar } from '@/components/appLayout/sidebar/app-sidebar';
+import { SiteHeader } from '@/components/app-layout/header';
+import { AppSidebar } from '@/components/app-layout/sidebar/app-sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { getCurrentAppUser } from '@/lib/auth';
+import { isAdminUser } from '@/lib/types/appUser';
 
 export default async function AppLayout({
   children,
@@ -14,6 +15,7 @@ export default async function AppLayout({
 }>): Promise<React.ReactNode> {
   await auth.protect({ unauthenticatedUrl: '/sign-in' });
   const appUser = await getCurrentAppUser();
+  const isAdmin: boolean = await isAdminUser(appUser);
 
   const cookieStore = await cookies();
   const defaultOpen =
@@ -34,7 +36,7 @@ export default async function AppLayout({
           } as React.CSSProperties
         }
       >
-        <AppSidebar />
+        <AppSidebar isAdmin={isAdmin} />
         <SidebarInset>
           <SiteHeader appUser={appUser} />
           <div className="flex flex-1 flex-col">

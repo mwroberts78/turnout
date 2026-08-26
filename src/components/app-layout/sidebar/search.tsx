@@ -3,7 +3,7 @@
 import { SearchIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { navItems } from '@/components/appLayout/sidebar/nav-main';
+import { navItems } from '@/components/app-layout/sidebar/nav-main';
 import {
   CommandDialog,
   CommandEmpty,

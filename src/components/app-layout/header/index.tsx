@@ -1,8 +1,8 @@
 'use client';
 
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
-import Notifications from '@/components/appLayout/header/notifications';
-import UserMenu from '@/components/appLayout/header/user-menu';
+import Notifications from '@/components/app-layout/header/notifications';
+import UserMenu from '@/components/app-layout/header/user-menu';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useSidebar } from '@/components/ui/sidebar';

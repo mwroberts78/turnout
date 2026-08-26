@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   allowedDevOrigins: ['turnout-dev.roberts-lab.dev'],
+  images: {
+    remotePatterns: [{ protocol: 'https', hostname: 'picsum.photos' }],
+  },
 };
 
 export default withSentryConfig(nextConfig, {

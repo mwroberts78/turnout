@@ -1,4 +1,4 @@
-import { auth } from '@clerk/nextjs/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 import { eq, sql } from 'drizzle-orm';
 import { cache } from 'react';
 import { db } from '@/db';
@@ -14,7 +14,15 @@ export const getCurrentAppUser = cache(async (): Promise<AppUser> => {
   if (orgId == null) return { status: 'no-org' };
 
   if (orgId === env.PLATFORM_ADMIN_ORG_ID) {
-    return { status: 'platform-admin' };
+    const client = await clerkClient();
+    const clerkUser = await client.users.getUser(userId);
+    return {
+      status: 'platform-admin',
+      role: 'platform-admin',
+      firstName: clerkUser.firstName ?? '',
+      lastName: clerkUser.lastName ?? '',
+      email: clerkUser.primaryEmailAddress?.emailAddress ?? '',
+    };
   }
 
   return db.transaction(async (tx) => {
@@ -39,6 +47,7 @@ export const getCurrentAppUser = cache(async (): Promise<AppUser> => {
     if (!tenant) return { status: 'pending-sync' };
 
     return {
+      tenantId: user.tenantId,
       status: 'active',
       role: user.role,
       firstName: user.firstName,
