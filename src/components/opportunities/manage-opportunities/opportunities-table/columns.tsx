@@ -1,8 +1,19 @@
 'use client';
 
 import { createColumnHelper } from '@tanstack/react-table';
+import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import Image from 'next/image';
 import type { z } from 'zod';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { typeLabels } from '@/db/schema';
 import type { opportunityListItem } from '@/lib/schemas/opportunity-list-item';
 import type { DataTableFeatures } from './features';
 
@@ -44,9 +55,32 @@ export const columns = columnHelper.columns([
     },
   }),
 
+  columnHelper.accessor('opportunityType', {
+    id: 'opportunityType',
+    header: 'Type',
+    filterFn: 'equalsString',
+    cell: (info) => {
+      return (
+        <Badge variant="outline" className={info.row.original.opportunityType}>
+          {typeLabels[info.row.original.opportunityType]}
+        </Badge>
+      );
+    },
+  }),
+
   columnHelper.accessor('startTime', {
     id: 'dateTime',
-    header: 'Date & Time',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Date & Time
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: (info) => {
       const start = info.getValue();
       const end = info.row.original.endTime;
@@ -74,6 +108,27 @@ export const columns = columnHelper.columns([
             {startLabel} - {endLabel}
           </span>
         </div>
+      );
+    },
+  }),
+  columnHelper.display({
+    id: 'actions',
+    cell: ({ row }) => {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={<Button variant="ghost" className="h-8 w-8 p-0" />}
+          >
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuGroup></DropdownMenuGroup>
+            <DropdownMenuItem>View details</DropdownMenuItem>
+            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       );
     },
   }),

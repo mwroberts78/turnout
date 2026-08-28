@@ -16,6 +16,18 @@
   }
 }
 
+@layer utilities {
+  .in-person {
+    @apply border-green-700 bg-green-50 text-green-700 dark:border-green-300 dark:bg-green-950 dark:text-green-300;
+  }
+  .virtual {
+    @apply border-amber-700 bg-amber-50 text-amber-700 dark:border-amber-300 dark:bg-amber-950 dark:text-amber-300;
+  }
+  .skills-based {
+    @apply border-purple-700 bg-purple-50 text-purple-700 dark:border-purple-300 dark:bg-purple-950 dark:text-purple-300;
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
