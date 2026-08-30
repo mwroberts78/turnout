@@ -10,4 +10,5 @@ export const opportunityListItem = z.object({
   imageUrl: z.string().nullable(),
   startTime: z.date(),
   endTime: z.date(),
+  maxSignupsAllowed: z.number().nullable(),
 });

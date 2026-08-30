@@ -1,7 +1,7 @@
 // src/db/seedOpportunities.ts
 import { eq } from 'drizzle-orm';
 import { db } from './index';
-import { mealOptions, opportunities, users } from './schema/index';
+import { mealOptions, opportunities, signUps, users } from './schema/index';
 
 const tenantId = process.argv.slice(2).find((arg) => arg !== '--');
 
@@ -23,6 +23,7 @@ type OpportunityTemplate = {
   location: string | null;
   mealProvided: boolean;
   tshirtProvided: boolean;
+  maxSignupsAllowed: number | null;
 };
 
 const templates: OpportunityTemplate[] = [
@@ -32,6 +33,7 @@ const templates: OpportunityTemplate[] = [
     location: '123 Main St, Anytown, USA',
     mealProvided: true,
     tshirtProvided: true,
+    maxSignupsAllowed: 3,
   },
   {
     description: 'Virtual resume-writing workshop for job seekers',
@@ -39,6 +41,7 @@ const templates: OpportunityTemplate[] = [
     location: null,
     mealProvided: false,
     tshirtProvided: false,
+    maxSignupsAllowed: null,
   },
   {
     description: 'Pro-bono website audit for a local nonprofit',
@@ -46,6 +49,7 @@ const templates: OpportunityTemplate[] = [
     location: null,
     mealProvided: false,
     tshirtProvided: false,
+    maxSignupsAllowed: 2,
   },
   {
     description: 'Food bank sorting and packing',
@@ -53,6 +57,7 @@ const templates: OpportunityTemplate[] = [
     location: '456 Oak Ave, Anytown, USA',
     mealProvided: true,
     tshirtProvided: false,
+    maxSignupsAllowed: 10,
   },
   {
     description: 'Habitat for Humanity build day',
@@ -60,6 +65,7 @@ const templates: OpportunityTemplate[] = [
     location: '789 Elm St, Anytown, USA',
     mealProvided: true,
     tshirtProvided: true,
+    maxSignupsAllowed: 15,
   },
   {
     description: 'Virtual coding mentorship for teens',
@@ -67,6 +73,7 @@ const templates: OpportunityTemplate[] = [
     location: null,
     mealProvided: false,
     tshirtProvided: false,
+    maxSignupsAllowed: null,
   },
   {
     description: 'Beach cleanup and conservation walk',
@@ -74,6 +81,7 @@ const templates: OpportunityTemplate[] = [
     location: 'Sunset Beach, Anytown, USA',
     mealProvided: true,
     tshirtProvided: false,
+    maxSignupsAllowed: 20,
   },
   {
     description: 'Nonprofit financial literacy webinar',
@@ -81,6 +89,7 @@ const templates: OpportunityTemplate[] = [
     location: null,
     mealProvided: false,
     tshirtProvided: false,
+    maxSignupsAllowed: null,
   },
   {
     description: 'Animal shelter dog walking day',
@@ -88,6 +97,7 @@ const templates: OpportunityTemplate[] = [
     location: 'Anytown Animal Shelter',
     mealProvided: false,
     tshirtProvided: true,
+    maxSignupsAllowed: 8,
   },
   {
     description: 'Senior center technology help desk',
@@ -95,6 +105,7 @@ const templates: OpportunityTemplate[] = [
     location: 'Anytown Senior Center',
     mealProvided: false,
     tshirtProvided: false,
+    maxSignupsAllowed: 6,
   },
   {
     description: 'River restoration and invasive species removal',
@@ -102,6 +113,7 @@ const templates: OpportunityTemplate[] = [
     location: 'Willow River Trailhead',
     mealProvided: true,
     tshirtProvided: true,
+    maxSignupsAllowed: 12,
   },
   {
     description: 'Virtual grant-writing workshop for nonprofits',
@@ -109,6 +121,7 @@ const templates: OpportunityTemplate[] = [
     location: null,
     mealProvided: false,
     tshirtProvided: false,
+    maxSignupsAllowed: null,
   },
   {
     description: 'School supply drive packing event',
@@ -116,6 +129,7 @@ const templates: OpportunityTemplate[] = [
     location: '456 Oak Ave, Anytown, USA',
     mealProvided: true,
     tshirtProvided: false,
+    maxSignupsAllowed: 15,
   },
   {
     description: 'Pro-bono legal aid clinic',
@@ -123,6 +137,7 @@ const templates: OpportunityTemplate[] = [
     location: null,
     mealProvided: false,
     tshirtProvided: false,
+    maxSignupsAllowed: 3,
   },
   {
     description: 'Community garden planting day',
@@ -130,6 +145,7 @@ const templates: OpportunityTemplate[] = [
     location: 'Maple Street Community Garden',
     mealProvided: true,
     tshirtProvided: true,
+    maxSignupsAllowed: 10,
   },
   {
     description: 'Virtual mock interview coaching',
@@ -137,6 +153,7 @@ const templates: OpportunityTemplate[] = [
     location: null,
     mealProvided: false,
     tshirtProvided: false,
+    maxSignupsAllowed: null,
   },
   {
     description: 'Blood drive volunteer support',
@@ -144,6 +161,7 @@ const templates: OpportunityTemplate[] = [
     location: 'Anytown Community Center',
     mealProvided: false,
     tshirtProvided: false,
+    maxSignupsAllowed: 25,
   },
   {
     description: 'Trail maintenance and signage repair',
@@ -151,6 +169,7 @@ const templates: OpportunityTemplate[] = [
     location: 'Willow River Trailhead',
     mealProvided: true,
     tshirtProvided: true,
+    maxSignupsAllowed: 12,
   },
   {
     description: 'Nonprofit board matching info session',
@@ -158,6 +177,7 @@ const templates: OpportunityTemplate[] = [
     location: null,
     mealProvided: false,
     tshirtProvided: false,
+    maxSignupsAllowed: null,
   },
   {
     description: 'Meals on Wheels delivery route',
@@ -165,6 +185,7 @@ const templates: OpportunityTemplate[] = [
     location: 'Anytown Senior Center',
     mealProvided: true,
     tshirtProvided: false,
+    maxSignupsAllowed: 8,
   },
   {
     description: 'Data analysis for a local nonprofit',
@@ -172,6 +193,7 @@ const templates: OpportunityTemplate[] = [
     location: null,
     mealProvided: false,
     tshirtProvided: false,
+    maxSignupsAllowed: 2,
   },
   {
     description: 'Holiday toy drive sorting',
@@ -179,6 +201,7 @@ const templates: OpportunityTemplate[] = [
     location: '456 Oak Ave, Anytown, USA',
     mealProvided: true,
     tshirtProvided: true,
+    maxSignupsAllowed: 20,
   },
   {
     description: 'Virtual English conversation practice for immigrants',
@@ -186,6 +209,7 @@ const templates: OpportunityTemplate[] = [
     location: null,
     mealProvided: false,
     tshirtProvided: false,
+    maxSignupsAllowed: null,
   },
   {
     description: 'Tree planting and habitat restoration day',
@@ -193,6 +217,7 @@ const templates: OpportunityTemplate[] = [
     location: 'Willow River Trailhead',
     mealProvided: true,
     tshirtProvided: true,
+    maxSignupsAllowed: 15,
   },
   {
     description: 'Nonprofit marketing and branding consultation',
@@ -200,6 +225,7 @@ const templates: OpportunityTemplate[] = [
     location: null,
     mealProvided: false,
     tshirtProvided: false,
+    maxSignupsAllowed: 3,
   },
   {
     description: 'Homeless shelter meal service',
@@ -207,6 +233,7 @@ const templates: OpportunityTemplate[] = [
     location: 'Anytown Community Shelter',
     mealProvided: true,
     tshirtProvided: false,
+    maxSignupsAllowed: 10,
   },
   {
     description: 'Virtual portfolio review for design students',
@@ -214,6 +241,7 @@ const templates: OpportunityTemplate[] = [
     location: null,
     mealProvided: false,
     tshirtProvided: false,
+    maxSignupsAllowed: null,
   },
 ];
 
@@ -231,6 +259,33 @@ const opportunityData = templates.map((template, index) => {
   };
 });
 
+const fakeVolunteers = [
+  { firstName: 'Jordan', lastName: 'Alvarez', email: 'jordan.alvarez@example.com' },
+  { firstName: 'Casey', lastName: 'Nguyen', email: 'casey.nguyen@example.com' },
+  { firstName: 'Morgan', lastName: 'Patel', email: 'morgan.patel@example.com' },
+  { firstName: 'Riley', lastName: 'Thompson', email: 'riley.thompson@example.com' },
+  { firstName: 'Taylor', lastName: 'Brooks', email: 'taylor.brooks@example.com' },
+  { firstName: 'Avery', lastName: 'Kim', email: 'avery.kim@example.com' },
+  { firstName: 'Sam', lastName: 'Rodriguez', email: 'sam.rodriguez@example.com' },
+  { firstName: 'Drew', lastName: 'Bennett', email: 'drew.bennett@example.com' },
+];
+
+const tshirtSizes = ['sm', 'md', 'lg', 'xl'] as const;
+
+function signupCountForOpportunity(
+  description: string,
+  index: number,
+  maxSignupsAllowed: number | null,
+  volunteerCount: number,
+): number {
+  if (description === 'Community park cleanup') return 3; // exactly maxed out
+  if (description === 'Food bank sorting and packing') return 2; // partially filled
+  if (index % 4 === 0) return 0; // leave some opportunities with no signups at all
+
+  const desired = (index % 3) + 1; // 1, 2, or 3
+  return Math.min(desired, maxSignupsAllowed ?? volunteerCount, volunteerCount);
+}
+
 const seedOpportunities = async () => {
   const tenantUsers = await db.query.users.findMany({
     where: eq(users.tenantId, tenantId),
@@ -245,30 +300,84 @@ const seedOpportunities = async () => {
     process.exit(1);
   }
 
-  for (const opp of opportunityData) {
+  const volunteers = await db
+    .insert(users)
+    .values(
+      fakeVolunteers.map((volunteer, index) => ({
+        tenantId,
+        clerkUserId: `user_fake_volunteer_${index + 1}`,
+        email: volunteer.email,
+        firstName: volunteer.firstName,
+        lastName: volunteer.lastName,
+        role: 'employee' as const,
+      })),
+    )
+    .returning();
+
+  console.log(`Created ${volunteers.length} fake volunteer users.`);
+
+  for (let index = 0; index < opportunityData.length; index++) {
+    const opp = opportunityData[index];
     const [inserted] = await db
       .insert(opportunities)
       .values({ tenantId, createdBy: creator.id, ...opp })
       .returning();
 
+    let meals: { id: string }[] = [];
     if (opp.mealProvided) {
-      await db.insert(mealOptions).values([
-        {
-          tenantId,
-          opportunityId: inserted.id,
-          mealName: 'Standard',
-          createdBy: creator.id,
-        },
-        {
-          tenantId,
-          opportunityId: inserted.id,
-          mealName: 'Vegetarian',
-          createdBy: creator.id,
-        },
-      ]);
+      meals = await db
+        .insert(mealOptions)
+        .values([
+          {
+            tenantId,
+            opportunityId: inserted.id,
+            mealName: 'Standard',
+            createdBy: creator.id,
+          },
+          {
+            tenantId,
+            opportunityId: inserted.id,
+            mealName: 'Vegetarian',
+            createdBy: creator.id,
+          },
+        ])
+        .returning();
     }
 
     console.log(`Created opportunity: ${inserted.description}`);
+
+    const signupCount = signupCountForOpportunity(
+      opp.description,
+      index,
+      opp.maxSignupsAllowed,
+      volunteers.length,
+    );
+
+    if (signupCount > 0) {
+      await db.insert(signUps).values(
+        Array.from({ length: signupCount }, (_, i) => {
+          const volunteer = volunteers[(index + i) % volunteers.length];
+          return {
+            tenantId,
+            userId: volunteer.id,
+            opportunityId: inserted.id,
+            estimatedHours: 4,
+            wantsMeal: opp.mealProvided,
+            selectedMeal: opp.mealProvided
+              ? meals[i % meals.length]?.id
+              : undefined,
+            wantsTShirt: opp.tshirtProvided,
+            tshirtSize: opp.tshirtProvided
+              ? tshirtSizes[i % tshirtSizes.length]
+              : undefined,
+            createdBy: volunteer.id,
+          };
+        }),
+      );
+      console.log(
+        `  ↳ ${signupCount} signup(s) for "${inserted.description}"`,
+      );
+    }
   }
 
   console.log(
