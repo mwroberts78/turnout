@@ -134,6 +134,13 @@
       "when": 1787181810476,
       "tag": "0018_add_authenticated_role_login",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1788111656673,
+      "tag": "0019_bizarre_hemingway",
+      "breakpoints": true
     }
   ]
 }
