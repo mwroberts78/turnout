@@ -131,6 +131,19 @@ export const columns = columnHelper.columns([
     },
   }),
 
+  columnHelper.accessor('isPublished', {
+    id: 'isPublished',
+    header: 'Status',
+    filterFn: 'equals',
+    cell: (info) => {
+      return (
+        <Badge variant={info.getValue() ? 'default' : 'outline'}>
+          {info.getValue() ? 'Published' : 'Draft'}
+        </Badge>
+      );
+    },
+  }),
+
   columnHelper.display({
     id: 'actions',
     header: 'Actions',

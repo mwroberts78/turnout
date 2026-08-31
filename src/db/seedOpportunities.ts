@@ -19,6 +19,7 @@ type OpportunityTemplate = {
   tshirtProvided: boolean;
   maxSignupsAllowed: number | null;
   image: string;
+  isPublished: boolean;
 };
 
 const templates: OpportunityTemplate[] = [
@@ -32,6 +33,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: true,
     maxSignupsAllowed: 3,
     image: 'outdoor-cleanup',
+    isPublished: true,
   },
   {
     title: 'Virtual resume-writing workshop for job seekers',
@@ -42,6 +44,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: false,
     maxSignupsAllowed: null,
     image: 'virtual-session',
+    isPublished: true,
   },
   {
     title: 'Pro-bono website audit for a local nonprofit',
@@ -53,6 +56,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: false,
     maxSignupsAllowed: 2,
     image: 'skills-consulting',
+    isPublished: false,
   },
   {
     title: 'Food bank sorting and packing',
@@ -63,6 +67,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: false,
     maxSignupsAllowed: 10,
     image: 'donation-sorting',
+    isPublished: true,
   },
   {
     title: 'Habitat for Humanity build day',
@@ -74,6 +79,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: true,
     maxSignupsAllowed: 15,
     image: 'house-build',
+    isPublished: true,
   },
   {
     title: 'Virtual coding mentorship for teens',
@@ -85,6 +91,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: false,
     maxSignupsAllowed: null,
     image: 'virtual-session',
+    isPublished: true,
   },
   {
     title: 'Beach cleanup and conservation walk',
@@ -95,6 +102,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: false,
     maxSignupsAllowed: 20,
     image: 'outdoor-cleanup',
+    isPublished: true,
   },
   {
     title: 'Nonprofit financial literacy webinar',
@@ -106,6 +114,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: false,
     maxSignupsAllowed: null,
     image: 'virtual-session',
+    isPublished: true,
   },
   {
     title: 'Animal shelter dog walking day',
@@ -117,6 +126,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: true,
     maxSignupsAllowed: 8,
     image: 'animal-shelter',
+    isPublished: true,
   },
   {
     title: 'Senior center technology help desk',
@@ -128,6 +138,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: false,
     maxSignupsAllowed: 6,
     image: 'senior-support',
+    isPublished: false,
   },
   {
     title: 'River restoration and invasive species removal',
@@ -138,6 +149,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: true,
     maxSignupsAllowed: 12,
     image: 'outdoor-cleanup',
+    isPublished: true,
   },
   {
     title: 'Virtual grant-writing workshop for nonprofits',
@@ -149,6 +161,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: false,
     maxSignupsAllowed: null,
     image: 'virtual-session',
+    isPublished: true,
   },
   {
     title: 'School supply drive packing event',
@@ -160,6 +173,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: false,
     maxSignupsAllowed: 15,
     image: 'donation-sorting',
+    isPublished: true,
   },
   {
     title: 'Pro-bono legal aid clinic',
@@ -171,6 +185,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: false,
     maxSignupsAllowed: 3,
     image: 'skills-consulting',
+    isPublished: true,
   },
   {
     title: 'Community garden planting day',
@@ -181,6 +196,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: true,
     maxSignupsAllowed: 10,
     image: 'community-garden',
+    isPublished: true,
   },
   {
     title: 'Virtual mock interview coaching',
@@ -192,6 +208,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: false,
     maxSignupsAllowed: null,
     image: 'virtual-session',
+    isPublished: false,
   },
   {
     title: 'Blood drive volunteer support',
@@ -203,6 +220,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: false,
     maxSignupsAllowed: 25,
     image: 'blood-drive',
+    isPublished: true,
   },
   {
     title: 'Trail maintenance and signage repair',
@@ -213,6 +231,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: true,
     maxSignupsAllowed: 12,
     image: 'outdoor-cleanup',
+    isPublished: true,
   },
   {
     title: 'Nonprofit board matching info session',
@@ -224,6 +243,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: false,
     maxSignupsAllowed: null,
     image: 'virtual-session',
+    isPublished: true,
   },
   {
     title: 'Meals on Wheels delivery route',
@@ -235,6 +255,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: false,
     maxSignupsAllowed: 8,
     image: 'senior-support',
+    isPublished: true,
   },
   {
     title: 'Data analysis for a local nonprofit',
@@ -245,6 +266,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: false,
     maxSignupsAllowed: 2,
     image: 'skills-consulting',
+    isPublished: true,
   },
   {
     title: 'Holiday toy drive sorting',
@@ -256,6 +278,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: true,
     maxSignupsAllowed: 20,
     image: 'donation-sorting',
+    isPublished: false,
   },
   {
     title: 'Virtual English conversation practice for immigrants',
@@ -267,6 +290,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: false,
     maxSignupsAllowed: null,
     image: 'virtual-session',
+    isPublished: true,
   },
   {
     title: 'Tree planting and habitat restoration day',
@@ -278,6 +302,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: true,
     maxSignupsAllowed: 15,
     image: 'outdoor-cleanup',
+    isPublished: true,
   },
   {
     title: 'Nonprofit marketing and branding consultation',
@@ -288,6 +313,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: false,
     maxSignupsAllowed: 3,
     image: 'skills-consulting',
+    isPublished: false,
   },
   {
     title: 'Homeless shelter meal service',
@@ -299,6 +325,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: false,
     maxSignupsAllowed: 10,
     image: 'meal-service',
+    isPublished: true,
   },
   {
     title: 'Virtual portfolio review for design students',
@@ -310,6 +337,7 @@ const templates: OpportunityTemplate[] = [
     tshirtProvided: false,
     maxSignupsAllowed: null,
     image: 'virtual-session',
+    isPublished: true,
   },
 ];
 

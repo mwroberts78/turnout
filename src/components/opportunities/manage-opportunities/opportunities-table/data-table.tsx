@@ -60,7 +60,11 @@ export function DataTable<TData extends RowData>({
   const endRow = Math.min((currentPage + 1) * pageSize, totalRows);
 
   const typeFilterValue = table.getColumn('opportunityType')?.getFilterValue();
-  const hasActiveFilters = globalFilter !== '' || typeFilterValue !== undefined;
+  const statusFilterValue = table.getColumn('isPublished')?.getFilterValue();
+  const hasActiveFilters =
+    globalFilter !== '' ||
+    typeFilterValue !== undefined ||
+    statusFilterValue !== undefined;
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -129,6 +133,44 @@ export function DataTable<TData extends RowData>({
             </SelectContent>
           </Select>
         </div>
+
+        <div className="flex items-center gap-2">
+          <Label htmlFor="status-filter">Status</Label>
+          <Select
+            value={
+              table.getColumn('isPublished')?.getFilterValue() === undefined
+                ? 'all'
+                : table.getColumn('isPublished')?.getFilterValue()
+                  ? 'published'
+                  : 'draft'
+            }
+            onValueChange={(value) =>
+              table
+                .getColumn('isPublished')
+                ?.setFilterValue(
+                  value === 'all' ? undefined : value === 'published',
+                )
+            }
+          >
+            <SelectTrigger id="status-filter" className="w-40">
+              <SelectValue>
+                {(value: string) =>
+                  value === 'all'
+                    ? 'All Statuses'
+                    : value === 'published'
+                      ? 'Published'
+                      : 'Draft'
+                }
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All statuses</SelectItem>
+              <SelectItem value="published">Published</SelectItem>
+              <SelectItem value="draft">Draft</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         {hasActiveFilters && (
           <Button
             variant="outline"
@@ -137,6 +179,7 @@ export function DataTable<TData extends RowData>({
             onClick={() => {
               setGlobalFilter('');
               table.getColumn('opportunityType')?.setFilterValue(undefined);
+              table.getColumn('isPublished')?.setFilterValue(undefined);
             }}
           >
             Clear

@@ -1,0 +1,1 @@
+ALTER TABLE "opportunities" ADD COLUMN "is_published" boolean DEFAULT false NOT NULL;

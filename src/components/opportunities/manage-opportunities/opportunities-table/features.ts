@@ -4,6 +4,7 @@ import {
   createFilteredRowModel,
   createPaginatedRowModel,
   createSortedRowModel,
+  filterFn_equals,
   filterFn_equalsString,
   filterFn_includesString,
   globalFilteringFeature,
@@ -46,6 +47,7 @@ export const features = tableFeatures({
     includesString: filterFn_includesString,
     equalsString: filterFn_equalsString,
     opportunitySearch: opportunitySearchFilter,
+    equals: filterFn_equals,
   },
   sortFns: { alphanumeric: sortFn_alphanumeric, text: sortFn_text },
 });

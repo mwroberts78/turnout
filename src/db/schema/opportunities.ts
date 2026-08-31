@@ -47,6 +47,7 @@ export const opportunities = pgTable(
     mealProvided: boolean('meal_provided').default(false).notNull(),
     tshirtProvided: boolean('tshirt_provided').default(false).notNull(),
     maxSignupsAllowed: integer('max_signups_allowed'),
+    isPublished: boolean('is_published').default(false).notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at')
       .defaultNow()
