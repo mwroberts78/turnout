@@ -33,6 +33,18 @@ function opportunitySearchFilter(
   );
 }
 
+function signupPercentSort(
+  rowA: { original: OpportunityListItem },
+  rowB: { original: OpportunityListItem },
+): number {
+  const percentFor = (row: { original: OpportunityListItem }) => {
+    const { signupCount, maxSignupsAllowed } = row.original;
+    return maxSignupsAllowed === null ? 0 : signupCount / maxSignupsAllowed;
+  };
+
+  return percentFor(rowA) - percentFor(rowB);
+}
+
 export const features = tableFeatures({
   columnFilteringFeature,
   columnVisibilityFeature,
@@ -49,7 +61,11 @@ export const features = tableFeatures({
     opportunitySearch: opportunitySearchFilter,
     equals: filterFn_equals,
   },
-  sortFns: { alphanumeric: sortFn_alphanumeric, text: sortFn_text },
+  sortFns: {
+    alphanumeric: sortFn_alphanumeric,
+    text: sortFn_text,
+    signupPercent: signupPercentSort,
+  },
 });
 
 export type DataTableFeatures = typeof features;

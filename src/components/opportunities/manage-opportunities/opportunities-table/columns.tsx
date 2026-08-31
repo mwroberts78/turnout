@@ -72,7 +72,16 @@ export const columns = columnHelper.columns([
 
   columnHelper.accessor('signupCount', {
     id: 'signups',
-    header: 'Signups',
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+      >
+        Signups
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    sortFn: 'signupPercent',
     cell: (info) => {
       const count = info.getValue();
       const max = info.row.original.maxSignupsAllowed;
