@@ -27,3 +27,26 @@ export async function findOpportunitiesByTenant(
       .orderBy(desc(opportunities.startTime)),
   );
 }
+
+export async function findOpportunityById(
+  oppId: string,
+  tenantId: string,
+): Promise<Opportunity | undefined> {
+  await mockDelay(3000);
+
+  return withTenantContext(tenantId, (tx) =>
+    tx.query.opportunities.findFirst({
+      where: eq(opportunities.id, oppId),
+      with: {
+        signUps: {
+          where: isNull(signUps.deletedAt),
+          with: {
+            user: {
+              columns: { firstName: true, lastName: true, email: true },
+            },
+          },
+        },
+      },
+    }),
+  );
+}
