@@ -6,6 +6,7 @@ import {
   createSortedRowModel,
   filterFn_equalsString,
   filterFn_includesString,
+  globalFilteringFeature,
   rowPaginationFeature,
   rowSelectionFeature,
   rowSortingFeature,
@@ -13,9 +14,24 @@ import {
   sortFn_text,
   tableFeatures,
 } from '@tanstack/react-table';
+import type { z } from 'zod';
+import type { opportunityListItem } from '@/lib/schemas/opportunity-list-item';
 
-// New in v9: declare the features this table uses — anything you don't
-// register is tree-shaken out of the bundle.
+type OpportunityListItem = z.infer<typeof opportunityListItem>;
+
+function opportunitySearchFilter(
+  row: { original: OpportunityListItem },
+  _columnId: string,
+  filterValue: unknown,
+) {
+  const search = String(filterValue).toLowerCase();
+  const { description, location } = row.original;
+  return (
+    description?.toLowerCase().includes(search) ||
+    (location ?? '').toLowerCase().includes(search)
+  );
+}
+
 export const features = tableFeatures({
   columnFilteringFeature,
   columnVisibilityFeature,
@@ -25,13 +41,13 @@ export const features = tableFeatures({
   filteredRowModel: createFilteredRowModel(),
   paginatedRowModel: createPaginatedRowModel(),
   sortedRowModel: createSortedRowModel(),
+  globalFilteringFeature,
   filterFns: {
     includesString: filterFn_includesString,
     equalsString: filterFn_equalsString,
+    opportunitySearch: opportunitySearchFilter,
   },
   sortFns: { alphanumeric: sortFn_alphanumeric, text: sortFn_text },
 });
 
-// Pass this as the first generic argument to `ColumnDef`, `Column`, `Table`,
-// and `Row` so each type knows which feature APIs are available.
 export type DataTableFeatures = typeof features;

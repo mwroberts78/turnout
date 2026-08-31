@@ -35,7 +35,8 @@ export const opportunities = pgTable(
     tenantId: uuid('tenant_id')
       .notNull()
       .references(() => tenants.id),
-    description: text('description').notNull(),
+    title: text('title').notNull(),
+    description: text('description'),
     opportunityType: opportunityTypeEnum('opportunity_type')
       .default('in-person')
       .notNull(),

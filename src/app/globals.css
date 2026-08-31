@@ -26,6 +26,18 @@
   .skills-based {
     @apply border-purple-700 bg-purple-50 text-purple-700 dark:border-purple-300 dark:bg-purple-950 dark:text-purple-300;
   }
+
+  .capacity-healthy {
+    @apply bg-green-500;
+  }
+
+  .capacity-warning {
+    @apply bg-amber-500;
+  }
+
+  .capacity-critical {
+    @apply bg-rose-500;
+  }
 }
 
 @theme inline {

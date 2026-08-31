@@ -7,8 +7,11 @@ import {
   useTable,
 } from '@tanstack/react-table';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Kbd, KbdGroup } from '@/components/ui/kbd';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -36,14 +39,18 @@ export function DataTable<TData extends RowData>({
   columns,
   data,
 }: DataTableProps<TData>) {
+  const [isMac, setIsMac] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = useState('');
 
   const table = useTable({
     features,
     data,
     columns,
     onSortingChange: setSorting,
-    state: { sorting },
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: 'opportunitySearch',
+    state: { sorting, globalFilter },
   });
 
   const totalRows = table.getFilteredRowModel().rows.length;
@@ -52,39 +59,92 @@ export function DataTable<TData extends RowData>({
   const startRow = currentPage * pageSize + 1;
   const endRow = Math.min((currentPage + 1) * pageSize, totalRows);
 
+  const typeFilterValue = table.getColumn('opportunityType')?.getFilterValue();
+  const hasActiveFilters = globalFilter !== '' || typeFilterValue !== undefined;
+
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setIsMac(/Mac/.test(navigator.platform));
+  }, []);
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      const isShortcut = isMac
+        ? e.metaKey && e.key === 'k'
+        : e.ctrlKey && e.key === 'k';
+      if (isShortcut) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', down);
+    return () => document.removeEventListener('keydown', down);
+  }, [isMac]);
+
   return (
     <div className="overflow-hidden">
-      <div className="border-b pb-3 px-3">
-        <Select
-          value={
-            (table.getColumn('opportunityType')?.getFilterValue() as string) ??
-            'all'
-          }
-          onValueChange={(value) =>
-            table
-              .getColumn('opportunityType')
-              ?.setFilterValue(value === 'all' ? undefined : value)
-          }
-        >
-          <SelectTrigger className="w-40">
-            <SelectValue>
-              {(value: string) =>
-                value === 'all'
-                  ? 'All Types'
-                  : typeLabels[value as keyof typeof typeLabels]
-              }
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All types</SelectItem>
-            <SelectItem value="in-person">In Person</SelectItem>
-            <SelectItem value="virtual">Virtual</SelectItem>
-            <SelectItem value="skills-based">Skills Based</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="border-b flex items-center pt-1 pb-5 px-4 gap-4">
+        <div className="relative max-w-sm">
+          <Input
+            ref={searchInputRef}
+            placeholder="Search opportunities..."
+            value={globalFilter}
+            onChange={(event) => setGlobalFilter(event.target.value)}
+            className="max-w-sm"
+          />
+          <KbdGroup className="pointer-events-none absolute top-1/2 right-2 hidden -translate-y-1/2 md:flex">
+            <Kbd>{isMac ? '⌘K' : 'Ctrl+K'}</Kbd>
+          </KbdGroup>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Label htmlFor="opportunity-type-filter">Type</Label>
+          <Select
+            value={
+              (table
+                .getColumn('opportunityType')
+                ?.getFilterValue() as string) ?? 'all'
+            }
+            onValueChange={(value) =>
+              table
+                .getColumn('opportunityType')
+                ?.setFilterValue(value === 'all' ? undefined : value)
+            }
+          >
+            <SelectTrigger className="w-40">
+              <SelectValue>
+                {(value: string) =>
+                  value === 'all'
+                    ? 'All Types'
+                    : typeLabels[value as keyof typeof typeLabels]
+                }
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All types</SelectItem>
+              <SelectItem value="in-person">In Person</SelectItem>
+              <SelectItem value="virtual">Virtual</SelectItem>
+              <SelectItem value="skills-based">Skills Based</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        {hasActiveFilters && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="ml-auto"
+            onClick={() => {
+              setGlobalFilter('');
+              table.getColumn('opportunityType')?.setFilterValue(undefined);
+            }}
+          >
+            Clear
+          </Button>
+        )}
       </div>
       <Table>
-        <TableHeader>
+        <TableHeader className="bg-muted">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
@@ -93,7 +153,7 @@ export function DataTable<TData extends RowData>({
                     key={header.id}
                     className={
                       header.column.id === 'actions'
-                        ? 'sticky right-0 z-10 bg-background'
+                        ? 'sticky right-0 z-10 bg-muted border-l text-center'
                         : undefined
                     }
                   >
@@ -112,13 +172,14 @@ export function DataTable<TData extends RowData>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && 'selected'}
+                className="group"
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}
                     className={
                       cell.column.id === 'actions'
-                        ? 'sticky right-0 bg-background'
+                        ? 'sticky right-0 z-10 border-l bg-background text-center group-hover:bg-muted group-data-[state=selected]:bg-muted'
                         : undefined
                     }
                   >
@@ -137,7 +198,7 @@ export function DataTable<TData extends RowData>({
         </TableBody>
       </Table>
       <div className="flex flex-col gap-4 border-t px-(--card-spacing) py-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-muted-foreground flex items-center gap-2 text-sm">
+        <div className="text-muted-foreground flex items-center gap-2 text-sm ">
           <span>
             Results: {startRow} - {endRow} of {totalRows}
             {table.getFilteredSelectedRowModel().rows.length > 0 &&

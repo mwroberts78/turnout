@@ -7,7 +7,6 @@ import * as React from 'react';
 import { useEffect } from 'react';
 import { useThemeConfig } from '@/components/active-theme';
 import { NavMain } from '@/components/app-layout/sidebar/nav-main';
-import Search from '@/components/app-layout/sidebar/search';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -75,7 +74,6 @@ export function AppSidebar({
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-        <Search />
       </SidebarHeader>
       <SidebarContent>
         <ScrollArea className="h-full *:data-[slot=scroll-area-viewport]:scroll-fade">

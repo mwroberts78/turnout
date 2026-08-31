@@ -10,238 +10,306 @@ if (!tenantId) {
   process.exit(1);
 }
 
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
-}
-
 type OpportunityTemplate = {
-  description: string;
+  title: string;
+  description: string | null;
   opportunityType: 'in-person' | 'virtual' | 'skills-based';
   location: string | null;
   mealProvided: boolean;
   tshirtProvided: boolean;
   maxSignupsAllowed: number | null;
+  image: string;
 };
 
 const templates: OpportunityTemplate[] = [
   {
-    description: 'Community park cleanup',
+    title: 'Community park cleanup',
+    description:
+      "Bring gloves and good energy — we'll tackle litter, weeds, and overgrown flower beds together.",
     opportunityType: 'in-person',
     location: '123 Main St, Anytown, USA',
     mealProvided: true,
     tshirtProvided: true,
     maxSignupsAllowed: 3,
+    image: 'outdoor-cleanup',
   },
   {
-    description: 'Virtual resume-writing workshop for job seekers',
+    title: 'Virtual resume-writing workshop for job seekers',
+    description: null,
     opportunityType: 'virtual',
     location: null,
     mealProvided: false,
     tshirtProvided: false,
     maxSignupsAllowed: null,
+    image: 'virtual-session',
   },
   {
-    description: 'Pro-bono website audit for a local nonprofit',
+    title: 'Pro-bono website audit for a local nonprofit',
+    description:
+      "We'll review site structure, accessibility, and basic SEO for a local nonprofit's website, then compile a short list of recommended fixes they can act on immediately.",
     opportunityType: 'skills-based',
     location: null,
     mealProvided: false,
     tshirtProvided: false,
     maxSignupsAllowed: 2,
+    image: 'skills-consulting',
   },
   {
-    description: 'Food bank sorting and packing',
+    title: 'Food bank sorting and packing',
+    description: null,
     opportunityType: 'in-person',
     location: '456 Oak Ave, Anytown, USA',
     mealProvided: true,
     tshirtProvided: false,
     maxSignupsAllowed: 10,
+    image: 'donation-sorting',
   },
   {
-    description: 'Habitat for Humanity build day',
+    title: 'Habitat for Humanity build day',
+    description:
+      "Join a full day on an active build site, working alongside Habitat staff and the future homeowner. No experience necessary — training is provided on-site for framing, siding, and interior finishing tasks. Closed-toe shoes required.\n\nLunch and water will be provided throughout the day.",
     opportunityType: 'in-person',
     location: '789 Elm St, Anytown, USA',
     mealProvided: true,
     tshirtProvided: true,
     maxSignupsAllowed: 15,
+    image: 'house-build',
   },
   {
-    description: 'Virtual coding mentorship for teens',
+    title: 'Virtual coding mentorship for teens',
+    description:
+      'One-hour video sessions pairing you with a local teen interested in learning to code.',
     opportunityType: 'virtual',
     location: null,
     mealProvided: false,
     tshirtProvided: false,
     maxSignupsAllowed: null,
+    image: 'virtual-session',
   },
   {
-    description: 'Beach cleanup and conservation walk',
+    title: 'Beach cleanup and conservation walk',
+    description: null,
     opportunityType: 'in-person',
     location: 'Sunset Beach, Anytown, USA',
     mealProvided: true,
     tshirtProvided: false,
     maxSignupsAllowed: 20,
+    image: 'outdoor-cleanup',
   },
   {
-    description: 'Nonprofit financial literacy webinar',
+    title: 'Nonprofit financial literacy webinar',
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
     opportunityType: 'virtual',
     location: null,
     mealProvided: false,
     tshirtProvided: false,
     maxSignupsAllowed: null,
+    image: 'virtual-session',
   },
   {
-    description: 'Animal shelter dog walking day',
+    title: 'Animal shelter dog walking day',
+    description:
+      'Get some fresh air with a shelter dog who could really use a break from the kennel.',
     opportunityType: 'in-person',
     location: 'Anytown Animal Shelter',
     mealProvided: false,
     tshirtProvided: true,
     maxSignupsAllowed: 8,
+    image: 'animal-shelter',
   },
   {
-    description: 'Senior center technology help desk',
+    title: 'Senior center technology help desk',
+    description:
+      "Sit one-on-one with seniors to help with smartphones, video calls, email, and anything else that's been giving them trouble. Patience is the only real requirement.",
     opportunityType: 'in-person',
     location: 'Anytown Senior Center',
     mealProvided: false,
     tshirtProvided: false,
     maxSignupsAllowed: 6,
+    image: 'senior-support',
   },
   {
-    description: 'River restoration and invasive species removal',
+    title: 'River restoration and invasive species removal',
+    description: null,
     opportunityType: 'in-person',
     location: 'Willow River Trailhead',
     mealProvided: true,
     tshirtProvided: true,
     maxSignupsAllowed: 12,
+    image: 'outdoor-cleanup',
   },
   {
-    description: 'Virtual grant-writing workshop for nonprofits',
+    title: 'Virtual grant-writing workshop for nonprofits',
+    description:
+      'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
     opportunityType: 'virtual',
     location: null,
     mealProvided: false,
     tshirtProvided: false,
     maxSignupsAllowed: null,
+    image: 'virtual-session',
   },
   {
-    description: 'School supply drive packing event',
+    title: 'School supply drive packing event',
+    description:
+      'Assemble backpacks with school supplies for kids heading back to class.',
     opportunityType: 'in-person',
     location: '456 Oak Ave, Anytown, USA',
     mealProvided: true,
     tshirtProvided: false,
     maxSignupsAllowed: 15,
+    image: 'donation-sorting',
   },
   {
-    description: 'Pro-bono legal aid clinic',
+    title: 'Pro-bono legal aid clinic',
+    description:
+      'Volunteer attorneys will provide free 30-minute consultations to community members on a walk-in basis, covering areas like housing, family law, and small claims. This is not a substitute for full representation, but many attendees just need direction on next steps.\n\nA basic understanding of the relevant practice area is helpful but not required — resource materials will be provided.',
     opportunityType: 'skills-based',
     location: null,
     mealProvided: false,
     tshirtProvided: false,
     maxSignupsAllowed: 3,
+    image: 'skills-consulting',
   },
   {
-    description: 'Community garden planting day',
+    title: 'Community garden planting day',
+    description: null,
     opportunityType: 'in-person',
     location: 'Maple Street Community Garden',
     mealProvided: true,
     tshirtProvided: true,
     maxSignupsAllowed: 10,
+    image: 'community-garden',
   },
   {
-    description: 'Virtual mock interview coaching',
+    title: 'Virtual mock interview coaching',
+    description:
+      'Run through a full mock interview with a job seeker, then spend 15 minutes giving direct, constructive feedback on their answers and presentation.',
     opportunityType: 'virtual',
     location: null,
     mealProvided: false,
     tshirtProvided: false,
     maxSignupsAllowed: null,
+    image: 'virtual-session',
   },
   {
-    description: 'Blood drive volunteer support',
+    title: 'Blood drive volunteer support',
+    description:
+      'Help greet, check in, and guide donors through the process — no medical experience needed.',
     opportunityType: 'in-person',
     location: 'Anytown Community Center',
     mealProvided: false,
     tshirtProvided: false,
     maxSignupsAllowed: 25,
+    image: 'blood-drive',
   },
   {
-    description: 'Trail maintenance and signage repair',
+    title: 'Trail maintenance and signage repair',
+    description: null,
     opportunityType: 'in-person',
     location: 'Willow River Trailhead',
     mealProvided: true,
     tshirtProvided: true,
     maxSignupsAllowed: 12,
+    image: 'outdoor-cleanup',
   },
   {
-    description: 'Nonprofit board matching info session',
+    title: 'Nonprofit board matching info session',
+    description:
+      'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.',
     opportunityType: 'virtual',
     location: null,
     mealProvided: false,
     tshirtProvided: false,
     maxSignupsAllowed: null,
+    image: 'virtual-session',
   },
   {
-    description: 'Meals on Wheels delivery route',
+    title: 'Meals on Wheels delivery route',
+    description:
+      'Deliver a set route of hot meals to homebound seniors in your assigned area.',
     opportunityType: 'in-person',
     location: 'Anytown Senior Center',
     mealProvided: true,
     tshirtProvided: false,
     maxSignupsAllowed: 8,
+    image: 'senior-support',
   },
   {
-    description: 'Data analysis for a local nonprofit',
+    title: 'Data analysis for a local nonprofit',
+    description: null,
     opportunityType: 'skills-based',
     location: null,
     mealProvided: false,
     tshirtProvided: false,
     maxSignupsAllowed: 2,
+    image: 'skills-consulting',
   },
   {
-    description: 'Holiday toy drive sorting',
+    title: 'Holiday toy drive sorting',
+    description:
+      'Sort, label, and box donated toys by age group ahead of the holiday distribution event. Expect to be on your feet most of the shift.',
     opportunityType: 'in-person',
     location: '456 Oak Ave, Anytown, USA',
     mealProvided: true,
     tshirtProvided: true,
     maxSignupsAllowed: 20,
+    image: 'donation-sorting',
   },
   {
-    description: 'Virtual English conversation practice for immigrants',
+    title: 'Virtual English conversation practice for immigrants',
+    description:
+      'Spend 45 minutes in casual conversation with an adult English-language learner.',
     opportunityType: 'virtual',
     location: null,
     mealProvided: false,
     tshirtProvided: false,
     maxSignupsAllowed: null,
+    image: 'virtual-session',
   },
   {
-    description: 'Tree planting and habitat restoration day',
+    title: 'Tree planting and habitat restoration day',
+    description:
+      "We're restoring a section of native habitat along the river corridor that was damaged by last year's flooding. Volunteers will plant saplings, install protective tree guards, and clear invasive growth from the planting area.\n\nWear clothes you don't mind getting muddy — this one gets hands-on fast.",
     opportunityType: 'in-person',
     location: 'Willow River Trailhead',
     mealProvided: true,
     tshirtProvided: true,
     maxSignupsAllowed: 15,
+    image: 'outdoor-cleanup',
   },
   {
-    description: 'Nonprofit marketing and branding consultation',
+    title: 'Nonprofit marketing and branding consultation',
+    description: null,
     opportunityType: 'skills-based',
     location: null,
     mealProvided: false,
     tshirtProvided: false,
     maxSignupsAllowed: 3,
+    image: 'skills-consulting',
   },
   {
-    description: 'Homeless shelter meal service',
+    title: 'Homeless shelter meal service',
+    description:
+      "Prep, serve, and clean up after a hot dinner service for shelter guests. Kitchen experience is helpful but not required — you'll be paired with a regular volunteer.",
     opportunityType: 'in-person',
     location: 'Anytown Community Shelter',
     mealProvided: true,
     tshirtProvided: false,
     maxSignupsAllowed: 10,
+    image: 'meal-service',
   },
   {
-    description: 'Virtual portfolio review for design students',
+    title: 'Virtual portfolio review for design students',
+    description:
+      'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
     opportunityType: 'virtual',
     location: null,
     mealProvided: false,
     tshirtProvided: false,
     maxSignupsAllowed: null,
+    image: 'virtual-session',
   },
 ];
 
@@ -253,7 +321,7 @@ const opportunityData = templates.map((template, index) => {
 
   return {
     ...template,
-    imageUrl: `https://picsum.photos/seed/${slugify(template.description)}/800/600`,
+    imageUrl: `/seed-images/${template.image}.jpg`,
     startTime,
     endTime,
   };
@@ -273,13 +341,13 @@ const fakeVolunteers = [
 const tshirtSizes = ['sm', 'md', 'lg', 'xl'] as const;
 
 function signupCountForOpportunity(
-  description: string,
+  title: string,
   index: number,
   maxSignupsAllowed: number | null,
   volunteerCount: number,
 ): number {
-  if (description === 'Community park cleanup') return 3; // exactly maxed out
-  if (description === 'Food bank sorting and packing') return 2; // partially filled
+  if (title === 'Community park cleanup') return 3; // exactly maxed out
+  if (title === 'Food bank sorting and packing') return 2; // partially filled
   if (index % 4 === 0) return 0; // leave some opportunities with no signups at all
 
   const desired = (index % 3) + 1; // 1, 2, or 3
@@ -344,10 +412,10 @@ const seedOpportunities = async () => {
         .returning();
     }
 
-    console.log(`Created opportunity: ${inserted.description}`);
+    console.log(`Created opportunity: ${inserted.title}`);
 
     const signupCount = signupCountForOpportunity(
-      opp.description,
+      opp.title,
       index,
       opp.maxSignupsAllowed,
       volunteers.length,
@@ -375,7 +443,7 @@ const seedOpportunities = async () => {
         }),
       );
       console.log(
-        `  ↳ ${signupCount} signup(s) for "${inserted.description}"`,
+        `  ↳ ${signupCount} signup(s) for "${inserted.title}"`,
       );
     }
   }

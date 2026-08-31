@@ -3,6 +3,7 @@
 import { createColumnHelper } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import type { z } from 'zod';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { typeLabels } from '@/db/schema';
 import type { opportunityListItem } from '@/lib/schemas/opportunity-list-item';
+import { SignupProgress } from '../../signup-progress';
 import type { DataTableFeatures } from './features';
 
 const columnHelper = createColumnHelper<
@@ -35,7 +37,7 @@ export const columns = columnHelper.columns([
             <div className="relative aspect-video w-24 shrink-0 overflow-hidden rounded-md">
               <Image
                 src={imageUrl}
-                alt={info.row.original.description}
+                alt={info.row.original.title}
                 fill
                 sizes="32px"
                 className="object-cover"
@@ -44,7 +46,7 @@ export const columns = columnHelper.columns([
           )}
           <div className="min-w-0">
             <div className="truncate font-medium">
-              {info.row.original.description}
+              {info.row.original.title}
             </div>
             <div className="text-muted-foreground text-xs">
               {info.row.original.location}
@@ -64,6 +66,23 @@ export const columns = columnHelper.columns([
         <Badge variant="outline" className={info.row.original.opportunityType}>
           {typeLabels[info.row.original.opportunityType]}
         </Badge>
+      );
+    },
+  }),
+
+  columnHelper.accessor('signupCount', {
+    id: 'signups',
+    header: 'Signups',
+    cell: (info) => {
+      const count = info.getValue();
+      const max = info.row.original.maxSignupsAllowed;
+      return (
+        max !== null && (
+          <div className="flex items-center gap-3">
+            <SignupProgress count={count} max={max} />
+            <span className="text-muted-foreground text-xs"></span>
+          </div>
+        )
       );
     },
   }),
@@ -111,9 +130,12 @@ export const columns = columnHelper.columns([
       );
     },
   }),
+
   columnHelper.display({
     id: 'actions',
-    cell: ({ row }) => {
+    header: 'Actions',
+    cell: (info) => {
+      const opportunity = info.row.original;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger
@@ -124,8 +146,18 @@ export const columns = columnHelper.columns([
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuGroup></DropdownMenuGroup>
-            <DropdownMenuItem>View details</DropdownMenuItem>
-            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuItem
+              render={<Link href={`/opportunities/manage/${opportunity.id}`} />}
+            >
+              View details
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              render={
+                <Link href={`/opportunities/manage/${opportunity.id}/edit`} />
+              }
+            >
+              Edit
+            </DropdownMenuItem>
             <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
