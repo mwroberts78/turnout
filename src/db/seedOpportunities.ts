@@ -72,7 +72,7 @@ const templates: OpportunityTemplate[] = [
   {
     title: 'Habitat for Humanity build day',
     description:
-      "Join a full day on an active build site, working alongside Habitat staff and the future homeowner. No experience necessary — training is provided on-site for framing, siding, and interior finishing tasks. Closed-toe shoes required.\n\nLunch and water will be provided throughout the day.",
+      'Join a full day on an active build site, working alongside Habitat staff and the future homeowner. No experience necessary — training is provided on-site for framing, siding, and interior finishing tasks. Closed-toe shoes required.\n\nLunch and water will be provided throughout the day.',
     opportunityType: 'in-person',
     location: '789 Elm St, Anytown, USA',
     mealProvided: true,
@@ -356,13 +356,29 @@ const opportunityData = templates.map((template, index) => {
 });
 
 const fakeVolunteers = [
-  { firstName: 'Jordan', lastName: 'Alvarez', email: 'jordan.alvarez@example.com' },
+  {
+    firstName: 'Jordan',
+    lastName: 'Alvarez',
+    email: 'jordan.alvarez@example.com',
+  },
   { firstName: 'Casey', lastName: 'Nguyen', email: 'casey.nguyen@example.com' },
   { firstName: 'Morgan', lastName: 'Patel', email: 'morgan.patel@example.com' },
-  { firstName: 'Riley', lastName: 'Thompson', email: 'riley.thompson@example.com' },
-  { firstName: 'Taylor', lastName: 'Brooks', email: 'taylor.brooks@example.com' },
+  {
+    firstName: 'Riley',
+    lastName: 'Thompson',
+    email: 'riley.thompson@example.com',
+  },
+  {
+    firstName: 'Taylor',
+    lastName: 'Brooks',
+    email: 'taylor.brooks@example.com',
+  },
   { firstName: 'Avery', lastName: 'Kim', email: 'avery.kim@example.com' },
-  { firstName: 'Sam', lastName: 'Rodriguez', email: 'sam.rodriguez@example.com' },
+  {
+    firstName: 'Sam',
+    lastName: 'Rodriguez',
+    email: 'sam.rodriguez@example.com',
+  },
   { firstName: 'Drew', lastName: 'Bennett', email: 'drew.bennett@example.com' },
 ];
 
@@ -470,9 +486,7 @@ const seedOpportunities = async () => {
           };
         }),
       );
-      console.log(
-        `  ↳ ${signupCount} signup(s) for "${inserted.title}"`,
-      );
+      console.log(`  ↳ ${signupCount} signup(s) for "${inserted.title}"`);
     }
   }
 
