@@ -1,6 +1,7 @@
 import { Plus } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
+import { TurnoutBreadcrumb } from '@/components/app-layout/turnout-ui/turnout-breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { getCurrentAppUser } from '@/lib/auth';
@@ -15,23 +16,26 @@ export default async function ManageOpportunities() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-bold tracking-tight lg:text-2xl">
-          Manage Opportunities
-        </h1>
-        <Button>
-          <Plus />
-          Add New Opportunity
-        </Button>
+    <>
+      <TurnoutBreadcrumb />
+      <div className="space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h1 className="text-xl font-bold tracking-tight lg:text-2xl">
+            Manage Opportunities
+          </h1>
+          <Button>
+            <Plus />
+            Add New Opportunity
+          </Button>
+        </div>
+        <Card>
+          <CardContent className="flex flex-col p-0 **:data-[slot=table-container]:flex-1">
+            <Suspense fallback={<OpportunitiesTableSkeleton />}>
+              <OpportunitiesTableSection tenantId={appUser.tenantId} />
+            </Suspense>
+          </CardContent>
+        </Card>
       </div>
-      <Card>
-        <CardContent className="flex flex-col p-0 **:data-[slot=table-container]:flex-1">
-          <Suspense fallback={<OpportunitiesTableSkeleton />}>
-            <OpportunitiesTableSection tenantId={appUser.tenantId} />
-          </Suspense>
-        </CardContent>
-      </Card>
-    </div>
+    </>
   );
 }
