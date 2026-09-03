@@ -4,10 +4,23 @@ import { opportunities } from './opportunities';
 import { signUps } from './signups';
 import { users } from './users';
 
-export const opportunitiesRelations = relations(opportunities, ({ many }) => ({
-  signUps: many(signUps),
-  mealOptions: many(mealOptions),
-}));
+export const opportunitiesRelations = relations(
+  opportunities,
+  ({ one, many }) => ({
+    signUps: many(signUps),
+    mealOptions: many(mealOptions),
+    creator: one(users, {
+      fields: [opportunities.createdBy],
+      references: [users.id],
+      relationName: 'opportunityCreator',
+    }),
+    updater: one(users, {
+      fields: [opportunities.updatedBy],
+      references: [users.id],
+      relationName: 'opportunityUpdater',
+    }),
+  }),
+);
 
 export const signUpsRelations = relations(signUps, ({ one }) => ({
   opportunity: one(opportunities, {

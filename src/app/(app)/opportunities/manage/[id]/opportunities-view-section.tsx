@@ -1,4 +1,6 @@
 import { notFound } from 'next/navigation';
+import ViewOpportunity from '@/components/opportunities/view-opportunity/view-opportunity';
+import { getCurrentAppUser } from '@/lib/auth';
 import { findOpportunityById } from '@/lib/dal/opportunity';
 
 export async function OpportunitiesViewSection({
@@ -12,5 +14,11 @@ export async function OpportunitiesViewSection({
 
   if (!opportunity) notFound();
 
-  return <div>{opportunity.title}</div>;
+  const appUser = await getCurrentAppUser();
+
+  if (appUser.status !== 'active') {
+    notFound();
+  }
+
+  return <ViewOpportunity opportunity={opportunity} appUser={appUser} />;
 }

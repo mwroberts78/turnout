@@ -1,7 +1,15 @@
 import { Progress as ProgressPrimitive } from '@base-ui/react/progress';
 import { cn } from '@/lib/utils';
 
-export function SignupProgress({ count, max }: { count: number; max: number }) {
+export function SignupProgress({
+  count,
+  max,
+  showRemaining = false,
+}: {
+  count: number;
+  max: number;
+  showRemaining?: boolean;
+}) {
   const percent = (count / max) * 100;
 
   function indicatorColorForPercent(percent: number): string {
@@ -23,8 +31,9 @@ export function SignupProgress({ count, max }: { count: number; max: number }) {
           )}
         />
       </ProgressPrimitive.Track>
-      <ProgressPrimitive.Label>
+      <ProgressPrimitive.Label className="whitespace-nowrap">
         {count}/{max}
+        {showRemaining && ` · ${max - count} spots left`}
       </ProgressPrimitive.Label>
     </ProgressPrimitive.Root>
   );

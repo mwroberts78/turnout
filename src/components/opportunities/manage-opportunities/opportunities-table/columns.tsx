@@ -5,6 +5,7 @@ import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { z } from 'zod';
+import TurnoutDateTime from '@/components/app-layout/turnout-ui/turnout-date-time';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -39,7 +40,7 @@ export const columns = columnHelper.columns([
                 src={imageUrl}
                 alt={info.row.original.title}
                 fill
-                sizes="32px"
+                sizes="96px"
                 className="object-cover"
               />
             </div>
@@ -77,7 +78,7 @@ export const columns = columnHelper.columns([
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
       >
-        Signups
+        Capacity
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
@@ -113,30 +114,7 @@ export const columns = columnHelper.columns([
       const start = info.getValue();
       const end = info.row.original.endTime;
 
-      const date = start.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      });
-
-      const startLabel = start.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-      });
-
-      const endLabel = end.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-      });
-
-      return (
-        <div className="flex flex-col">
-          <span>{date}</span>
-          <span className="text-muted-foreground text-xs">
-            {startLabel} - {endLabel}
-          </span>
-        </div>
-      );
+      return <TurnoutDateTime start={start} end={end} />;
     },
   }),
 
