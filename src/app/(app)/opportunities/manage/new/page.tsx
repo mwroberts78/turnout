@@ -1,3 +1,3 @@
-export default function NewOpportunity() {
+export default function NewOpportunityPage() {
   return <div>New Opportunity</div>;
 }

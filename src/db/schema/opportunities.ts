@@ -19,15 +19,6 @@ export const opportunityTypeEnum = pgEnum('opportunity_type', [
   'skills-based',
 ]);
 
-export const typeLabels: Record<
-  (typeof opportunityTypeEnum.enumValues)[number],
-  string
-> = {
-  'in-person': 'In Person',
-  virtual: 'Virtual',
-  'skills-based': 'Skills Based',
-};
-
 export const opportunities = pgTable(
   'opportunities',
   {

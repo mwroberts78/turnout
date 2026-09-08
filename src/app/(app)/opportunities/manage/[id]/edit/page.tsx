@@ -1,3 +1,3 @@
-export default async function EditOpportunity() {
+export default async function EditOpportunityPage() {
   return <div>Edit Opportunity</div>;
 }

@@ -11,20 +11,19 @@ import {
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
-import { TurnoutBreadcrumb } from '@/components/app-layout/turnout-ui/turnout-breadcrumb';
-import TurnoutDateTime from '@/components/app-layout/turnout-ui/turnout-date-time';
-import TurnoutInfoCard from '@/components/app-layout/turnout-ui/turnout-info-card';
-import TurnoutOpportunityTypeBlock from '@/components/app-layout/turnout-ui/turnout-opportunity-type-block';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { typeLabels } from '@/db/schema';
+import { AppBreadcrumb } from '@/components/app-ui/app-breadcrumb';
+import { AppCapacityDisplay } from '@/components/app-ui/app-capacity-display';
+import { AppDateTime } from '@/components/app-ui/app-date-time';
+import { AppInfoCard } from '@/components/app-ui/app-info-card';
+import { AppOpportunityBadge } from '@/components/app-ui/app-opportunity-badge';
+import { AppOpportunityTypeBlock } from '@/components/app-ui/app-opportunity-type-block';
+import { Button } from '@/components/base-ui/button';
 import type { OpportunityWithDetails } from '@/lib/dal/opportunity';
 import { type AppUser, isAdminUser } from '@/lib/types/appUser';
-import { SignupProgress } from '../signup-progress';
 import { ViewOpportunitySignupsTableSection } from './view-opportunity-signups/view-opportunity-signups-table-section';
 import { ViewOpportunitiesSignupsTableSkeleton } from './view-opportunity-signups/view-opportunity-signups-table-skeleton';
 
-export default async function ViewOpportunity({
+export async function ViewOpportunity({
   opportunity,
   appUser,
 }: {
@@ -39,7 +38,7 @@ export default async function ViewOpportunity({
 
   return (
     <>
-      <TurnoutBreadcrumb
+      <AppBreadcrumb
         overrides={{ '/opportunities/manage/[id]': opportunity.title }}
       />
       <div className="mx-auto max-w-5xl space-y-4 lg:space-y-6">
@@ -81,21 +80,16 @@ export default async function ViewOpportunity({
                 className="object-cover"
               />
             ) : (
-              <TurnoutOpportunityTypeBlock
-                oppType={opportunity.opportunityType}
-              />
+              <AppOpportunityTypeBlock oppType={opportunity.opportunityType} />
             )}
           </div>
-          <TurnoutInfoCard
+          <AppInfoCard
             title={
               <div className="flex w-full items-center justify-between">
                 <span>Details</span>
-                <Badge
-                  variant="outline"
-                  className={opportunity.opportunityType}
-                >
-                  {typeLabels[opportunity.opportunityType]}
-                </Badge>
+                <AppOpportunityBadge
+                  opportunityType={opportunity.opportunityType}
+                />
               </div>
             }
           >
@@ -108,7 +102,7 @@ export default async function ViewOpportunity({
               )}
               <div className="inline-flex items-center gap-2">
                 <CalendarClock className="text-muted-foreground size-4" />
-                <TurnoutDateTime
+                <AppDateTime
                   start={opportunity.startTime}
                   end={opportunity.endTime}
                 />
@@ -141,32 +135,27 @@ export default async function ViewOpportunity({
                   <Users className="text-muted-foreground size-4" />
                   Capacity
                 </span>
-                {opportunity.maxSignupsAllowed !== null ? (
-                  <SignupProgress
-                    count={opportunity.signUps.length}
-                    max={opportunity.maxSignupsAllowed}
-                    showRemaining
-                  />
-                ) : (
-                  <span className="text-muted-foreground text-sm ml-6">
-                    Unlimited
-                  </span>
-                )}
+                <AppCapacityDisplay
+                  count={opportunity.signUps.length}
+                  max={opportunity.maxSignupsAllowed}
+                  showRemaining
+                  className="ml-6"
+                />
               </div>
             </div>
-          </TurnoutInfoCard>
+          </AppInfoCard>
         </section>
 
         {opportunity.description && (
           <section>
-            <TurnoutInfoCard title="Description">
+            <AppInfoCard title="Description">
               {opportunity.description}
-            </TurnoutInfoCard>
+            </AppInfoCard>
           </section>
         )}
 
         <section>
-          <TurnoutInfoCard title="Signups">
+          <AppInfoCard title="Signups">
             <Suspense fallback={<ViewOpportunitiesSignupsTableSkeleton />}>
               <div className="-m-4">
                 <ViewOpportunitySignupsTableSection
@@ -176,7 +165,7 @@ export default async function ViewOpportunity({
                 />
               </div>
             </Suspense>
-          </TurnoutInfoCard>
+          </AppInfoCard>
         </section>
       </div>
     </>
