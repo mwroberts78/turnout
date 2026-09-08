@@ -12,14 +12,14 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+} from '@/components/base-ui/collapsible';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@/components/base-ui/dropdown-menu';
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -32,7 +32,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar,
-} from '@/components/ui/sidebar';
+} from '@/components/base-ui/sidebar';
 
 type NavGroup = {
   title: string;
@@ -70,7 +70,7 @@ export const navItems: NavGroup[] = [
   },
 ];
 
-export function NavMain({ isAdmin }: { isAdmin: boolean }) {
+export function AppSidebarNavMain({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
   const { isMobile } = useSidebar();
 

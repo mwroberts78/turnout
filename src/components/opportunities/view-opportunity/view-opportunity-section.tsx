@@ -3,7 +3,7 @@ import ViewOpportunity from '@/components/opportunities/view-opportunity/view-op
 import { getCurrentAppUser } from '@/lib/auth';
 import { findOpportunityById } from '@/lib/dal/opportunity';
 
-export async function OpportunitiesViewSection({
+export async function ViewOpportunitySection({
   id,
   tenantId,
 }: {

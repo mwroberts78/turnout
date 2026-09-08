@@ -1,9 +1,8 @@
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
-
+import { ViewOpportunitySection } from '@/components/opportunities/view-opportunity/view-opportunity-section';
+import { ViewOpportunitySkeleton } from '@/components/opportunities/view-opportunity/view-opportunity-skeleton';
 import { getCurrentAppUser } from '@/lib/auth';
-import { OpportunitiesViewSection } from './opportunities-view-section';
-import { OpportunitiesViewSkeleton } from './opportunities-view-skeleton';
 
 export default async function ViewOpportunity({
   params,
@@ -18,8 +17,8 @@ export default async function ViewOpportunity({
   }
 
   return (
-    <Suspense fallback={<OpportunitiesViewSkeleton />}>
-      <OpportunitiesViewSection id={id} tenantId={appUser.tenantId} />
+    <Suspense fallback={<ViewOpportunitySkeleton />}>
+      <ViewOpportunitySection id={id} tenantId={appUser.tenantId} />
     </Suspense>
   );
 }

@@ -1,12 +1,12 @@
 import { Plus } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
-import { TurnoutBreadcrumb } from '@/components/app-layout/turnout-ui/turnout-breadcrumb';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { AppBreadcrumb } from '@/components/app-ui/app-breadcrumb';
+import { Button } from '@/components/base-ui/button';
+import { Card, CardContent } from '@/components/base-ui/card';
+import { ManageOpportunitiesSection } from '@/components/opportunities/manage-opportunities/manage-opportunities-section';
+import { ManageOpportunitiesSkeleton } from '@/components/opportunities/manage-opportunities/manage-opportunities-skeleton';
 import { getCurrentAppUser } from '@/lib/auth';
-import { OpportunitiesTableSection } from './opportunities-table-section';
-import { OpportunitiesTableSkeleton } from './opportunities-table-skeleton';
 
 export default async function ManageOpportunities() {
   const appUser = await getCurrentAppUser();
@@ -17,7 +17,7 @@ export default async function ManageOpportunities() {
 
   return (
     <>
-      <TurnoutBreadcrumb />
+      <AppBreadcrumb />
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-xl font-bold tracking-tight lg:text-2xl">
@@ -30,8 +30,8 @@ export default async function ManageOpportunities() {
         </div>
         <Card>
           <CardContent className="flex flex-col p-0 **:data-[slot=table-container]:flex-1">
-            <Suspense fallback={<OpportunitiesTableSkeleton />}>
-              <OpportunitiesTableSection tenantId={appUser.tenantId} />
+            <Suspense fallback={<ManageOpportunitiesSkeleton />}>
+              <ManageOpportunitiesSection tenantId={appUser.tenantId} />
             </Suspense>
           </CardContent>
         </Card>

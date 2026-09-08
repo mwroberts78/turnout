@@ -16,7 +16,7 @@ import {
   tableFeatures,
 } from '@tanstack/react-table';
 
-export const features = tableFeatures({
+export const viewOpportunitySignupsTablefeatures = tableFeatures({
   columnFilteringFeature,
   columnVisibilityFeature,
   rowPaginationFeature,
@@ -37,4 +37,4 @@ export const features = tableFeatures({
   },
 });
 
-export type DataTableFeatures = typeof features;
+export type DataTableFeatures = typeof viewOpportunitySignupsTablefeatures;

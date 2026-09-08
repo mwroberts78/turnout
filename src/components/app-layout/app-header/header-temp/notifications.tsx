@@ -1,7 +1,11 @@
 import { BellIcon, ClockIcon } from 'lucide-react';
 import Link from 'next/link';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@/components/base-ui/avatar';
+import { Button } from '@/components/base-ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,8 +13,8 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { ScrollArea } from '@/components/ui/scroll-area';
+} from '@/components/base-ui/dropdown-menu';
+import { ScrollArea } from '@/components/base-ui/scroll-area';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 import { type Notification, notifications } from './data';

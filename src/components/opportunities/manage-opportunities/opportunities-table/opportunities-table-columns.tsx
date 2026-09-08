@@ -5,27 +5,27 @@ import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { z } from 'zod';
-import TurnoutDateTime from '@/components/app-layout/turnout-ui/turnout-date-time';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import AppDateTime from '@/components/app-ui/app-date-time';
+import { AppSignupCapacity } from '@/components/app-ui/app-signup-capacity';
+import { Badge } from '@/components/base-ui/badge';
+import { Button } from '@/components/base-ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@/components/base-ui/dropdown-menu';
 import { typeLabels } from '@/db/schema';
 import type { opportunityListItem } from '@/lib/schemas/opportunity-list-item';
-import { SignupProgress } from '../../signup-progress';
-import type { DataTableFeatures } from './features';
+import type { DataTableFeatures } from './opportunities-table-features';
 
 const columnHelper = createColumnHelper<
   DataTableFeatures,
   z.infer<typeof opportunityListItem>
 >();
 
-export const columns = columnHelper.columns([
+export const opportunitiesTableColumns = columnHelper.columns([
   columnHelper.accessor('imageUrl', {
     id: 'opportunity',
     header: 'Opportunity',
@@ -89,7 +89,7 @@ export const columns = columnHelper.columns([
       return (
         max !== null && (
           <div className="flex items-center gap-3">
-            <SignupProgress count={count} max={max} />
+            <AppSignupCapacity count={count} max={max} />
             <span className="text-muted-foreground text-xs"></span>
           </div>
         )
@@ -114,7 +114,7 @@ export const columns = columnHelper.columns([
       const start = info.getValue();
       const end = info.row.original.endTime;
 
-      return <TurnoutDateTime start={start} end={end} />;
+      return <AppDateTime start={start} end={end} />;
     },
   }),
 

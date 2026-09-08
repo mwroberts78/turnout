@@ -13,7 +13,7 @@ const opportunityTypeIcons: Record<keyof typeof typeLabels, LucideIcon> = {
   'skills-based': GraduationCap,
 };
 
-export default function TurnoutOpportunityTypeBlock({
+export default function AppOpportunityTypeBlock({
   oppType,
 }: {
   oppType: keyof typeof typeLabels;

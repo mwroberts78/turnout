@@ -4,23 +4,23 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import type { z } from 'zod';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/base-ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@/components/base-ui/dropdown-menu';
 import type { signupListItem } from '@/lib/schemas/signup-list-item';
-import type { DataTableFeatures } from './features';
+import type { DataTableFeatures } from './view-opportunity-signups-table-features';
 
 const columnHelper = createColumnHelper<
   DataTableFeatures,
   z.infer<typeof signupListItem>
 >();
 
-export const columns = columnHelper.columns([
+export const viewOpportunitySignupsTableColumns = columnHelper.columns([
   columnHelper.accessor('user.firstName', {
     id: 'name',
     header: 'Name',

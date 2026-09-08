@@ -6,9 +6,13 @@ import { usePathname } from 'next/navigation';
 import * as React from 'react';
 import { useEffect } from 'react';
 import { useThemeConfig } from '@/components/active-theme';
-import { NavMain } from '@/components/app-layout/sidebar/nav-main';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { AppSidebarNavMain } from '@/components/app-layout/app-sidebar/app-sidebar-nav-main';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@/components/base-ui/avatar';
+import { ScrollArea } from '@/components/base-ui/scroll-area';
 import {
   Sidebar,
   SidebarContent,
@@ -18,7 +22,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from '@/components/ui/sidebar';
+} from '@/components/base-ui/sidebar';
 import { useIsTablet } from '@/hooks/use-mobile';
 import type { SidebarCollapsible, SidebarVariant } from '@/lib/themes';
 
@@ -77,7 +81,7 @@ export function AppSidebar({
       </SidebarHeader>
       <SidebarContent>
         <ScrollArea className="h-full *:data-[slot=scroll-area-viewport]:scroll-fade">
-          <NavMain isAdmin={isAdmin} />
+          <AppSidebarNavMain isAdmin={isAdmin} />
         </ScrollArea>
       </SidebarContent>
       <SidebarFooter></SidebarFooter>

@@ -1,6 +1,6 @@
 import { findSignupsForOpportunity } from '@/lib/dal/opportunity';
-import { columns } from './view-opportunity-signups-table/columns';
-import { DataTable } from './view-opportunity-signups-table/data-table';
+import { ViewOpportunitySignupsTable } from './view-opportunity-signups-table/view-opportunity-signups-table';
+import { viewOpportunitySignupsTableColumns } from './view-opportunity-signups-table/view-opportunity-signups-table-columns';
 
 export async function ViewOpportunitySignupsTableSection({
   oppId,
@@ -12,5 +12,11 @@ export async function ViewOpportunitySignupsTableSection({
   isAdmin: boolean;
 }) {
   const signups = await findSignupsForOpportunity(oppId, tenantId);
-  return <DataTable data={signups} columns={columns} isAdmin={isAdmin} />;
+  return (
+    <ViewOpportunitySignupsTable
+      data={signups}
+      columns={viewOpportunitySignupsTableColumns}
+      isAdmin={isAdmin}
+    />
+  );
 }

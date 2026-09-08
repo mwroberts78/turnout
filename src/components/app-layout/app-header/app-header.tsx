@@ -1,14 +1,13 @@
 'use client';
 
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
-import Notifications from '@/components/app-layout/header/notifications';
-import UserMenu from '@/components/app-layout/header/user-menu';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { useSidebar } from '@/components/ui/sidebar';
+import UserMenu from '@/components/app-layout/app-header/app-header-user-menu';
+import { Button } from '@/components/base-ui/button';
+import { Separator } from '@/components/base-ui/separator';
+import { useSidebar } from '@/components/base-ui/sidebar';
 import type { AppUser } from '@/lib/types/appUser';
 
-export function SiteHeader({ appUser }: { appUser: AppUser }) {
+export function AppHeader({ appUser }: { appUser: AppUser }) {
   const { toggleSidebar, open } = useSidebar();
 
   return (
@@ -19,7 +18,7 @@ export function SiteHeader({ appUser }: { appUser: AppUser }) {
         </Button>
 
         <div className="ml-auto flex items-center gap-2">
-          <Notifications />
+          {/* <Notifications /> */}
           <Separator
             orientation="vertical"
             className="mx-2 data-[orientation=vertical]:h-4 data-[orientation=vertical]:self-center"

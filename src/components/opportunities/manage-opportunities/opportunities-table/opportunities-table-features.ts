@@ -45,7 +45,7 @@ function signupPercentSort(
   return percentFor(rowA) - percentFor(rowB);
 }
 
-export const features = tableFeatures({
+export const opportunitiesTableFeatures = tableFeatures({
   columnFilteringFeature,
   columnVisibilityFeature,
   rowPaginationFeature,
@@ -68,4 +68,4 @@ export const features = tableFeatures({
   },
 });
 
-export type DataTableFeatures = typeof features;
+export type DataTableFeatures = typeof opportunitiesTableFeatures;

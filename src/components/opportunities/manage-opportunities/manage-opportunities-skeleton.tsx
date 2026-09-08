@@ -1,6 +1,6 @@
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '@/components/base-ui/skeleton';
 
-export function OpportunitiesTableSkeleton() {
+export function ManageOpportunitiesSkeleton() {
   return (
     <div className="overflow-hidden">
       <div className="flex items-center gap-4 border-b px-4 pt-1 pb-5">

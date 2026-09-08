@@ -1,4 +1,4 @@
-export default function TurnoutDateTime({
+export default function AppDateTime({
   start,
   end,
 }: {

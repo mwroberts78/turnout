@@ -10,7 +10,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+} from '@/components/base-ui/breadcrumb';
 
 type PageCrumb = { label: string; parent?: string };
 
@@ -57,7 +57,7 @@ function resolveHref(
   return `/${resolved.join('/')}`;
 }
 
-export function TurnoutBreadcrumb({
+export function AppBreadcrumb({
   overrides,
 }: {
   overrides?: Record<string, string>;

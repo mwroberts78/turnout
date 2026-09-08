@@ -4,8 +4,12 @@ import { SignOutButton, useUser } from '@clerk/nextjs';
 import { LogOutIcon, MoonIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import * as React from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@/components/base-ui/avatar';
+import { Badge } from '@/components/base-ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,11 +18,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Switch } from '@/components/ui/switch';
+} from '@/components/base-ui/dropdown-menu';
+import { Switch } from '@/components/base-ui/switch';
 import type { AppUser } from '@/lib/types/appUser';
 
-export default function UserMenu({ appUser }: { appUser: AppUser }) {
+export default function AppHeaderUserMenu({ appUser }: { appUser: AppUser }) {
   const { theme, setTheme } = useTheme();
   const { user } = useUser();
   const [mounted, setMounted] = React.useState(false);
