@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { z } from 'zod';
 import { AppDateTime } from '@/components/app-ui/app-date-time';
+import { AppOpportunityBadge } from '@/components/app-ui/app-opportunity-badge';
 import { AppSignupCapacity } from '@/components/app-ui/app-signup-capacity';
 import { Badge } from '@/components/base-ui/badge';
 import { Button } from '@/components/base-ui/button';
@@ -16,7 +17,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/base-ui/dropdown-menu';
-import { typeLabels } from '@/db/schema';
 import type { opportunityListItem } from '@/lib/schemas/opportunity-list-item';
 import type { DataTableFeatures } from './opportunities-table-features';
 
@@ -64,9 +64,9 @@ export const opportunitiesTableColumns = columnHelper.columns([
     filterFn: 'equalsString',
     cell: (info) => {
       return (
-        <Badge variant="outline" className={info.row.original.opportunityType}>
-          {typeLabels[info.row.original.opportunityType]}
-        </Badge>
+        <AppOpportunityBadge
+          opportunityType={info.row.original.opportunityType}
+        />
       );
     },
   }),

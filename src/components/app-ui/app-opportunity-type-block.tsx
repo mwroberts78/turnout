@@ -1,17 +1,5 @@
-import {
-  GraduationCap,
-  HandHeart,
-  type LucideIcon,
-  Monitor,
-} from 'lucide-react';
-import type { typeLabels } from '@/db/schema';
 import { cn } from '@/lib/utils';
-
-const opportunityTypeIcons: Record<keyof typeof typeLabels, LucideIcon> = {
-  'in-person': HandHeart,
-  virtual: Monitor,
-  'skills-based': GraduationCap,
-};
+import { opportunityTypeIcons, type typeLabels } from './app-opportunity-type';
 
 export function AppOpportunityTypeBlock({
   oppType,

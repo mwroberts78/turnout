@@ -14,11 +14,10 @@ import { Suspense } from 'react';
 import { AppBreadcrumb } from '@/components/app-ui/app-breadcrumb';
 import { AppDateTime } from '@/components/app-ui/app-date-time';
 import { AppInfoCard } from '@/components/app-ui/app-info-card';
+import { AppOpportunityBadge } from '@/components/app-ui/app-opportunity-badge';
 import { AppOpportunityTypeBlock } from '@/components/app-ui/app-opportunity-type-block';
 import { AppSignupCapacity } from '@/components/app-ui/app-signup-capacity';
-import { Badge } from '@/components/base-ui/badge';
 import { Button } from '@/components/base-ui/button';
-import { typeLabels } from '@/db/schema';
 import type { OpportunityWithDetails } from '@/lib/dal/opportunity';
 import { type AppUser, isAdminUser } from '@/lib/types/appUser';
 import { ViewOpportunitySignupsTableSection } from './view-opportunity-signups/view-opportunity-signups-table-section';
@@ -88,12 +87,9 @@ export async function ViewOpportunity({
             title={
               <div className="flex w-full items-center justify-between">
                 <span>Details</span>
-                <Badge
-                  variant="outline"
-                  className={opportunity.opportunityType}
-                >
-                  {typeLabels[opportunity.opportunityType]}
-                </Badge>
+                <AppOpportunityBadge
+                  opportunityType={opportunity.opportunityType}
+                />
               </div>
             }
           >

@@ -7,6 +7,7 @@ import {
   useTable,
 } from '@tanstack/react-table';
 import { useState } from 'react';
+import { typeLabels } from '@/components/app-ui/app-opportunity-type';
 import { TablePagination } from '@/components/app-ui/data-table/table-pagination';
 import { TableSearchInput } from '@/components/app-ui/data-table/table-search-input';
 import {
@@ -30,7 +31,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/base-ui/table';
-import { typeLabels } from '@/db/schema';
 import {
   type DataTableFeatures,
   opportunitiesTableFeatures,
