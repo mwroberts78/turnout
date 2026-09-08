@@ -1,7 +1,7 @@
 import { Progress as ProgressPrimitive } from '@base-ui/react/progress';
 import { cn } from '@/lib/utils';
 
-export function AppSignupCapacity({
+export function AppCapacityDisplay({
   count,
   max,
   showRemaining = false,

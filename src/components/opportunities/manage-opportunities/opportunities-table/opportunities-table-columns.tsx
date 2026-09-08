@@ -4,7 +4,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { ArrowUpDown } from 'lucide-react';
 import Image from 'next/image';
 import type { z } from 'zod';
-import { AppSignupCapacity } from '@/components/app-ui/app-capacity-display';
+import { AppCapacityDisplay } from '@/components/app-ui/app-capacity-display';
 import { AppDateTime } from '@/components/app-ui/app-date-time';
 import { AppOpportunityBadge } from '@/components/app-ui/app-opportunity-badge';
 import { TableRowActionsMenu } from '@/components/app-ui/data-table/table-row-actions.menu';
@@ -81,7 +81,7 @@ export const opportunitiesTableColumns = columnHelper.columns([
       const max = info.row.original.maxSignupsAllowed;
       return (
         <div className="flex items-center gap-3">
-          <AppSignupCapacity count={count} max={max} />
+          <AppCapacityDisplay count={count} max={max} />
         </div>
       );
     },

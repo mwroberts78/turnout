@@ -12,7 +12,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { AppBreadcrumb } from '@/components/app-ui/app-breadcrumb';
-import { AppSignupCapacity } from '@/components/app-ui/app-capacity-display';
+import { AppCapacityDisplay } from '@/components/app-ui/app-capacity-display';
 import { AppDateTime } from '@/components/app-ui/app-date-time';
 import { AppInfoCard } from '@/components/app-ui/app-info-card';
 import { AppOpportunityBadge } from '@/components/app-ui/app-opportunity-badge';
@@ -135,7 +135,7 @@ export async function ViewOpportunity({
                   <Users className="text-muted-foreground size-4" />
                   Capacity
                 </span>
-                <AppSignupCapacity
+                <AppCapacityDisplay
                   count={opportunity.signUps.length}
                   max={opportunity.maxSignupsAllowed}
                   showRemaining

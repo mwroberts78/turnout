@@ -1,4 +1,5 @@
-import { Link, MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
+import Link from 'next/link';
 import { Button } from '@/components/base-ui/button';
 import {
   DropdownMenu,
