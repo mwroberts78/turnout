@@ -8,7 +8,7 @@ import { ManageOpportunitiesSection } from '@/components/opportunities/manage-op
 import { ManageOpportunitiesSkeleton } from '@/components/opportunities/manage-opportunities/manage-opportunities-skeleton';
 import { getCurrentAppUser } from '@/lib/auth';
 
-export default async function ManageOpportunities() {
+export default async function ManageOpportunitiesPage() {
   const appUser = await getCurrentAppUser();
 
   if (appUser.status !== 'active') {

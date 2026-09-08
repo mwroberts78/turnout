@@ -4,7 +4,7 @@ import { ViewOpportunitySection } from '@/components/opportunities/view-opportun
 import { ViewOpportunitySkeleton } from '@/components/opportunities/view-opportunity/view-opportunity-skeleton';
 import { getCurrentAppUser } from '@/lib/auth';
 
-export default async function ViewOpportunity({
+export default async function ManageOpportunityPage({
   params,
 }: {
   params: Promise<{ id: string }>;
