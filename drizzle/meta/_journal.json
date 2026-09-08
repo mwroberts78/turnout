@@ -162,6 +162,13 @@
       "when": 1788187847812,
       "tag": "0022_legal_menace",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1788906793081,
+      "tag": "0023_damp_black_cat",
+      "breakpoints": true
     }
   ]
 }

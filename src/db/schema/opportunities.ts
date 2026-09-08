@@ -48,11 +48,13 @@ export const opportunities = pgTable(
       .notNull()
       .references((): AnyPgColumn => users.id),
     updatedBy: uuid('updated_by').references((): AnyPgColumn => users.id),
+    deletedBy: uuid('deleted_by').references((): AnyPgColumn => users.id),
+    deletedAt: timestamp('deleted_at'),
   },
   (table) => [
     crudPolicy({
       role: authenticatedRole,
-      read: sql`${table.tenantId} = current_setting('app.current_tenant_id', true)::uuid`,
+      read: sql`${table.tenantId} = current_setting('app.current_tenant_id', true)::uuid  AND ${table.deletedAt} IS NULL`,
       modify: sql`${table.tenantId} = current_setting('app.current_tenant_id', true)::uuid`,
     }),
   ],
