@@ -6,7 +6,11 @@ import {
   type SortingState,
   useTable,
 } from '@tanstack/react-table';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
+import {
+  stickyCellClassName,
+  stickyHeadClassName,
+} from '@/components/app-ui/data-table/sticky-column';
 import {
   Table,
   TableBody,
@@ -15,7 +19,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/base-ui/table';
-import { cn } from '@/lib/utils';
 import {
   type DataTableFeatures,
   viewOpportunitySignupsTablefeatures,
@@ -32,7 +35,6 @@ export function ViewOpportunitySignupsTable<TData extends RowData>({
   data,
   isAdmin,
 }: DataTableProps<TData>) {
-  const [isMac, setIsMac] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
 
@@ -48,26 +50,6 @@ export function ViewOpportunitySignupsTable<TData extends RowData>({
     },
   });
 
-  const searchInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    setIsMac(/Mac/.test(navigator.platform));
-  }, []);
-
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      const isShortcut = isMac
-        ? e.metaKey && e.key === 'k'
-        : e.ctrlKey && e.key === 'k';
-      if (isShortcut) {
-        e.preventDefault();
-        searchInputRef.current?.focus();
-      }
-    };
-    document.addEventListener('keydown', down);
-    return () => document.removeEventListener('keydown', down);
-  }, [isMac]);
-
   return (
     <div className="overflow-hidden rounded-lg">
       <Table>
@@ -78,12 +60,7 @@ export function ViewOpportunitySignupsTable<TData extends RowData>({
                 return (
                   <TableHead
                     key={header.id}
-                    className={cn(
-                      index === 0 && 'pl-4',
-                      header.column.id === 'actions'
-                        ? 'sticky right-0 z-10 bg-muted border-l text-center'
-                        : undefined,
-                    )}
+                    className={stickyHeadClassName(index, header.column.id)}
                   >
                     {header.isPlaceholder ? null : (
                       <table.FlexRender header={header} />
@@ -105,12 +82,7 @@ export function ViewOpportunitySignupsTable<TData extends RowData>({
                 {row.getVisibleCells().map((cell, index) => (
                   <TableCell
                     key={cell.id}
-                    className={cn(
-                      index === 0 && 'pl-4',
-                      cell.column.id === 'actions'
-                        ? 'sticky right-0 z-10 border-l bg-background text-center group-hover:bg-muted group-data-[state=selected]:bg-muted'
-                        : undefined,
-                    )}
+                    className={stickyCellClassName(index, cell.column.id)}
                   >
                     <table.FlexRender cell={cell} />
                   </TableCell>
@@ -126,69 +98,6 @@ export function ViewOpportunitySignupsTable<TData extends RowData>({
           )}
         </TableBody>
       </Table>
-      {/* <div className="flex flex-col gap-4 border-t px-(--card-spacing) py-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-muted-foreground flex items-center gap-2 text-sm ">
-          <span>
-            Results: {startRow} - {endRow} of {totalRows}
-            {table.getFilteredSelectedRowModel().rows.length > 0 &&
-              ` · ${table.getFilteredSelectedRowModel().rows.length} selected`}
-          </span>
-          <Select
-            value={String(pageSize)}
-            onValueChange={(value) => table.setPageSize(Number(value))}
-          >
-            <SelectTrigger className="w-17.5">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="10">10</SelectItem>
-              <SelectItem value="20">20</SelectItem>
-              <SelectItem value="50">50</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex items-center gap-1">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          {Array.from({ length: Math.min(table.getPageCount(), 5) }, (_, i) => (
-            <Button
-              // biome-ignore lint/suspicious/noArrayIndexKey: i is fine here.
-              key={i}
-              variant={currentPage === i ? 'default' : 'outline'}
-              size="icon"
-              onClick={() => table.setPageIndex(i)}
-            >
-              {i + 1}
-            </Button>
-          ))}
-          {table.getPageCount() > 5 && (
-            <>
-              <span className="text-muted-foreground px-2">...</span>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-              >
-                {table.getPageCount()}
-              </Button>
-            </>
-          )}
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-      </div> */}
     </div>
   );
 }

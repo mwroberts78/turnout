@@ -8,6 +8,10 @@ import {
 } from '@tanstack/react-table';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import {
+  stickyCellClassName,
+  stickyHeadClassName,
+} from '@/components/app-ui/data-table/sticky-column';
 import { Button } from '@/components/base-ui/button';
 import { Input } from '@/components/base-ui/input';
 import { Kbd, KbdGroup } from '@/components/base-ui/kbd';
@@ -193,15 +197,11 @@ export function OpportunitiesTable<TData extends RowData>({
         <TableHeader className="bg-muted">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
+              {headerGroup.headers.map((header, index) => {
                 return (
                   <TableHead
                     key={header.id}
-                    className={
-                      header.column.id === 'actions'
-                        ? 'sticky right-0 z-10 bg-muted border-l text-center'
-                        : undefined
-                    }
+                    className={stickyHeadClassName(index, header.column.id)}
                   >
                     {header.isPlaceholder ? null : (
                       <table.FlexRender header={header} />
@@ -220,14 +220,10 @@ export function OpportunitiesTable<TData extends RowData>({
                 data-state={row.getIsSelected() && 'selected'}
                 className="group"
               >
-                {row.getVisibleCells().map((cell) => (
+                {row.getVisibleCells().map((cell, index) => (
                   <TableCell
                     key={cell.id}
-                    className={
-                      cell.column.id === 'actions'
-                        ? 'sticky right-0 z-10 border-l bg-background text-center group-hover:bg-muted group-data-[state=selected]:bg-muted'
-                        : undefined
-                    }
+                    className={stickyCellClassName(index, cell.column.id)}
                   >
                     <table.FlexRender cell={cell} />
                   </TableCell>
