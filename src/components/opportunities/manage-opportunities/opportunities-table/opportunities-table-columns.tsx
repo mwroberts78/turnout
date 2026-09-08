@@ -5,9 +5,9 @@ import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { z } from 'zod';
+import { AppSignupCapacity } from '@/components/app-ui/app-capacity-display';
 import { AppDateTime } from '@/components/app-ui/app-date-time';
 import { AppOpportunityBadge } from '@/components/app-ui/app-opportunity-badge';
-import { AppSignupCapacity } from '@/components/app-ui/app-signup-capacity';
 import { Badge } from '@/components/base-ui/badge';
 import { Button } from '@/components/base-ui/button';
 import {
@@ -87,12 +87,9 @@ export const opportunitiesTableColumns = columnHelper.columns([
       const count = info.getValue();
       const max = info.row.original.maxSignupsAllowed;
       return (
-        max !== null && (
-          <div className="flex items-center gap-3">
-            <AppSignupCapacity count={count} max={max} />
-            <span className="text-muted-foreground text-xs"></span>
-          </div>
-        )
+        <div className="flex items-center gap-3">
+          <AppSignupCapacity count={count} max={max} />
+        </div>
       );
     },
   }),

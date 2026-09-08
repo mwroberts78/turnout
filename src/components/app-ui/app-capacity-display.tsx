@@ -5,11 +5,20 @@ export function AppSignupCapacity({
   count,
   max,
   showRemaining = false,
+  className,
 }: {
   count: number;
-  max: number;
+  max: number | null;
   showRemaining?: boolean;
+  className?: string;
 }) {
+  if (max === null) {
+    return (
+      <span className={cn('text-muted-foreground text-sm', className)}>
+        Unlimited
+      </span>
+    );
+  }
   const percent = (count / max) * 100;
 
   function indicatorColorForPercent(percent: number): string {

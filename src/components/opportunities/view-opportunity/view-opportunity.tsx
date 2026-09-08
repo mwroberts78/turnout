@@ -12,11 +12,11 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { AppBreadcrumb } from '@/components/app-ui/app-breadcrumb';
+import { AppSignupCapacity } from '@/components/app-ui/app-capacity-display';
 import { AppDateTime } from '@/components/app-ui/app-date-time';
 import { AppInfoCard } from '@/components/app-ui/app-info-card';
 import { AppOpportunityBadge } from '@/components/app-ui/app-opportunity-badge';
 import { AppOpportunityTypeBlock } from '@/components/app-ui/app-opportunity-type-block';
-import { AppSignupCapacity } from '@/components/app-ui/app-signup-capacity';
 import { Button } from '@/components/base-ui/button';
 import type { OpportunityWithDetails } from '@/lib/dal/opportunity';
 import { type AppUser, isAdminUser } from '@/lib/types/appUser';
@@ -135,17 +135,12 @@ export async function ViewOpportunity({
                   <Users className="text-muted-foreground size-4" />
                   Capacity
                 </span>
-                {opportunity.maxSignupsAllowed !== null ? (
-                  <AppSignupCapacity
-                    count={opportunity.signUps.length}
-                    max={opportunity.maxSignupsAllowed}
-                    showRemaining
-                  />
-                ) : (
-                  <span className="text-muted-foreground text-sm ml-6">
-                    Unlimited
-                  </span>
-                )}
+                <AppSignupCapacity
+                  count={opportunity.signUps.length}
+                  max={opportunity.maxSignupsAllowed}
+                  showRemaining
+                  className="ml-6"
+                />
               </div>
             </div>
           </AppInfoCard>
