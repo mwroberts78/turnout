@@ -11,7 +11,12 @@ import {
 export function TableRowActionsMenu({
   items,
 }: {
-  items: { label: string; href: string; variant?: 'destructive' }[];
+  items: {
+    label: string;
+    href?: string;
+    onClick?: () => void;
+    variant?: 'destructive';
+  }[];
 }) {
   return (
     <DropdownMenu>
@@ -26,7 +31,14 @@ export function TableRowActionsMenu({
           <DropdownMenuItem
             key={item.label}
             variant={item.variant}
-            render={<Link href={item.href} />}
+            onClick={
+              item.onClick
+                ? () => {
+                    item.onClick?.();
+                  }
+                : undefined
+            }
+            render={item.href ? <Link href={item.href} /> : undefined}
           >
             {item.label}
           </DropdownMenuItem>

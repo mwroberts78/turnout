@@ -7,11 +7,11 @@ import type { z } from 'zod';
 import { AppCapacityDisplay } from '@/components/app-ui/app-capacity-display';
 import { AppDateTime } from '@/components/app-ui/app-date-time';
 import { AppOpportunityBadge } from '@/components/app-ui/app-opportunity-badge';
-import { TableRowActionsMenu } from '@/components/app-ui/data-table/table-row-actions-menu';
 import { Badge } from '@/components/base-ui/badge';
 import { Button } from '@/components/base-ui/button';
 import type { opportunityListItem } from '@/lib/schemas/opportunity-list-item';
 import type { DataTableFeatures } from './opportunities-table-features';
+import { OpportunitiesTableRowActions } from './opportunities-table-row-actions';
 
 const columnHelper = createColumnHelper<
   DataTableFeatures,
@@ -126,25 +126,7 @@ export const opportunitiesTableColumns = columnHelper.columns([
     header: 'Actions',
     cell: (info) => {
       const opportunity = info.row.original;
-      return (
-        <TableRowActionsMenu
-          items={[
-            {
-              href: `/opportunities/manage/${opportunity.id}`,
-              label: 'View details',
-            },
-            {
-              label: 'Edit',
-              href: `/opportunities/manage/${opportunity.id}/edit`,
-            },
-            {
-              label: 'Delete',
-              variant: 'destructive',
-              href: `/opportunities/manage/${opportunity.id}/delete`,
-            },
-          ]}
-        />
-      );
+      return <OpportunitiesTableRowActions opportunity={opportunity} />;
     },
   }),
 ]);
