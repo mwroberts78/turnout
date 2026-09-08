@@ -10,7 +10,7 @@ import { useState } from 'react';
 import {
   stickyCellClassName,
   stickyHeadClassName,
-} from '@/components/app-ui/data-table/sticky-column';
+} from '@/components/app-ui/data-table/table-sticky-column';
 import {
   Table,
   TableBody,
