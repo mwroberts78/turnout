@@ -7,7 +7,7 @@ import type { z } from 'zod';
 import { AppCapacityDisplay } from '@/components/app-ui/app-capacity-display';
 import { AppDateTime } from '@/components/app-ui/app-date-time';
 import { AppOpportunityBadge } from '@/components/app-ui/app-opportunity-badge';
-import { TableRowActionsMenu } from '@/components/app-ui/data-table/table-row-actions.menu';
+import { TableRowActionsMenu } from '@/components/app-ui/data-table/table-row-actions-menu';
 import { Badge } from '@/components/base-ui/badge';
 import { Button } from '@/components/base-ui/button';
 import type { opportunityListItem } from '@/lib/schemas/opportunity-list-item';

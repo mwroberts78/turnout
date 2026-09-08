@@ -2,7 +2,7 @@
 
 import { createColumnHelper } from '@tanstack/react-table';
 import type { z } from 'zod';
-import { TableRowActionsMenu } from '@/components/app-ui/data-table/table-row-actions.menu';
+import { TableRowActionsMenu } from '@/components/app-ui/data-table/table-row-actions-menu';
 import type { signupListItem } from '@/lib/schemas/signup-list-item';
 import type { DataTableFeatures } from './view-opportunity-signups-table-features';
 
