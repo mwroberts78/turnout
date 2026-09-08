@@ -7,6 +7,7 @@ import {
   useTable,
 } from '@tanstack/react-table';
 import { useState } from 'react';
+import { TableEmptyState } from '@/components/app-ui/data-table/table-empty-state';
 import {
   stickyCellClassName,
   stickyHeadClassName,
@@ -90,11 +91,7 @@ export function ViewOpportunitySignupsTable<TData extends RowData>({
               </TableRow>
             ))
           ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
+            <TableEmptyState colSpan={columns.length} />
           )}
         </TableBody>
       </Table>

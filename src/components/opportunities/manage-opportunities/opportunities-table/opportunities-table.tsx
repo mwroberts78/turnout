@@ -8,6 +8,7 @@ import {
 } from '@tanstack/react-table';
 import { useState } from 'react';
 import { typeLabels } from '@/components/app-ui/app-opportunity-type';
+import { TableEmptyState } from '@/components/app-ui/data-table/table-empty-state';
 import { TablePagination } from '@/components/app-ui/data-table/table-pagination';
 import { TableSearchInput } from '@/components/app-ui/data-table/table-search-input';
 import {
@@ -196,11 +197,7 @@ export function OpportunitiesTable<TData extends RowData>({
               </TableRow>
             ))
           ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
+            <TableEmptyState colSpan={columns.length} />
           )}
         </TableBody>
       </Table>
