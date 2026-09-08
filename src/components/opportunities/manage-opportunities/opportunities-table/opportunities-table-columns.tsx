@@ -1,22 +1,15 @@
 'use client';
 
 import { createColumnHelper } from '@tanstack/react-table';
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
+import { ArrowUpDown } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 import type { z } from 'zod';
 import { AppSignupCapacity } from '@/components/app-ui/app-capacity-display';
 import { AppDateTime } from '@/components/app-ui/app-date-time';
 import { AppOpportunityBadge } from '@/components/app-ui/app-opportunity-badge';
+import { TableRowActionsMenu } from '@/components/app-ui/data-table/table-row-actions.menu';
 import { Badge } from '@/components/base-ui/badge';
 import { Button } from '@/components/base-ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/base-ui/dropdown-menu';
 import type { opportunityListItem } from '@/lib/schemas/opportunity-list-item';
 import type { DataTableFeatures } from './opportunities-table-features';
 
@@ -134,30 +127,23 @@ export const opportunitiesTableColumns = columnHelper.columns([
     cell: (info) => {
       const opportunity = info.row.original;
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={<Button variant="ghost" className="h-8 w-8 p-0" />}
-          >
-            <span className="sr-only">Open menu</span>
-            <MoreHorizontal className="h-4 w-4" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuGroup></DropdownMenuGroup>
-            <DropdownMenuItem
-              render={<Link href={`/opportunities/manage/${opportunity.id}`} />}
-            >
-              View details
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              render={
-                <Link href={`/opportunities/manage/${opportunity.id}/edit`} />
-              }
-            >
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <TableRowActionsMenu
+          items={[
+            {
+              href: `/opportunities/manage/${opportunity.id}`,
+              label: 'View details',
+            },
+            {
+              label: 'Edit',
+              href: `/opportunities/manage/${opportunity.id}/edit`,
+            },
+            {
+              label: 'Delete',
+              variant: 'destructive',
+              href: `/opportunities/manage/${opportunity.id}/delete`,
+            },
+          ]}
+        />
       );
     },
   }),

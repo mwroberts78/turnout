@@ -1,17 +1,8 @@
 'use client';
 
 import { createColumnHelper } from '@tanstack/react-table';
-import { MoreHorizontal } from 'lucide-react';
-import Link from 'next/link';
 import type { z } from 'zod';
-import { Button } from '@/components/base-ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/base-ui/dropdown-menu';
+import { TableRowActionsMenu } from '@/components/app-ui/data-table/table-row-actions.menu';
 import type { signupListItem } from '@/lib/schemas/signup-list-item';
 import type { DataTableFeatures } from './view-opportunity-signups-table-features';
 
@@ -47,28 +38,20 @@ export const viewOpportunitySignupsTableColumns = columnHelper.columns([
     cell: (info) => {
       const signup = info.row.original;
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={<Button variant="ghost" className="h-8 w-8 p-0" />}
-          >
-            <span className="sr-only">Open menu</span>
-            <MoreHorizontal className="h-4 w-4" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuGroup></DropdownMenuGroup>
-            <DropdownMenuItem
-              render={<Link href={`/opportunities/manage/${signup.id}`} />}
-            >
-              View details
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              render={<Link href={`/opportunities/manage/${signup.id}/edit`} />}
-            >
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <TableRowActionsMenu
+          items={[
+            {
+              href: `/opportunities/manage/${signup.id}`,
+              label: 'View details',
+            },
+            { label: 'Edit', href: `/opportunities/manage/${signup.id}/edit` },
+            {
+              label: 'Delete',
+              variant: 'destructive',
+              href: `/opportunities/manage/${signup.id}/delete`,
+            },
+          ]}
+        />
       );
     },
   }),
