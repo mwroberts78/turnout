@@ -5,7 +5,7 @@ import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { z } from 'zod';
-import AppDateTime from '@/components/app-ui/app-date-time';
+import { AppDateTime } from '@/components/app-ui/app-date-time';
 import { AppSignupCapacity } from '@/components/app-ui/app-signup-capacity';
 import { Badge } from '@/components/base-ui/badge';
 import { Button } from '@/components/base-ui/button';

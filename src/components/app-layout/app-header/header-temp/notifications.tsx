@@ -19,7 +19,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 import { type Notification, notifications } from './data';
 
-const Notifications = () => {
+export function Navigation() {
   const isMobile = useIsMobile();
 
   return (
@@ -98,6 +98,4 @@ const Notifications = () => {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
-
-export default Notifications;
+}

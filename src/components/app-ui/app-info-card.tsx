@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from '@/components/base-ui/card';
 
-export default function AppInfoCard({
+export function AppInfoCard({
   children,
   title,
 }: {

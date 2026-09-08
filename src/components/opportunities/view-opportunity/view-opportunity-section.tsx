@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import ViewOpportunity from '@/components/opportunities/view-opportunity/view-opportunity';
+import { ViewOpportunity } from '@/components/opportunities/view-opportunity/view-opportunity';
 import { getCurrentAppUser } from '@/lib/auth';
 import { findOpportunityById } from '@/lib/dal/opportunity';
 

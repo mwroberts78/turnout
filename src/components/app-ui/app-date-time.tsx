@@ -1,10 +1,4 @@
-export default function AppDateTime({
-  start,
-  end,
-}: {
-  start: Date;
-  end: Date;
-}) {
+export function AppDateTime({ start, end }: { start: Date; end: Date }) {
   const date = start.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',

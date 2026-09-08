@@ -1,7 +1,7 @@
 'use client';
 
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
-import UserMenu from '@/components/app-layout/app-header/app-header-user-menu';
+import { AppHeaderUserMenu } from '@/components/app-layout/app-header/app-header-user-menu';
 import { Button } from '@/components/base-ui/button';
 import { Separator } from '@/components/base-ui/separator';
 import { useSidebar } from '@/components/base-ui/sidebar';
@@ -23,7 +23,7 @@ export function AppHeader({ appUser }: { appUser: AppUser }) {
             orientation="vertical"
             className="mx-2 data-[orientation=vertical]:h-4 data-[orientation=vertical]:self-center"
           />
-          <UserMenu appUser={appUser} />
+          <AppHeaderUserMenu appUser={appUser} />
         </div>
       </div>
     </header>

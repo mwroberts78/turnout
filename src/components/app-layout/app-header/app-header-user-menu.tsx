@@ -22,7 +22,7 @@ import {
 import { Switch } from '@/components/base-ui/switch';
 import type { AppUser } from '@/lib/types/appUser';
 
-export default function AppHeaderUserMenu({ appUser }: { appUser: AppUser }) {
+export function AppHeaderUserMenu({ appUser }: { appUser: AppUser }) {
   const { theme, setTheme } = useTheme();
   const { user } = useUser();
   const [mounted, setMounted] = React.useState(false);

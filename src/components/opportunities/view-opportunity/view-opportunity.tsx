@@ -12,9 +12,9 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { AppBreadcrumb } from '@/components/app-ui/app-breadcrumb';
-import AppDateTime from '@/components/app-ui/app-date-time';
-import AppInfoCard from '@/components/app-ui/app-info-card';
-import AppOpportunityTypeBlock from '@/components/app-ui/app-opportunity-type-block';
+import { AppDateTime } from '@/components/app-ui/app-date-time';
+import { AppInfoCard } from '@/components/app-ui/app-info-card';
+import { AppOpportunityTypeBlock } from '@/components/app-ui/app-opportunity-type-block';
 import { AppSignupCapacity } from '@/components/app-ui/app-signup-capacity';
 import { Badge } from '@/components/base-ui/badge';
 import { Button } from '@/components/base-ui/button';
@@ -24,7 +24,7 @@ import { type AppUser, isAdminUser } from '@/lib/types/appUser';
 import { ViewOpportunitySignupsTableSection } from './view-opportunity-signups/view-opportunity-signups-table-section';
 import { ViewOpportunitiesSignupsTableSkeleton } from './view-opportunity-signups/view-opportunity-signups-table-skeleton';
 
-export default async function ViewOpportunity({
+export async function ViewOpportunity({
   opportunity,
   appUser,
 }: {

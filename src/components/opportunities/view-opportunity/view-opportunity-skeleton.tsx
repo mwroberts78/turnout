@@ -1,4 +1,4 @@
-import AppInfoCard from '@/components/app-ui/app-info-card';
+import { AppInfoCard } from '@/components/app-ui/app-info-card';
 import { Skeleton } from '@/components/base-ui/skeleton';
 
 export function ViewOpportunitySkeleton() {
