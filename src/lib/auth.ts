@@ -50,6 +50,7 @@ export const getCurrentAppUser = cache(async (): Promise<AppUser> => {
       tenantId: user.tenantId,
       status: 'active',
       role: user.role,
+      id: user.id,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,

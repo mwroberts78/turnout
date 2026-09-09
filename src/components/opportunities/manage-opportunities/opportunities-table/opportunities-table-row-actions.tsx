@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AppConfirmDeleteDialog } from '@/components/app-ui/app-confirm-delete-dialog';
 import { TableRowActionsMenu } from '@/components/app-ui/data-table/table-row-actions-menu';
+import { deleteOpportunityAction } from '@/lib/actions/opportunity';
 
 export function OpportunitiesTableRowActions({
   opportunity,
@@ -34,7 +35,7 @@ export function OpportunitiesTableRowActions({
         title="Delete opportunity?"
         description={`This will permanently delete "${opportunity.title}" and cannot be undone.`}
         onConfirm={async () => {
-          //TODO: call the actual delete when it exists
+          await deleteOpportunityAction(opportunity.id);
         }}
       />
     </>

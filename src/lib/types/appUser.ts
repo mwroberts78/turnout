@@ -13,6 +13,7 @@ export type AppUser =
       tenantId: string;
       status: 'active';
       role: 'admin' | 'employee';
+      id: string;
       firstName: string;
       lastName: string;
       email: string;

@@ -73,3 +73,16 @@ export async function findSignupsForOpportunity(
     }),
   );
 }
+
+export async function deleteOpportunity(
+  oppId: string,
+  tenantId: string,
+  userId: string,
+) {
+  await withTenantContext(tenantId, (tx) =>
+    tx
+      .update(opportunities)
+      .set({ deletedAt: new Date(), deletedBy: userId })
+      .where(eq(opportunities.id, oppId)),
+  );
+}
