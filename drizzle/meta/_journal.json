@@ -169,6 +169,20 @@
       "when": 1788906793081,
       "tag": "0023_damp_black_cat",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1788966010148,
+      "tag": "0024_tiresome_masked_marvel",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1788966862177,
+      "tag": "0025_great_crusher_hogan",
+      "breakpoints": true
     }
   ]
 }

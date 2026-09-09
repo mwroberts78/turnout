@@ -26,7 +26,12 @@ export async function findOpportunitiesByTenant(
           isNull(signUps.deletedAt),
         ),
       )
-      .where(eq(opportunities.tenantId, tenantId))
+      .where(
+        and(
+          eq(opportunities.tenantId, tenantId),
+          isNull(opportunities.deletedAt),
+        ),
+      )
       .groupBy(opportunities.id)
       .orderBy(desc(opportunities.startTime)),
   );
@@ -37,7 +42,10 @@ export async function findOpportunityById(oppId: string, tenantId: string) {
 
   return withTenantContext(tenantId, (tx) =>
     tx.query.opportunities.findFirst({
-      where: eq(opportunities.id, oppId),
+      where: and(
+        eq(opportunities.id, oppId),
+        isNull(opportunities.deletedAt),
+      ),
       with: {
         mealOptions: true,
         creator: {

@@ -32,8 +32,8 @@ export const tenants = pgTable(
   (table) => [
     crudPolicy({
       role: authenticatedRole,
-      read: sql`${table.id} = current_setting('app.current_tenant_id', true)::uuid AND ${table.deletedAt} IS NULL`,
-      modify: sql`${table.id} = current_setting('app.current_tenant_id', true)::uuid`,
+      read: sql`${table.id} = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid`,
+      modify: sql`${table.id} = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid`,
     }),
   ],
 );

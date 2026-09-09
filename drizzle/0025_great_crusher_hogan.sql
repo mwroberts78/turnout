@@ -1,0 +1,5 @@
+ALTER POLICY "crud-authenticated-policy-select" ON "opportunities" TO authenticated USING ("opportunities"."tenant_id" = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid);--> statement-breakpoint
+ALTER POLICY "crud-authenticated-policy-select" ON "sign_ups" TO authenticated USING ("sign_ups"."tenant_id" = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid);--> statement-breakpoint
+ALTER POLICY "crud-authenticated-policy-select" ON "tenants" TO authenticated USING ("tenants"."id" = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid);--> statement-breakpoint
+ALTER POLICY "crud-authenticated-policy-select" ON "users" TO authenticated USING ("users"."tenant_id" = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid);--> statement-breakpoint
+ALTER POLICY "self-lookup-by-clerk-user-id" ON "users" TO authenticated USING ("users"."clerk_user_id" = current_setting('app.current_clerk_user_id', true));

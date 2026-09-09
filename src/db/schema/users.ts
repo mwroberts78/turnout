@@ -39,13 +39,13 @@ export const users = pgTable(
   (table) => [
     crudPolicy({
       role: authenticatedRole,
-      read: sql`${table.tenantId} = current_setting('app.current_tenant_id', true)::uuid AND ${table.deletedAt} IS NULL`,
-      modify: sql`${table.tenantId} = current_setting('app.current_tenant_id', true)::uuid`,
+      read: sql`${table.tenantId} = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid`,
+      modify: sql`${table.tenantId} = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid`,
     }),
     pgPolicy('self-lookup-by-clerk-user-id', {
       for: 'select',
       to: authenticatedRole,
-      using: sql`${table.clerkUserId} = current_setting('app.current_clerk_user_id', true) AND ${table.deletedAt} IS NULL`,
+      using: sql`${table.clerkUserId} = current_setting('app.current_clerk_user_id', true)`,
     }),
   ],
 );
