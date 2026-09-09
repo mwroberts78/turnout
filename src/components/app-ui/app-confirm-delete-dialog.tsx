@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Button } from '../base-ui/button';
 import {
   Dialog,
@@ -15,29 +14,28 @@ export function AppConfirmDeleteDialog({
   onOpenChange,
   title,
   description,
+  isDeleting,
   onConfirm,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  isDeleting: boolean;
   title: string;
   description: string;
-  onConfirm: () => Promise<void> | void;
+  onConfirm: () => void;
 }) {
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  async function handleConfirm() {
-    setIsDeleting(true);
-    try {
-      await onConfirm();
-      onOpenChange(false);
-    } finally {
-      setIsDeleting(false);
-    }
-  }
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen, eventDetails) => {
+        if (isDeleting) {
+          eventDetails.cancel();
+          return;
+        }
+        onOpenChange(nextOpen);
+      }}
+    >
+      <DialogContent showCloseButton={!isDeleting}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
@@ -50,7 +48,7 @@ export function AppConfirmDeleteDialog({
           </DialogClose>
           <Button
             variant="destructive"
-            onClick={handleConfirm}
+            onClick={onConfirm}
             disabled={isDeleting}
           >
             {isDeleting ? 'Deleting...' : 'Delete'}

@@ -42,10 +42,7 @@ export async function findOpportunityById(oppId: string, tenantId: string) {
 
   return withTenantContext(tenantId, (tx) =>
     tx.query.opportunities.findFirst({
-      where: and(
-        eq(opportunities.id, oppId),
-        isNull(opportunities.deletedAt),
-      ),
+      where: and(eq(opportunities.id, oppId), isNull(opportunities.deletedAt)),
       with: {
         mealOptions: true,
         creator: {
@@ -87,6 +84,8 @@ export async function deleteOpportunity(
   tenantId: string,
   userId: string,
 ) {
+  await mockDelay(3000);
+
   await withTenantContext(tenantId, (tx) =>
     tx
       .update(opportunities)

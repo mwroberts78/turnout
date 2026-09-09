@@ -2,6 +2,10 @@ import { Plus } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { AppBreadcrumb } from '@/components/app-ui/app-breadcrumb';
+import {
+  TableRefreshOverlay,
+  TableRefreshProvider,
+} from '@/components/app-ui/data-table/table-refresh-context';
 import { Button } from '@/components/base-ui/button';
 import { Card, CardContent } from '@/components/base-ui/card';
 import { ManageOpportunitiesSection } from '@/components/opportunities/manage-opportunities/manage-opportunities-section';
@@ -28,13 +32,16 @@ export default async function ManageOpportunitiesPage() {
             Add New Opportunity
           </Button>
         </div>
-        <Card>
-          <CardContent className="flex flex-col p-0 **:data-[slot=table-container]:flex-1">
-            <Suspense fallback={<ManageOpportunitiesSkeleton />}>
-              <ManageOpportunitiesSection tenantId={appUser.tenantId} />
-            </Suspense>
-          </CardContent>
-        </Card>
+        <TableRefreshProvider>
+          <Card className="relative">
+            <TableRefreshOverlay />
+            <CardContent className="flex flex-col p-0 **:data-[slot=table-container]:flex-1">
+              <Suspense fallback={<ManageOpportunitiesSkeleton />}>
+                <ManageOpportunitiesSection tenantId={appUser.tenantId} />
+              </Suspense>
+            </CardContent>
+          </Card>
+        </TableRefreshProvider>
       </div>
     </>
   );
