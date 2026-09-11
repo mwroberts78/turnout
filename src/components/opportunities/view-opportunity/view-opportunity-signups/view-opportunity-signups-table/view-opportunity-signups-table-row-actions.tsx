@@ -2,12 +2,20 @@ import { useState } from 'react';
 import { AppConfirmDialog } from '@/components/app-ui/app-confirm-dialog';
 import { useTableRefresh } from '@/components/app-ui/data-table/table-refresh-context';
 import { TableRowActionsMenu } from '@/components/app-ui/data-table/table-row-actions-menu';
-import { deleteOpportunityAction } from '@/lib/actions/opportunity';
+import { deleteSignUpAction } from '@/lib/actions/signUp';
 
-export function OpportunitiesTableRowActions({
-  opportunity,
+export function ViewOpportunitySignupsTableRowActions({
+  signup,
 }: {
-  opportunity: { id: string; title: string };
+  signup: {
+    id: string;
+    opportunityId: string;
+    user: {
+      firstName: string;
+      lastName: string;
+      email: string;
+    };
+  };
 }) {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -15,8 +23,9 @@ export function OpportunitiesTableRowActions({
 
   async function handleConfirmDelete() {
     setIsDeleting(true);
+
     try {
-      await deleteOpportunityAction(opportunity.id);
+      await deleteSignUpAction(signup.opportunityId, signup.id);
       refresh();
       setDeleteOpen(false);
     } finally {
@@ -29,12 +38,12 @@ export function OpportunitiesTableRowActions({
       <TableRowActionsMenu
         items={[
           {
-            href: `/opportunities/manage/${opportunity.id}`,
+            href: `/opportunities/manage/${signup.opportunityId}/signup/${signup.id}`,
             label: 'View details',
           },
           {
             label: 'Edit',
-            href: `/opportunities/manage/${opportunity.id}/edit`,
+            href: `/opportunities/manage/${signup.opportunityId}/signup/${signup.id}/edit`,
           },
           {
             label: 'Delete',
@@ -48,11 +57,11 @@ export function OpportunitiesTableRowActions({
         onOpenChange={setDeleteOpen}
         isPending={isDeleting}
         title="Delete opportunity?"
-        description={`This will permanently delete "${opportunity.title}" and cannot be undone.`}
+        description={`This will permanently delete the signup for "${signup.user.firstName} ${signup.user.lastName}" and cannot be undone.`}
         onConfirm={handleConfirmDelete}
-        variant="destructive"
         confirmLabel="Delete"
         pendingLabel="Deleting..."
+        variant="destructive"
       />
     </>
   );

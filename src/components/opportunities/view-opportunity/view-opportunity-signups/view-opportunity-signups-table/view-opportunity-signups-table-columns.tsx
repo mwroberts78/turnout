@@ -2,9 +2,9 @@
 
 import { createColumnHelper } from '@tanstack/react-table';
 import type { z } from 'zod';
-import { TableRowActionsMenu } from '@/components/app-ui/data-table/table-row-actions-menu';
 import type { signupListItem } from '@/lib/schemas/signup-list-item';
 import type { DataTableFeatures } from './view-opportunity-signups-table-features';
+import { ViewOpportunitySignupsTableRowActions } from './view-opportunity-signups-table-row-actions';
 
 const columnHelper = createColumnHelper<
   DataTableFeatures,
@@ -37,22 +37,7 @@ export const viewOpportunitySignupsTableColumns = columnHelper.columns([
     header: 'Actions',
     cell: (info) => {
       const signup = info.row.original;
-      return (
-        <TableRowActionsMenu
-          items={[
-            {
-              href: `/opportunities/manage/${signup.id}`,
-              label: 'View details',
-            },
-            { label: 'Edit', href: `/opportunities/manage/${signup.id}/edit` },
-            {
-              label: 'Delete',
-              variant: 'destructive',
-              href: `/opportunities/manage/${signup.id}/delete`,
-            },
-          ]}
-        />
-      );
+      return <ViewOpportunitySignupsTableRowActions signup={signup} />;
     },
   }),
 ]);

@@ -10,7 +10,7 @@ export type OpportunityWithDetails = NonNullable<
 export async function findOpportunitiesByTenant(
   tenantId: string,
 ): Promise<(Opportunity & { signupCount: number })[]> {
-  await mockDelay(3000);
+  await mockDelay();
 
   return withTenantContext(tenantId, (tx) =>
     tx
@@ -38,7 +38,7 @@ export async function findOpportunitiesByTenant(
 }
 
 export async function findOpportunityById(oppId: string, tenantId: string) {
-  await mockDelay(3000);
+  await mockDelay();
 
   return withTenantContext(tenantId, (tx) =>
     tx.query.opportunities.findFirst({
@@ -64,7 +64,7 @@ export async function findSignupsForOpportunity(
   oppId: string,
   tenantId: string,
 ) {
-  await mockDelay(3000);
+  await mockDelay();
 
   return withTenantContext(tenantId, (tx) =>
     tx.query.signUps.findMany({
@@ -84,12 +84,30 @@ export async function deleteOpportunity(
   tenantId: string,
   userId: string,
 ) {
-  await mockDelay(3000);
+  await mockDelay();
 
   await withTenantContext(tenantId, (tx) =>
     tx
       .update(opportunities)
       .set({ deletedAt: new Date(), deletedBy: userId })
+      .where(eq(opportunities.id, oppId)),
+  );
+}
+
+export async function togglePublish(
+  oppId: string,
+  tenantId: string,
+  userId: string,
+) {
+  await mockDelay();
+
+  await withTenantContext(tenantId, (tx) =>
+    tx
+      .update(opportunities)
+      .set({
+        isPublished: sql`NOT ${opportunities.isPublished}`,
+        updatedBy: userId,
+      })
       .where(eq(opportunities.id, oppId)),
   );
 }

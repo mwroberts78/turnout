@@ -48,7 +48,7 @@ export function TableRefreshOverlay() {
   if (!isRefreshing) return null;
 
   return (
-    <div className="absolute inset-0 z-10 flex items-start justify-center bg-background/60 pt-8 backdrop-blur-[1px]">
+    <div className="absolute inset-0 z-20 flex items-start justify-center bg-background/60 pt-8 backdrop-blur-[1px]">
       <div className="flex items-center gap-2 rounded-md border bg-popover px-3 py-1.5 text-sm text-muted-foreground shadow-sm">
         <Loader2 className="h-4 w-4 animate-spin" />
         Refreshing...

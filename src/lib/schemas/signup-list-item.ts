@@ -4,6 +4,7 @@ export const signupListItem = z.object({
   id: z.string(),
   workCompleted: z.boolean(),
   estimatedHours: z.number(),
+  opportunityId: z.string(),
   actualHours: z.number().nullable(),
   wantsMeal: z.boolean(),
   user: z.object({

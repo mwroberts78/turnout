@@ -9,49 +9,51 @@ import {
   DialogTitle,
 } from '../base-ui/dialog';
 
-export function AppConfirmDeleteDialog({
+export function AppConfirmDialog({
   open,
   onOpenChange,
   title,
   description,
-  isDeleting,
+  isPending,
   onConfirm,
+  confirmLabel,
+  pendingLabel,
+  variant,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  isDeleting: boolean;
+  isPending: boolean;
   title: string;
   description: string;
   onConfirm: () => void;
+  confirmLabel: string;
+  pendingLabel: string;
+  variant: 'destructive' | 'default';
 }) {
   return (
     <Dialog
       open={open}
       onOpenChange={(nextOpen, eventDetails) => {
-        if (isDeleting) {
+        if (isPending) {
           eventDetails.cancel();
           return;
         }
         onOpenChange(nextOpen);
       }}
     >
-      <DialogContent showCloseButton={!isDeleting}>
+      <DialogContent showCloseButton={!isPending}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <DialogClose
-            render={<Button variant="outline" disabled={isDeleting} />}
+            render={<Button variant="outline" disabled={isPending} />}
           >
             Cancel
           </DialogClose>
-          <Button
-            variant="destructive"
-            onClick={onConfirm}
-            disabled={isDeleting}
-          >
-            {isDeleting ? 'Deleting...' : 'Delete'}
+          <Button variant={variant} onClick={onConfirm} disabled={isPending}>
+            {isPending ? pendingLabel : confirmLabel}
           </Button>
         </DialogFooter>
       </DialogContent>
