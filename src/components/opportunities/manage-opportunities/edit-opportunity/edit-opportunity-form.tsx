@@ -12,6 +12,8 @@ const opportunityFormSchema = z
     imageUrl: z.string().nullable(),
     startTime: z.date(),
     endTime: z.date(),
+    timeZone: z.string().nullable(),
+    hasPhysicalLocation: z.boolean(),
     mealProvided: z.boolean(),
     tshirtProvided: z.boolean(),
     maxSignupsAllowed: z.number().nullable(),
@@ -19,7 +21,20 @@ const opportunityFormSchema = z
   .refine((data) => data.endTime > data.startTime, {
     message: 'End time must be after start time',
     path: ['endTime'],
-  });
+  })
+  .refine(
+    (data) => {
+      const needsTimeZone =
+        data.opportunityType === 'in-person' ||
+        (data.opportunityType === 'skills-based' && data.hasPhysicalLocation);
+
+      return !needsTimeZone || data.timeZone !== null;
+    },
+    {
+      message: 'Select a timezone for this opportunity',
+      path: ['timeZone'],
+    },
+  );
 
 export function EditOpportunityForm({ oppId }: { oppId?: string }) {
   if (!oppId) return <div>New</div>;

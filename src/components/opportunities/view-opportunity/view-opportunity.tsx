@@ -103,6 +103,7 @@ export async function ViewOpportunity({
                   <AppDateTime
                     start={opportunity.startTime}
                     end={opportunity.endTime}
+                    timeZone={opportunity.timeZone}
                   />
                 </div>
                 {opportunity.tshirtProvided && (

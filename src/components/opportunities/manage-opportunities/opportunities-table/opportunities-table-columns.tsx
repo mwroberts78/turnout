@@ -104,7 +104,13 @@ export const opportunitiesTableColumns = columnHelper.columns([
       const start = info.getValue();
       const end = info.row.original.endTime;
 
-      return <AppDateTime start={start} end={end} />;
+      return (
+        <AppDateTime
+          start={start}
+          end={end}
+          timeZone={info.row.original.timeZone}
+        />
+      );
     },
   }),
 

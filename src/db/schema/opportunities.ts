@@ -35,6 +35,7 @@ export const opportunities = pgTable(
     imageUrl: text('image_url'),
     startTime: timestamp('start_time', { withTimezone: true }).notNull(),
     endTime: timestamp('end_time', { withTimezone: true }).notNull(),
+    timeZone: text('time_zone'),
     mealProvided: boolean('meal_provided').default(false).notNull(),
     tshirtProvided: boolean('tshirt_provided').default(false).notNull(),
     maxSignupsAllowed: integer('max_signups_allowed'),
