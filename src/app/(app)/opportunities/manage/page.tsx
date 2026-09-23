@@ -1,4 +1,5 @@
 import { Plus } from 'lucide-react';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { AppBreadcrumb } from '@/components/app-ui/app-breadcrumb';
@@ -27,7 +28,10 @@ export default async function ManageOpportunitiesPage() {
           <h1 className="text-xl font-bold tracking-tight lg:text-2xl">
             Manage Opportunities
           </h1>
-          <Button>
+          <Button
+            render={<Link href="/opportunities/manage/new" />}
+            nativeButton={false}
+          >
             <Plus />
             Add New Opportunity
           </Button>
