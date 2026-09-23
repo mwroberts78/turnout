@@ -6,7 +6,7 @@ import {
   Users,
   UtensilsCrossed,
 } from 'lucide-react';
-import Image from 'next/image';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { AppBreadcrumb } from '@/components/app-ui/app-breadcrumb';
@@ -14,7 +14,7 @@ import { AppCapacityDisplay } from '@/components/app-ui/app-capacity-display';
 import { AppDateTime } from '@/components/app-ui/app-date-time';
 import { AppInfoCard } from '@/components/app-ui/app-info-card';
 import { AppOpportunityBadge } from '@/components/app-ui/app-opportunity-badge';
-import { AppOpportunityTypeBlock } from '@/components/app-ui/app-opportunity-type-block';
+import { AppOpportunityImage } from '@/components/app-ui/app-opportunity-image';
 import {
   TableRefreshOverlay,
   TableRefreshProvider,
@@ -53,7 +53,17 @@ export async function ViewOpportunity({
 
             {isAdmin && (
               <div className="text-muted-foreground flex items-center gap-1.5 text-sm">
-                <Button variant="outline" size="sm" type="button">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  type="button"
+                  render={
+                    <Link
+                      href={`/opportunities/manage/${opportunity.id}/edit`}
+                    />
+                  }
+                  nativeButton={false}
+                >
                   <Pencil />
                   Edit
                 </Button>
@@ -67,19 +77,13 @@ export async function ViewOpportunity({
           </div>
           <section className="grid gap-3 lg:grid-cols-3">
             <div className="relative min-h-62.5 overflow-hidden rounded-md lg:col-span-2 lg:min-h-105">
-              {opportunity.imageUrl ? (
-                <Image
-                  src={opportunity.imageUrl}
-                  alt={opportunity.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 800px"
-                  className="object-cover"
-                />
-              ) : (
-                <AppOpportunityTypeBlock
-                  oppType={opportunity.opportunityType}
-                />
-              )}
+              <AppOpportunityImage
+                imageUrl={opportunity.imageUrl}
+                alt={opportunity.title}
+                sizes="(max-width: 768px) 100vw, 800px"
+                className="object-cover"
+                opportunityType={opportunity.opportunityType}
+              />
             </div>
             <AppInfoCard
               title={

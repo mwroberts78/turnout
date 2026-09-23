@@ -6,7 +6,10 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   allowedDevOrigins: ['turnout-dev.roberts-lab.dev'],
   images: {
-    remotePatterns: [{ protocol: 'https', hostname: 'picsum.photos' }],
+    remotePatterns: [
+      { protocol: 'https', hostname: 'picsum.photos' },
+      { protocol: 'https', hostname: '*.public.blob.vercel-storage.com' },
+    ],
   },
 };
 

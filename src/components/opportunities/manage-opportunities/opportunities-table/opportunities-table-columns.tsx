@@ -2,11 +2,11 @@
 
 import { createColumnHelper } from '@tanstack/react-table';
 import { ArrowUpDown } from 'lucide-react';
-import Image from 'next/image';
 import type { z } from 'zod';
 import { AppCapacityDisplay } from '@/components/app-ui/app-capacity-display';
 import { AppDateTime } from '@/components/app-ui/app-date-time';
 import { AppOpportunityBadge } from '@/components/app-ui/app-opportunity-badge';
+import { AppOpportunityImage } from '@/components/app-ui/app-opportunity-image';
 import { Badge } from '@/components/base-ui/badge';
 import { Button } from '@/components/base-ui/button';
 import type { opportunityListItem } from '@/lib/schemas/opportunity-list-item';
@@ -27,17 +27,15 @@ export const opportunitiesTableColumns = columnHelper.columns([
 
       return (
         <div className="flex min-w-0 items-center gap-3">
-          {imageUrl && (
-            <div className="relative aspect-video w-24 shrink-0 overflow-hidden rounded-md">
-              <Image
-                src={imageUrl}
-                alt={info.row.original.title}
-                fill
-                sizes="96px"
-                className="object-cover"
-              />
-            </div>
-          )}
+          <div className="relative aspect-video w-24 shrink-0 overflow-hidden rounded-md">
+            <AppOpportunityImage
+              imageUrl={imageUrl}
+              alt={info.row.original.title}
+              sizes="96px"
+              className="object-cover"
+              opportunityType={info.row.original.opportunityType}
+            />
+          </div>
           <div className="min-w-0">
             <div className="truncate font-medium">
               {info.row.original.title}

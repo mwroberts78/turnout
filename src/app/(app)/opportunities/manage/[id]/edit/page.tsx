@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
-import { EditOpportunityForm } from '@/components/opportunities/manage-opportunities/edit-opportunity/edit-opportunity-form';
+import { EditOpportunitySection } from '@/components/opportunities/manage-opportunities/edit-opportunity/edit-opportunity-section';
 import { EditOpportunitySkeleton } from '@/components/opportunities/manage-opportunities/edit-opportunity/edit-opportunity-skeleton';
 import { getCurrentAppUser } from '@/lib/auth';
 
@@ -18,7 +18,7 @@ export default async function EditOpportunityPage({
 
   return (
     <Suspense fallback={<EditOpportunitySkeleton />}>
-      <EditOpportunityForm oppId={id} />
+      <EditOpportunitySection id={id} tenantId={appUser.tenantId} />
     </Suspense>
   );
 }

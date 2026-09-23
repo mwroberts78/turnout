@@ -5,6 +5,7 @@ import { ActiveThemeProvider } from '@/components/active-theme';
 import { AppHeader } from '@/components/app-layout/app-header/app-header';
 import { AppSidebar } from '@/components/app-layout/app-sidebar/app-sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/base-ui/sidebar';
+import { Toaster } from '@/components/base-ui/toast';
 import { getCurrentAppUser } from '@/lib/auth';
 import { isAdminUser } from '@/lib/types/appUser';
 
@@ -46,6 +47,7 @@ export default async function AppLayout({
           </div>
         </SidebarInset>
       </SidebarProvider>
+      <Toaster />
     </ActiveThemeProvider>
   );
 }

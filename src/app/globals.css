@@ -27,6 +27,16 @@
     @apply border-purple-700 bg-purple-50 text-purple-700 dark:border-purple-300 dark:bg-purple-950 dark:text-purple-300;
   }
 
+  .in-person-dot {
+    @apply border-green-700 bg-green-500 text-green-700 dark:border-green-300 dark:bg-green-950 dark:text-green-300;
+  }
+  .virtual-dot {
+    @apply border-amber-700 bg-amber-500 text-amber-700 dark:border-amber-300 dark:bg-amber-950 dark:text-amber-300;
+  }
+  .skills-based-dot {
+    @apply border-purple-700 bg-purple-500 text-purple-700 dark:border-purple-300 dark:bg-purple-950 dark:text-purple-300;
+  }
+
   .capacity-healthy {
     @apply bg-green-500;
   }
