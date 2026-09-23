@@ -2,7 +2,7 @@ import { Skeleton } from '@/components/base-ui/skeleton';
 
 export function ViewOpportunitiesSignupsTableSkeleton() {
   return (
-    <div className="overflow-hidden rounded-lg border">
+    <div className="overflow-hidden rounded-lg ">
       <div className="flex items-center gap-4 bg-muted px-4 py-2.5">
         <Skeleton className="h-4 w-24" />
         <Skeleton className="h-4 w-40" />
