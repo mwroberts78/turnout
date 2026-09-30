@@ -1,5 +1,6 @@
 'use client';
 
+import { ImageOff } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 import type { typeLabels } from './app-opportunity-type';
@@ -13,7 +14,7 @@ export function AppOpportunityImage({
   className,
 }: {
   imageUrl: string | null;
-  opportunityType: keyof typeof typeLabels;
+  opportunityType: keyof typeof typeLabels | undefined;
   alt: string;
   sizes: string;
   className?: string;
@@ -21,7 +22,15 @@ export function AppOpportunityImage({
   const [hasError, setHasError] = useState(false);
 
   if (!imageUrl || hasError) {
-    return <AppOpportunityTypeBlock oppType={opportunityType} />;
+    if (opportunityType) {
+      <AppOpportunityTypeBlock oppType={opportunityType} />;
+    }
+
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <ImageOff className="size-16 text-muted-foreground opacity-50" />
+      </div>
+    );
   }
 
   return (

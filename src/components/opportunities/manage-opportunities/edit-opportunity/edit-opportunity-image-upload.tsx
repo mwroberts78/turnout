@@ -4,6 +4,7 @@ import { type ChangeEvent, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import type { z } from 'zod';
 import { AppInfoCard } from '@/components/app-ui/app-info-card';
+import { AppOpportunityImage } from '@/components/app-ui/app-opportunity-image';
 import { Button } from '@/components/base-ui/button';
 import { Input } from '@/components/base-ui/input';
 import type { OpportunityFormSchema } from '@/lib/schemas/opportunity-form';
@@ -11,6 +12,7 @@ import type { OpportunityFormSchema } from '@/lib/schemas/opportunity-form';
 export function EditOpportunityImageUpload() {
   const form = useFormContext<z.input<OpportunityFormSchema>>();
   const imageUrl = form.watch('imageUrl');
+  const opportunityType = form.watch('opportunityType');
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,12 +41,11 @@ export function EditOpportunityImageUpload() {
       <div className="space-y-3">
         {imageUrl && (
           <div className="relative aspect-video overflow-hidden rounded-md">
-            <Image
-              src={imageUrl}
+            <AppOpportunityImage
+              imageUrl={imageUrl}
+              opportunityType={opportunityType}
               alt="Opportunity image"
-              fill
               sizes="(max-width: 768px) 100vw, 500px"
-              className="object-cover"
             />
           </div>
         )}
