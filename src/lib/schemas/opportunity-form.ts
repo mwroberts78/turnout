@@ -1,6 +1,8 @@
 import { fromZonedTime } from 'date-fns-tz';
 import { z } from 'zod';
 import { opportunityTypeEnum } from '@/db/schema';
+import { isValidTimeZone } from '../utils/isValidTimeZone';
+import { numericStringToNullable } from './numeric-string';
 
 export function needsTimeZone(data: {
   opportunityType: string;
@@ -40,10 +42,7 @@ export function buildOpportunityFormSchema(
         }),
       ),
       tshirtProvided: z.boolean(),
-      maxSignupsAllowed: z
-        .string()
-        .transform((val) => (val.trim() === '' ? null : Number(val)))
-        .pipe(z.number().int().positive().nullable()),
+      maxSignupsAllowed: numericStringToNullable(z.number().int().positive()),
     })
     .refine(
       (data) =>
@@ -58,10 +57,15 @@ export function buildOpportunityFormSchema(
       message: 'End time must be after start time',
       path: ['endTime'],
     })
-    .refine((data) => !needsTimeZone(data) || data.timeZone !== null, {
-      message: 'Select a timezone for this opportunity',
-      path: ['timeZone'],
-    })
+    .refine(
+      (data) =>
+        !needsTimeZone(data) ||
+        (data.timeZone !== null && isValidTimeZone(data.timeZone)),
+      {
+        message: 'Select a timezone for this opportunity',
+        path: ['timeZone'],
+      },
+    )
     .refine(
       (data) =>
         data.maxSignupsAllowed === null ||

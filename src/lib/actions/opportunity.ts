@@ -16,6 +16,7 @@ import {
   buildOpportunityFormSchema,
   type OpportunityFormSchema,
 } from '../schemas/opportunity-form';
+import { isAdminUser } from '../types/appUser';
 import { deleteBlobImage } from '../utils/blob';
 import { isValidTimeZone } from '../utils/isValidTimeZone';
 
@@ -26,7 +27,7 @@ export type SaveOpportunityResult =
 export async function deleteOpportunityAction(oppId: string) {
   const appUser = await getCurrentAppUser();
 
-  if (appUser.status !== 'active' || appUser.role !== 'admin') {
+  if (appUser.status !== 'active' || !isAdminUser(appUser)) {
     throw new Error('Not authorized');
   }
 
@@ -38,7 +39,7 @@ export async function deleteOpportunityAction(oppId: string) {
 export async function togglePublishOpportunityAction(oppId: string) {
   const appUser = await getCurrentAppUser();
 
-  if (appUser.status !== 'active' || appUser.role !== 'admin') {
+  if (appUser.status !== 'active' || !isAdminUser(appUser)) {
     throw new Error('Not authorized');
   }
 
@@ -54,7 +55,7 @@ export async function saveOpportunityAction(
 ): Promise<SaveOpportunityResult> {
   const appUser = await getCurrentAppUser();
 
-  if (appUser.status !== 'active' || appUser.role !== 'admin') {
+  if (appUser.status !== 'active' || !isAdminUser(appUser)) {
     throw new Error('Not authorized');
   }
 

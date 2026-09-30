@@ -123,13 +123,13 @@ export function EditOpportunityForm({
   const showMeals = form.watch('mealProvided');
   const submitLabel = opportunity ? 'Save changes' : 'Create opportunity';
 
-  const mealSignupCount =
-    opportunity?.signUps.filter((s) => s.wantsMeal).length ?? 0;
-  const tshirtSignupCount =
-    opportunity?.signUps.filter((s) => s.wantsTShirt).length ?? 0;
-
+  let mealSignupCount = 0;
+  let tshirtSignupCount = 0;
   const mealOptionUsage: Record<string, number> = {};
+
   for (const s of opportunity?.signUps ?? []) {
+    if (s.wantsMeal) mealSignupCount++;
+    if (s.wantsTShirt) tshirtSignupCount++;
     if (s.selectedMeal) {
       mealOptionUsage[s.selectedMeal] =
         (mealOptionUsage[s.selectedMeal] ?? 0) + 1;

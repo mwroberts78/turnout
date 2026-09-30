@@ -28,7 +28,10 @@ import {
 import { Switch } from '@/components/base-ui/switch';
 import { opportunityTypeEnum } from '@/db/schema';
 import { getTimeZoneLabel, US_TIME_ZONES } from '@/lib/constants/usTimeZones';
-import type { OpportunityFormSchema } from '@/lib/schemas/opportunity-form';
+import {
+  needsTimeZone,
+  type OpportunityFormSchema,
+} from '@/lib/schemas/opportunity-form';
 
 const oppTypeSelectItems = opportunityTypeEnum.enumValues.map((type) => {
   return { label: typeLabels[type], value: type };
@@ -53,9 +56,7 @@ export function EditOpportunityDetailsFields({
     }
   }, [opportunityType, form]);
 
-  const showTimeZone =
-    opportunityType === 'in-person' ||
-    (opportunityType === 'skills-based' && hasPhysicalLocation);
+  const showTimeZone = needsTimeZone({ opportunityType, hasPhysicalLocation });
 
   return (
     <AppInfoCard title="Details">

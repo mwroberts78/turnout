@@ -5,11 +5,12 @@ import type { z } from 'zod';
 import { getCurrentAppUser } from '../auth';
 import { deleteSignUp, updateSignUp } from '../dal/signUp';
 import { signupEditFormSchema } from '../schemas/signup-edit-form';
+import { isAdminUser } from '../types/appUser';
 
 export async function deleteSignUpAction(oppId: string, signUpId: string) {
   const appUser = await getCurrentAppUser();
 
-  if (appUser.status !== 'active' || appUser.role !== 'admin') {
+  if (appUser.status !== 'active' || !isAdminUser(appUser)) {
     throw new Error('Not authorized');
   }
 
@@ -25,7 +26,7 @@ export async function updateSignUpAction(
 ) {
   const appUser = await getCurrentAppUser();
 
-  if (appUser.status !== 'active' || appUser.role !== 'admin') {
+  if (appUser.status !== 'active' || !isAdminUser(appUser)) {
     throw new Error('Not authorized)');
   }
 

@@ -1,9 +1,7 @@
 import { z } from 'zod';
+import { numericStringToNullable } from './numeric-string';
 
 export const signupEditFormSchema = z.object({
   workCompleted: z.boolean(),
-  actualHours: z
-    .string()
-    .transform((val) => (val.trim() === '' ? null : Number(val)))
-    .pipe(z.number().nonnegative().nullable()),
+  actualHours: numericStringToNullable(z.number().nonnegative()),
 });
