@@ -23,7 +23,7 @@ export function AppOpportunityImage({
 
   if (!imageUrl || hasError) {
     if (opportunityType) {
-      <AppOpportunityTypeBlock oppType={opportunityType} />;
+      return <AppOpportunityTypeBlock oppType={opportunityType} />;
     }
 
     return (

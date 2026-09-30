@@ -1,5 +1,4 @@
 import { upload } from '@vercel/blob/client';
-import Image from 'next/image';
 import { type ChangeEvent, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import type { z } from 'zod';
@@ -46,6 +45,7 @@ export function EditOpportunityImageUpload() {
               opportunityType={opportunityType}
               alt="Opportunity image"
               sizes="(max-width: 768px) 100vw, 500px"
+              className="object-cover"
             />
           </div>
         )}
