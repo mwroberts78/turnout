@@ -58,12 +58,14 @@ export const signUps = pgTable(
       .notNull()
       .references((): AnyPgColumn => users.id),
     updatedBy: uuid('updated_by').references((): AnyPgColumn => users.id),
+    deletedBy: uuid('deleted_by').references((): AnyPgColumn => users.id),
+    deletedAt: timestamp('deleted_at'),
   },
   (table) => [
     crudPolicy({
       role: authenticatedRole,
-      read: sql`${table.tenantId} = current_setting('app.current_tenant_id', true)::uuid`,
-      modify: sql`${table.tenantId} = current_setting('app.current_tenant_id', true)::uuid`,
+      read: sql`${table.tenantId} = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid`,
+      modify: sql`${table.tenantId} = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid`,
     }),
   ],
 );

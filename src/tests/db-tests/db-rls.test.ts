@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, isNull } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 import {
   mealOptions,
@@ -323,7 +323,7 @@ describe('opportunities RLS', () => {
         .insert(opportunities)
         .values({
           tenantId: tenantA.id,
-          description: 'Tenant A - Test Opportunity 1',
+          title: 'Tenant A - Test Opportunity 1',
           opportunityType: 'in-person',
           location: 'Location',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
@@ -340,7 +340,7 @@ describe('opportunities RLS', () => {
         .insert(opportunities)
         .values({
           tenantId: tenantA.id,
-          description: 'Tenant A - Test Opportunity 2',
+          title: 'Tenant A - Test Opportunity 2',
           opportunityType: 'in-person',
           location: 'Location',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
@@ -358,7 +358,7 @@ describe('opportunities RLS', () => {
         .insert(opportunities)
         .values({
           tenantId: tenantB.id,
-          description: 'Tenant B - Test Opportunity 1',
+          title: 'Tenant B - Test Opportunity 1',
           opportunityType: 'in-person',
           location: 'Location',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
@@ -375,7 +375,7 @@ describe('opportunities RLS', () => {
         .insert(opportunities)
         .values({
           tenantId: tenantB.id,
-          description: 'Tenant B- Test Opportunity 2',
+          title: 'Tenant B- Test Opportunity 2',
           opportunityType: 'in-person',
           location: 'Location',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
@@ -440,7 +440,7 @@ describe('opportunities RLS', () => {
         .insert(opportunities)
         .values({
           tenantId: tenantA.id,
-          description: 'Tenant A - Test Opportunity 1',
+          title: 'Tenant A - Test Opportunity 1',
           opportunityType: 'in-person',
           location: 'Location',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
@@ -458,7 +458,7 @@ describe('opportunities RLS', () => {
         .insert(opportunities)
         .values({
           tenantId: tenantB.id,
-          description: 'Tenant B - Test Opportunity 1',
+          title: 'Tenant B - Test Opportunity 1',
           opportunityType: 'in-person',
           location: 'Location',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
@@ -527,7 +527,7 @@ describe('opportunities RLS', () => {
         tx.transaction(async (savepoint) => {
           await savepoint.insert(opportunities).values({
             tenantId: tenantB.id,
-            description: 'Inserting into Tenant B as Tenant A',
+            title: 'Inserting into Tenant B as Tenant A',
             opportunityType: 'in-person',
             location: 'Location',
             startTime: new Date('2026-09-01T09:00:00-04:00'),
@@ -551,7 +551,7 @@ describe('opportunities RLS', () => {
         tx.transaction(async (savepoint) => {
           await savepoint.insert(opportunities).values({
             tenantId: tenantA.id,
-            description: 'Inserting into Tenant A as Tenant B',
+            title: 'Inserting into Tenant A as Tenant B',
             opportunityType: 'in-person',
             location: 'Location',
             startTime: new Date('2026-09-01T09:00:00-04:00'),
@@ -569,6 +569,95 @@ describe('opportunities RLS', () => {
 
       const resultB = await tx.select().from(opportunities);
       expect(resultB).toHaveLength(0);
+    });
+  });
+
+  it("relational query does not leak another tenant's opportunity or its signups", async () => {
+    await withRollback(async (tx, actAs) => {
+      const [tenantA] = await tx
+        .insert(tenants)
+        .values({ name: 'A', clerkOrgId: 'org_a' })
+        .returning();
+      const [tenantB] = await tx
+        .insert(tenants)
+        .values({ name: 'B', clerkOrgId: 'org_b' })
+        .returning();
+
+      await actAs(tenantA.id);
+      const [userA] = await tx
+        .insert(users)
+        .values({
+          tenantId: tenantA.id,
+          clerkUserId: 'user_a',
+          email: 'a@x.com',
+          firstName: 'A',
+          lastName: 'A',
+        })
+        .returning();
+
+      const [oppA] = await tx
+        .insert(opportunities)
+        .values({
+          tenantId: tenantA.id,
+          title: 'Tenant A - Test Opportunity 1',
+          opportunityType: 'in-person',
+          location: 'Location',
+          startTime: new Date('2026-09-01T09:00:00-04:00'),
+          endTime: new Date('2026-09-01T13:00:00-04:00'),
+          mealProvided: false,
+          tshirtProvided: false,
+          createdBy: userA.id,
+          updatedBy: userA.id,
+        })
+        .returning();
+
+      await tx.insert(signUps).values({
+        tenantId: tenantA.id,
+        userId: userA.id,
+        opportunityId: oppA.id,
+        estimatedHours: 4,
+        createdBy: userA.id,
+      });
+
+      // Acting as Tenant B, attempt to fetch Tenant A's opportunity via the
+      // same relational query shape findOpportunityById uses.
+      await actAs(tenantB.id);
+      const asB = await tx.query.opportunities.findFirst({
+        where: eq(opportunities.id, oppA.id),
+        with: {
+          signUps: {
+            where: isNull(signUps.deletedAt),
+            with: {
+              user: {
+                columns: { firstName: true, lastName: true, email: true },
+              },
+            },
+          },
+        },
+      });
+
+      expect(asB).toBeUndefined();
+
+      // Sanity check: acting as the actual owning tenant, the same query
+      // correctly returns the opportunity with its nested signup and user.
+      await actAs(tenantA.id);
+      const asA = await tx.query.opportunities.findFirst({
+        where: eq(opportunities.id, oppA.id),
+        with: {
+          signUps: {
+            where: isNull(signUps.deletedAt),
+            with: {
+              user: {
+                columns: { firstName: true, lastName: true, email: true },
+              },
+            },
+          },
+        },
+      });
+
+      expect(asA?.id).toEqual(oppA.id);
+      expect(asA?.signUps).toHaveLength(1);
+      expect(asA?.signUps[0].user.firstName).toEqual('A');
     });
   });
 });
@@ -601,7 +690,7 @@ describe('meal_options RLS', () => {
         .insert(opportunities)
         .values({
           tenantId: tenantA.id,
-          description: 'Tenant A - Test Opportunity 1',
+          title: 'Tenant A - Test Opportunity 1',
           opportunityType: 'in-person',
           location: 'Location',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
@@ -666,7 +755,7 @@ describe('meal_options RLS', () => {
         .insert(opportunities)
         .values({
           tenantId: tenantB.id,
-          description: 'Tenant B - Test Opportunity 1',
+          title: 'Tenant B - Test Opportunity 1',
           opportunityType: 'in-person',
           location: 'Location',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
@@ -758,7 +847,7 @@ describe('meal_options RLS', () => {
         .insert(opportunities)
         .values({
           tenantId: tenantA.id,
-          description: 'Tenant A - Test Opportunity 1',
+          title: 'Tenant A - Test Opportunity 1',
           opportunityType: 'in-person',
           location: 'Location',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
@@ -799,7 +888,7 @@ describe('meal_options RLS', () => {
         .insert(opportunities)
         .values({
           tenantId: tenantB.id,
-          description: 'Tenant B - Test Opportunity 1',
+          title: 'Tenant B - Test Opportunity 1',
           opportunityType: 'in-person',
           location: 'Location',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
@@ -867,7 +956,7 @@ describe('meal_options RLS', () => {
         .insert(opportunities)
         .values({
           tenantId: tenantA.id,
-          description: 'Tenant A - Test Opportunity 1',
+          title: 'Tenant A - Test Opportunity 1',
           opportunityType: 'in-person',
           location: 'Location',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
@@ -927,7 +1016,7 @@ describe('sign_ups RLS', () => {
         .insert(opportunities)
         .values({
           tenantId: tenantA.id,
-          description: 'Tenant A - Test Opportunity 1',
+          title: 'Tenant A - Test Opportunity 1',
           opportunityType: 'in-person',
           location: 'Location',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
@@ -982,7 +1071,7 @@ describe('sign_ups RLS', () => {
         .insert(opportunities)
         .values({
           tenantId: tenantB.id,
-          description: 'Tenant B - Test Opportunity 1',
+          title: 'Tenant B - Test Opportunity 1',
           opportunityType: 'in-person',
           location: 'Location',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
@@ -1064,7 +1153,7 @@ describe('sign_ups RLS', () => {
         .insert(opportunities)
         .values({
           tenantId: tenantA.id,
-          description: 'Tenant A - Test Opportunity 1',
+          title: 'Tenant A - Test Opportunity 1',
           opportunityType: 'in-person',
           location: 'Location',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
@@ -1106,7 +1195,7 @@ describe('sign_ups RLS', () => {
         .insert(opportunities)
         .values({
           tenantId: tenantB.id,
-          description: 'Tenant B - Test Opportunity 1',
+          title: 'Tenant B - Test Opportunity 1',
           opportunityType: 'in-person',
           location: 'Location',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
@@ -1175,7 +1264,7 @@ describe('sign_ups RLS', () => {
         .insert(opportunities)
         .values({
           tenantId: tenantA.id,
-          description: 'Tenant A - Test Opportunity 1',
+          title: 'Tenant A - Test Opportunity 1',
           opportunityType: 'in-person',
           location: 'Location',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
@@ -1204,7 +1293,7 @@ describe('sign_ups RLS', () => {
         .insert(opportunities)
         .values({
           tenantId: tenantB.id,
-          description: 'Tenant B - Test Opportunity 1',
+          title: 'Tenant B - Test Opportunity 1',
           opportunityType: 'in-person',
           location: 'Location',
           startTime: new Date('2026-09-01T09:00:00-04:00'),

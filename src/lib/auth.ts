@@ -1,5 +1,5 @@
-import { auth } from '@clerk/nextjs/server';
-import { eq, sql } from 'drizzle-orm';
+import { auth, clerkClient } from '@clerk/nextjs/server';
+import { and, eq, isNull, sql } from 'drizzle-orm';
 import { cache } from 'react';
 import { db } from '@/db';
 import { tenants, users } from '@/db/schema';
@@ -14,7 +14,15 @@ export const getCurrentAppUser = cache(async (): Promise<AppUser> => {
   if (orgId == null) return { status: 'no-org' };
 
   if (orgId === env.PLATFORM_ADMIN_ORG_ID) {
-    return { status: 'platform-admin' };
+    const client = await clerkClient();
+    const clerkUser = await client.users.getUser(userId);
+    return {
+      status: 'platform-admin',
+      role: 'platform-admin',
+      firstName: clerkUser.firstName ?? '',
+      lastName: clerkUser.lastName ?? '',
+      email: clerkUser.primaryEmailAddress?.emailAddress ?? '',
+    };
   }
 
   return db.transaction(async (tx) => {
@@ -23,7 +31,7 @@ export const getCurrentAppUser = cache(async (): Promise<AppUser> => {
     );
 
     const user = await tx.query.users.findFirst({
-      where: eq(users.clerkUserId, userId),
+      where: and(eq(users.clerkUserId, userId), isNull(users.deletedAt)),
     });
 
     if (!user) return { status: 'pending-sync' };
@@ -33,14 +41,16 @@ export const getCurrentAppUser = cache(async (): Promise<AppUser> => {
     );
 
     const tenant = await tx.query.tenants.findFirst({
-      where: eq(tenants.id, user.tenantId),
+      where: and(eq(tenants.id, user.tenantId), isNull(tenants.deletedAt)),
     });
 
     if (!tenant) return { status: 'pending-sync' };
 
     return {
+      tenantId: user.tenantId,
       status: 'active',
       role: user.role,
+      id: user.id,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,

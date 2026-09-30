@@ -7,7 +7,15 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!drizzle", "!node_modules", "!.next", "!dist", "!build"]
+    "includes": [
+      "**",
+      "!drizzle",
+      "!node_modules",
+      "!.next",
+      "!dist",
+      "!build",
+      "!src/components/base-ui"
+    ]
   },
   "formatter": {
     "enabled": true,

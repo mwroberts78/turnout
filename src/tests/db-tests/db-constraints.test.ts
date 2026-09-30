@@ -289,7 +289,7 @@ describe('opportunities constraints', () => {
         tx.transaction(async (savepoint) => {
           await savepoint.insert(opportunities).values({
             tenantId: tenant.id,
-            description: 'Description',
+            title: 'Description',
             endTime: new Date('2026-09-01T13:00:00-04:00'),
             createdBy: user.id,
             // biome-ignore lint/suspicious/noExplicitAny: intentionally bypassing the notNull type check to verify the DB rejects it too
@@ -301,7 +301,7 @@ describe('opportunities constraints', () => {
         tx.transaction(async (savepoint) => {
           await savepoint.insert(opportunities).values({
             tenantId: tenant.id,
-            description: 'Description',
+            title: 'Description',
             startTime: new Date('2026-09-01T09:00:00-04:00'),
             createdBy: user.id,
             // biome-ignore lint/suspicious/noExplicitAny: intentionally bypassing the notNull type check to verify the DB rejects it too
@@ -313,7 +313,7 @@ describe('opportunities constraints', () => {
         tx.transaction(async (savepoint) => {
           await savepoint.insert(opportunities).values({
             tenantId: tenant.id,
-            description: 'Description',
+            title: 'Description',
             startTime: new Date('2026-09-01T09:00:00-04:00'),
             endTime: new Date('2026-09-01T13:00:00-04:00'),
             // biome-ignore lint/suspicious/noExplicitAny: intentionally bypassing the notNull type check to verify the DB rejects it too
@@ -345,7 +345,7 @@ describe('opportunities constraints', () => {
         .insert(opportunities)
         .values({
           tenantId: tenant.id,
-          description: 'Description',
+          title: 'Description',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
           endTime: new Date('2026-09-01T13:00:00-04:00'),
           createdBy: user.id,
@@ -378,7 +378,7 @@ describe('opportunities constraints', () => {
         .insert(opportunities)
         .values({
           tenantId: tenant.id,
-          description: 'Description',
+          title: 'Description',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
           endTime: new Date('2026-09-01T13:00:00-04:00'),
           createdBy: user.id,
@@ -411,7 +411,7 @@ describe('opportunities constraints', () => {
       await expect(
         tx.insert(opportunities).values({
           tenantId: tenant.id,
-          description: 'Description',
+          title: 'Description',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
           endTime: new Date('2026-09-01T13:00:00-04:00'),
           createdBy: user.id,
@@ -446,7 +446,7 @@ describe('opportunities constraints', () => {
         .insert(opportunities)
         .values({
           tenantId: tenant.id,
-          description: 'Description',
+          title: 'Description',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
           endTime: new Date('2026-09-01T13:00:00-04:00'),
           createdBy: user.id,
@@ -456,7 +456,7 @@ describe('opportunities constraints', () => {
       const [updatedOpportunity] = await tx
         .update(opportunities)
         .set({
-          description: 'Updated Description',
+          title: 'Updated Description',
         })
         .where(eq(opportunities.id, opportunity.id))
         .returning();
@@ -489,7 +489,7 @@ describe('meal_options constraints', () => {
         .insert(opportunities)
         .values({
           tenantId: tenant.id,
-          description: 'Description',
+          title: 'Description',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
           endTime: new Date('2026-09-01T13:00:00-04:00'),
           createdBy: user.id,
@@ -595,7 +595,7 @@ describe('sign_ups constraints', () => {
         .insert(opportunities)
         .values({
           tenantId: tenant.id,
-          description: 'Description',
+          title: 'Description',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
           endTime: new Date('2026-09-01T13:00:00-04:00'),
           createdBy: user.id,
@@ -686,7 +686,7 @@ describe('sign_ups constraints', () => {
         .insert(opportunities)
         .values({
           tenantId: tenant.id,
-          description: 'Description',
+          title: 'Description',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
           endTime: new Date('2026-09-01T13:00:00-04:00'),
           createdBy: user.id,
@@ -732,7 +732,7 @@ describe('sign_ups constraints', () => {
         .insert(opportunities)
         .values({
           tenantId: tenant.id,
-          description: 'Description',
+          title: 'Description',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
           endTime: new Date('2026-09-01T13:00:00-04:00'),
           createdBy: user.id,
@@ -779,7 +779,7 @@ describe('sign_ups constraints', () => {
         .insert(opportunities)
         .values({
           tenantId: tenant.id,
-          description: 'Description',
+          title: 'Description',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
           endTime: new Date('2026-09-01T13:00:00-04:00'),
           createdBy: user.id,
@@ -824,7 +824,7 @@ describe('sign_ups constraints', () => {
         .insert(opportunities)
         .values({
           tenantId: tenant.id,
-          description: 'Description',
+          title: 'Description',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
           endTime: new Date('2026-09-01T13:00:00-04:00'),
           createdBy: user.id,
@@ -894,7 +894,7 @@ describe('referential integrity on delete', () => {
         .insert(opportunities)
         .values({
           tenantId: tenant.id,
-          description: 'Description',
+          title: 'Description',
           startTime: new Date('2026-09-01T09:00:00-04:00'),
           endTime: new Date('2026-09-01T13:00:00-04:00'),
           createdBy: user.id,

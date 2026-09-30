@@ -3,6 +3,7 @@ import { authenticatedRole, crudPolicy } from 'drizzle-orm/neon';
 import {
   type AnyPgColumn,
   boolean,
+  integer,
   pgEnum,
   pgTable,
   text,
@@ -25,7 +26,8 @@ export const opportunities = pgTable(
     tenantId: uuid('tenant_id')
       .notNull()
       .references(() => tenants.id),
-    description: text('description').notNull(),
+    title: text('title').notNull(),
+    description: text('description'),
     opportunityType: opportunityTypeEnum('opportunity_type')
       .default('in-person')
       .notNull(),
@@ -33,9 +35,11 @@ export const opportunities = pgTable(
     imageUrl: text('image_url'),
     startTime: timestamp('start_time', { withTimezone: true }).notNull(),
     endTime: timestamp('end_time', { withTimezone: true }).notNull(),
+    timeZone: text('time_zone'),
     mealProvided: boolean('meal_provided').default(false).notNull(),
     tshirtProvided: boolean('tshirt_provided').default(false).notNull(),
-
+    maxSignupsAllowed: integer('max_signups_allowed'),
+    isPublished: boolean('is_published').default(false).notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at')
       .defaultNow()
@@ -45,12 +49,16 @@ export const opportunities = pgTable(
       .notNull()
       .references((): AnyPgColumn => users.id),
     updatedBy: uuid('updated_by').references((): AnyPgColumn => users.id),
+    deletedBy: uuid('deleted_by').references((): AnyPgColumn => users.id),
+    deletedAt: timestamp('deleted_at'),
   },
   (table) => [
     crudPolicy({
       role: authenticatedRole,
-      read: sql`${table.tenantId} = current_setting('app.current_tenant_id', true)::uuid`,
-      modify: sql`${table.tenantId} = current_setting('app.current_tenant_id', true)::uuid`,
+      read: sql`${table.tenantId} = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid`,
+      modify: sql`${table.tenantId} = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid`,
     }),
   ],
 );
+
+export type Opportunity = typeof opportunities.$inferSelect;

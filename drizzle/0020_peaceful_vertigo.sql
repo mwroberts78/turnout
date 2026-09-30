@@ -1,0 +1,1 @@
+ALTER TABLE "opportunities" ADD COLUMN "max_signups_allowed" integer;

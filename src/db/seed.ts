@@ -34,7 +34,7 @@ const seed = async () => {
     .insert(opportunities)
     .values({
       tenantId: tenant.id,
-      description: 'Community park cleanup',
+      title: 'Community park cleanup',
       opportunityType: 'in-person',
       location: '123 Main St, Anytown, USA',
       startTime: new Date('2026-09-01T09:00:00-04:00'),
