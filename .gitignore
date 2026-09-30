@@ -46,3 +46,6 @@ next-env.d.ts
 .env.sentry-build-plugin
 .claude/
 coverage/
+
+# Local-only staging folder for handing test builds to testers (contains real secrets, never commit)
+/TestBuild_LocalSetup/
