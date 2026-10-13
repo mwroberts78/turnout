@@ -71,10 +71,10 @@ export function buildOpportunityFormSchema(
     })
     .refine(
       (data) =>
-        data.opportunityType !== 'in-person' ||
+        !needsTimeZone(data) ||
         (data.location !== null && data.location.trim().length > 0),
       {
-        message: 'Location is required for in-person opportunities',
+        message: 'Location is required for this opportunity',
         path: ['location'],
       },
     )

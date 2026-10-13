@@ -86,6 +86,16 @@ describe('buildOpportunityFormSchema', () => {
       expect(result.success).toBe(false);
       expect(result.error?.issues[0].path).toEqual(['tshirtProvided']);
     });
+
+    it('accepts virtual opportunity with mealProvided and tshirtProvided set', () => {
+      const result = schema.safeParse({
+        ...validVirtual,
+        tshirtProvided: true,
+        mealProvided: true,
+      });
+
+      expect(result.success).toBe(true);
+    });
   });
 
   describe('opportunity type', () => {
@@ -613,7 +623,7 @@ describe('buildOpportunityFormSchema', () => {
       expect(result.success).toBe(false);
       expect(result.error?.issues[0].path).toEqual(['location']);
       expect(result.error?.issues[0].message).toBe(
-        'Location is required for in-person opportunities',
+        'Location is required for this opportunity',
       );
     });
 
@@ -628,7 +638,7 @@ describe('buildOpportunityFormSchema', () => {
       expect(result.success).toBe(false);
       expect(result.error?.issues[0].path).toEqual(['location']);
       expect(result.error?.issues[0].message).toBe(
-        'Location is required for in-person opportunities',
+        'Location is required for this opportunity',
       );
     });
 
@@ -670,6 +680,20 @@ describe('buildOpportunityFormSchema', () => {
 
       expect(result.success).toBe(true);
       expect(result.data?.location).toBe('Actual Address');
+    });
+
+    it('rejects a missing location for a skills-based opportunity with hasPhysicalLocation: true and no location and points the error at location', () => {
+      const result = schema.safeParse({
+        ...validSkillsBased,
+        hasPhysicalLocation: true,
+        location: '',
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].path).toEqual(['location']);
+      expect(result.error?.issues[0].message).toBe(
+        'Location is required for this opportunity',
+      );
     });
   });
 
@@ -800,6 +824,20 @@ describe('buildOpportunityFormSchema', () => {
       expect(result.success).toBe(true);
       expect(result.data?.endTime).toEqual(
         fromZonedTime(validInPerson.endTime, 'America/Los_Angeles'),
+      );
+    });
+
+    it('converts a skills-based-with-physical-location start time using its own venue time zone rather than the fallback', () => {
+      const result = schema.safeParse({
+        ...validSkillsBased,
+        hasPhysicalLocation: true,
+        location: 'location',
+        timeZone: 'America/Los_Angeles',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.data?.startTime).toEqual(
+        fromZonedTime(validSkillsBased.startTime, 'America/Los_Angeles'),
       );
     });
 
