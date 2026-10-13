@@ -22,23 +22,48 @@ export function buildOpportunityFormSchema(
     .object({
       title: z
         .string()
+        .trim()
         .min(2, { message: 'Opportunity title must be at least 2 characters' }),
-      description: z.string().nullable(),
+      description: z
+        .string()
+        .trim()
+        .nullable()
+        .transform((value) => (value === '' ? null : value)),
       opportunityType: z.enum(
         opportunityTypeEnum.enumValues,
         'Please select an opportunity type',
       ),
-      location: z.string().nullable(),
-      imageUrl: z.string().nullable(),
-      startTime: z.string().min(1, { message: 'Start time is required' }),
-      endTime: z.string().min(1, { message: 'End time is required' }),
+      location: z
+        .string()
+        .trim()
+        .nullable()
+        .transform((value) => (value === '' ? null : value)),
+      imageUrl: z
+        .string()
+        .trim()
+        .nullable()
+        .transform((value) => (value === '' ? null : value)),
+      startTime: z
+        .string()
+        .trim()
+        .min(1, { message: 'Start time is required' })
+        .refine((value) => !Number.isNaN(Date.parse(value)), {
+          message: 'Start time must be a valid date and time',
+        }),
+      endTime: z
+        .string()
+        .trim()
+        .min(1, { message: 'End time is required' })
+        .refine((value) => !Number.isNaN(Date.parse(value)), {
+          message: 'End time must be a valid date and time',
+        }),
       timeZone: z.string().nullable(),
       hasPhysicalLocation: z.boolean(),
       mealProvided: z.boolean(),
       mealOptions: z.array(
         z.object({
           mealOptionId: z.string().optional(),
-          mealName: z.string().min(1, 'Meal name is required'),
+          mealName: z.string().trim().min(1, 'Meal name is required'),
         }),
       ),
       tshirtProvided: z.boolean(),
@@ -73,7 +98,7 @@ export function buildOpportunityFormSchema(
       {
         message:
           minCapacity > 0
-            ? `Capacity can't be less than the ${minCapacity} existing signup${minCapacity === 1 ? '' : 's'}`
+            ? `Capacity can't be less than the ${minCapacity} existing signups`
             : undefined,
         path: ['maxSignupsAllowed'],
       },
@@ -82,6 +107,7 @@ export function buildOpportunityFormSchema(
       const zone = (needsTimeZone(data) && data.timeZone) || fallbackTimeZone;
       return {
         ...data,
+        timeZone: needsTimeZone(data) ? data.timeZone : null,
         startTime: fromZonedTime(data.startTime, zone),
         endTime: fromZonedTime(data.endTime, zone),
       };
