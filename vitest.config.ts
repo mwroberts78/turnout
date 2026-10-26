@@ -11,6 +11,7 @@ export default defineConfig({
       reporter: ['text', 'html'],
       reportsDirectory: './coverage',
     },
+    setupFiles: ['./src/tests/setup.ts'],
   },
   resolve: {
     alias: {
