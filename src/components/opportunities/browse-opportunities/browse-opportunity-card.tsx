@@ -26,7 +26,7 @@ export function BrowseOpportunityCard({
 }) {
   return (
     <Link
-      href={`/opportunities/${opportunity.id}`}
+      href={`/opportunities/view/${opportunity.id}`}
       className="group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <Card className="h-full transition-shadow group-hover:shadow-lg">
