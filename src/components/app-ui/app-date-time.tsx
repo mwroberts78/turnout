@@ -7,10 +7,12 @@ export function AppDateTime({
   start,
   end,
   timeZone,
+  variant = 'stacked',
 }: {
   start: Date;
   end: Date;
   timeZone?: string | null;
+  variant?: 'stacked' | 'inline';
 }) {
   const [viewerTimeZone, setViewerTimeZone] = useState<string | null>(null);
 
@@ -21,6 +23,10 @@ export function AppDateTime({
   }, [timeZone]);
 
   if (!timeZone && !viewerTimeZone) {
+    if (variant === 'inline') {
+      return <Skeleton className="h-4 w-36" />;
+    }
+
     return (
       <div className="flex flex-col gap-1">
         <Skeleton className="h-4 w-24" />
@@ -49,6 +55,14 @@ export function AppDateTime({
     minute: '2-digit',
     timeZone: resolvedZone,
   });
+
+  if (variant === 'inline') {
+    return (
+      <span>
+        {date} · {startLabel}
+      </span>
+    );
+  }
 
   return (
     <div className="flex flex-col">

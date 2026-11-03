@@ -11,11 +11,13 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/base-ui/breadcrumb';
+import { isUuid } from '@/lib/utils/isUuid';
 
 type PageCrumb = { label: string; parent?: string };
 
 const pageCrumbs: Record<string, PageCrumb> = {
   '/dashboard': { label: 'Dashboard' },
+  '/opportunities': { label: 'Opportunities', parent: '/dashboard' },
   '/opportunities/manage': {
     label: 'Manage Opportunities',
     parent: '/dashboard',
@@ -30,13 +32,10 @@ const pageCrumbs: Record<string, PageCrumb> = {
   },
 };
 
-const uuidPattern =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 function normalize(pathname: string) {
   return pathname
     .split('/')
-    .map((segment) => (uuidPattern.test(segment) ? '[id]' : segment))
+    .map((segment) => (isUuid(segment) ? '[id]' : segment))
     .join('/');
 }
 

@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { EditOpportunitySection } from '@/components/opportunities/manage-opportunities/edit-opportunity/edit-opportunity-section';
 import { EditOpportunitySkeleton } from '@/components/opportunities/manage-opportunities/edit-opportunity/edit-opportunity-skeleton';
 import { getCurrentAppUser } from '@/lib/auth';
+import { isUuid } from '@/lib/utils/isUuid';
 
 export default async function EditOpportunityPage({
   params,
@@ -10,6 +11,11 @@ export default async function EditOpportunityPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+
+  if (!isUuid(id)) {
+    notFound();
+  }
+
   const appUser = await getCurrentAppUser();
 
   if (appUser.status !== 'active') {
