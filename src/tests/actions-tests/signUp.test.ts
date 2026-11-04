@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm';
 import { refresh, revalidatePath } from 'next/cache';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '@/db';
-import { mealOptions, signUps } from '@/db/schema';
+import { signUps } from '@/db/schema';
 import {
   createSignUpAction,
   deleteSignUpAction,
