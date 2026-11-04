@@ -15,61 +15,13 @@ import {
   updateOpportunity,
 } from '@/lib/dal/opportunity';
 import {
+  baseOpportunityInput,
   cleanupTestTenant,
+  createPublished,
   createTestTenantAndAdmin,
   createTestVolunteer,
+  daysFromNow,
 } from './dal-test-utils';
-
-function baseOpportunityInput(
-  overrides: Partial<Parameters<typeof createOpportunity>[2]> = {},
-) {
-  return {
-    title: 'Park Cleanup',
-    description: 'Bring gloves',
-    opportunityType: 'virtual' as const,
-    location: null,
-    imageUrl: null,
-    startTime: new Date('2026-06-01T14:00:00Z'),
-    endTime: new Date('2026-06-01T16:00:00Z'),
-    timeZone: null,
-    hasPhysicalLocation: false,
-    mealProvided: false,
-    mealOptions: [],
-    tshirtProvided: false,
-    maxSignupsAllowed: null,
-    ...overrides,
-  };
-}
-
-function daysFromNow(days: number, hour = 14) {
-  const d = new Date();
-  d.setDate(d.getDate() + days);
-  d.setUTCHours(hour, 0, 0, 0);
-  return d;
-}
-
-async function createPublished(
-  tenantId: string,
-  adminId: string,
-  overrides: Parameters<typeof baseOpportunityInput>[0] = {},
-) {
-  const oppId = await createOpportunity(
-    tenantId,
-    adminId,
-    baseOpportunityInput({
-      startTime: daysFromNow(7),
-      endTime: daysFromNow(7, 16),
-      ...overrides,
-    }),
-  );
-
-  await db
-    .update(opportunities)
-    .set({ isPublished: true })
-    .where(eq(opportunities.id, oppId));
-
-  return oppId;
-}
 
 describe('opportunity DAL', () => {
   let tenant: Awaited<ReturnType<typeof createTestTenantAndAdmin>>['tenant'];
