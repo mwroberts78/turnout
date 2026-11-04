@@ -1,5 +1,6 @@
 import { findPublishedOpportunityById } from '@/lib/dal/opportunity';
 import { BrowseOpportunityDetails } from './browse-opportunity-details';
+import { BrowseOpportunitySignupForm } from './browse-opportunity-signup-form';
 
 export async function BrowseOpportunityDetailsSection({
   id,
@@ -21,5 +22,23 @@ export async function BrowseOpportunityDetailsSection({
     );
   }
 
-  return <BrowseOpportunityDetails opportunity={opportunity} />;
+  const durationHours =
+    (opportunity.endTime.getTime() - opportunity.startTime.getTime()) /
+    3_600_000;
+  const defaultHours = Math.min(
+    24,
+    Math.max(0.5, Math.round(durationHours * 2) / 2),
+  );
+
+  return (
+    <BrowseOpportunityDetails opportunity={opportunity}>
+      <BrowseOpportunitySignupForm
+        opportunityId={opportunity.id}
+        mealProvided={opportunity.mealProvided}
+        tshirtProvided={opportunity.tshirtProvided}
+        mealOptions={opportunity.mealOptions}
+        defaultHours={defaultHours}
+      />
+    </BrowseOpportunityDetails>
+  );
 }

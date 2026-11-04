@@ -11,3 +11,8 @@ vi.mock('next/cache', () => ({
 vi.mock('@vercel/blob', () => ({
   del: vi.fn().mockResolvedValue(undefined),
 }));
+
+vi.mock('next/cache', () => ({
+  revalidatePath: vi.fn(),
+  refresh: vi.fn(),
+}));
