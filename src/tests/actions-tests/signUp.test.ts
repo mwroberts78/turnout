@@ -1,14 +1,19 @@
 import { eq } from 'drizzle-orm';
-import { revalidatePath } from 'next/cache';
+import { refresh, revalidatePath } from 'next/cache';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '@/db';
 import { signUps } from '@/db/schema';
-import { deleteSignUpAction, updateSignUpAction } from '@/lib/actions/signUp';
+import {
+  createSignUpAction,
+  deleteSignUpAction,
+  updateSignUpAction,
+} from '@/lib/actions/signUp';
 import { getCurrentAppUser } from '@/lib/auth';
 import { createOpportunity } from '@/lib/dal/opportunity';
 import {
   asActiveAppUser,
   cleanupTestTenant,
+  createPublished,
   createTestTenantAndAdmin,
   createTestVolunteer,
 } from '../dal-tests/dal-test-utils';
@@ -149,6 +154,131 @@ describe('signUp actions', () => {
       expect(revalidatePath).toHaveBeenCalledWith(
         `/opportunities/manage/${oppId}`,
       );
+    });
+  });
+
+  describe('createSignUpAction', () => {
+    function formInput(overrides: Record<string, unknown> = {}) {
+      return {
+        estimatedHours: '2',
+        wantsMeal: false,
+        selectedMeal: null,
+        wantsTShirt: false,
+        tshirtSize: null,
+        comments: '',
+        ...overrides,
+      };
+    }
+
+    it('throws Not authorized for a user who is not active', async () => {
+      vi.mocked(getCurrentAppUser).mockResolvedValue({ status: 'no-org' });
+
+      await expect(
+        createSignUpAction(crypto.randomUUID(), formInput()),
+      ).rejects.toThrow('Not authorized');
+    });
+
+    it('signs up the current user and refreshes the page', async () => {
+      const publishedId = await createPublished(tenant.id, admin.id);
+      const volunteer = await createTestVolunteer(tenant.id);
+      vi.mocked(getCurrentAppUser).mockResolvedValue(
+        asActiveAppUser(volunteer),
+      );
+
+      const result = await createSignUpAction(publishedId, formInput());
+
+      expect(result).toEqual({ success: true });
+      const [row] = await db
+        .select()
+        .from(signUps)
+        .where(eq(signUps.opportunityId, publishedId));
+      expect(row).toMatchObject({ userId: volunteer.id, tenantId: tenant.id });
+      expect(refresh).toHaveBeenCalled();
+    });
+
+    it('returns not-found for an id that is not a uuid', async () => {
+      const volunteer = await createTestVolunteer(tenant.id);
+      vi.mocked(getCurrentAppUser).mockResolvedValue(
+        asActiveAppUser(volunteer),
+      );
+
+      const result = await createSignUpAction('not-a-uuid', formInput());
+
+      expect(result).toEqual({
+        success: false,
+        message: "This opportunity isn't available anymore.",
+      });
+    });
+
+    it('returns not-found for an unpublished opportunity', async () => {
+      const volunteer = await createTestVolunteer(tenant.id);
+      vi.mocked(getCurrentAppUser).mockResolvedValue(
+        asActiveAppUser(volunteer),
+      );
+
+      const result = await createSignUpAction(oppId, formInput());
+
+      expect(result.success).toBe(false);
+    });
+
+    it('rejects invalid form input without writing a row', async () => {
+      const publishedId = await createPublished(tenant.id, admin.id);
+      const volunteer = await createTestVolunteer(tenant.id);
+      vi.mocked(getCurrentAppUser).mockResolvedValue(
+        asActiveAppUser(volunteer),
+      );
+
+      const result = await createSignUpAction(
+        publishedId,
+        formInput({ estimatedHours: '' }),
+      );
+
+      expect(result).toEqual({
+        success: false,
+        message: 'Please fix the errors in the form',
+      });
+      const rows = await db
+        .select()
+        .from(signUps)
+        .where(eq(signUps.opportunityId, publishedId));
+      expect(rows).toHaveLength(0);
+    });
+
+    it('validates the meal against the opportunity’s real options, not the client', async () => {
+      const publishedId = await createPublished(tenant.id, admin.id, {
+        mealProvided: true,
+        mealOptions: [{ mealName: 'Pizza' }],
+      });
+      const volunteer = await createTestVolunteer(tenant.id);
+      vi.mocked(getCurrentAppUser).mockResolvedValue(
+        asActiveAppUser(volunteer),
+      );
+
+      const result = await createSignUpAction(
+        publishedId,
+        formInput({ wantsMeal: true, selectedMeal: crypto.randomUUID() }),
+      );
+
+      expect(result.success).toBe(false);
+    });
+
+    it('returns a friendly message when the opportunity is full', async () => {
+      const publishedId = await createPublished(tenant.id, admin.id, {
+        maxSignupsAllowed: 1,
+      });
+      const first = await createTestVolunteer(tenant.id);
+      const second = await createTestVolunteer(tenant.id);
+
+      vi.mocked(getCurrentAppUser).mockResolvedValue(asActiveAppUser(first));
+      await createSignUpAction(publishedId, formInput());
+
+      vi.mocked(getCurrentAppUser).mockResolvedValue(asActiveAppUser(second));
+      const result = await createSignUpAction(publishedId, formInput());
+
+      expect(result).toEqual({
+        success: false,
+        message: 'Sorry, this opportunity just filled up.',
+      });
     });
   });
 });

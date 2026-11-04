@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { ViewOpportunitySection } from '@/components/opportunities/view-opportunity/view-opportunity-section';
 import { ViewOpportunitySkeleton } from '@/components/opportunities/view-opportunity/view-opportunity-skeleton';
 import { getCurrentAppUser } from '@/lib/auth';
+import { isUuid } from '@/lib/utils/isUuid';
 
 export default async function ManageOpportunityPage({
   params,
@@ -10,6 +11,11 @@ export default async function ManageOpportunityPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+
+  if (!isUuid(id)) {
+    notFound();
+  }
+
   const appUser = await getCurrentAppUser();
 
   if (appUser.status !== 'active') {

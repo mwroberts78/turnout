@@ -1,8 +1,10 @@
 import {
   and,
+  asc,
   desc,
   eq,
   getTableColumns,
+  gt,
   inArray,
   isNull,
   sql,
@@ -23,6 +25,14 @@ import { type Tx, withTenantContext } from './withTenantContext';
 
 export type OpportunityWithDetails = NonNullable<
   Awaited<ReturnType<typeof findOpportunityById>>
+>;
+
+export type PublishedOpportunity = Awaited<
+  ReturnType<typeof findPublishedOpportunities>
+>[number];
+
+export type PublishedOpportunityDetails = NonNullable<
+  Awaited<ReturnType<typeof findPublishedOpportunityById>>
 >;
 
 type OpportunityFormData = z.output<OpportunityFormSchema>;
@@ -180,6 +190,79 @@ export async function createOpportunity(
 
     return created.id;
   });
+}
+
+export async function findPublishedOpportunities(
+  tenantId: string,
+  userId: string,
+): Promise<(Opportunity & { signupCount: number; isSignedUp: boolean })[]> {
+  await mockDelay();
+
+  return withTenantContext(tenantId, (tx) =>
+    tx
+      .select({
+        ...getTableColumns(opportunities),
+        signupCount: sql<number>`count(${signUps.id})`.mapWith(Number),
+        isSignedUp: sql<boolean>`coalesce(bool_or(${signUps.userId} = ${userId}), false)`,
+      })
+      .from(opportunities)
+      .leftJoin(
+        signUps,
+        and(
+          eq(signUps.opportunityId, opportunities.id),
+          isNull(signUps.deletedAt),
+        ),
+      )
+      .where(
+        and(
+          eq(opportunities.tenantId, tenantId),
+          isNull(opportunities.deletedAt),
+          eq(opportunities.isPublished, true),
+          gt(opportunities.startTime, new Date()),
+        ),
+      )
+      .groupBy(opportunities.id)
+      .orderBy(asc(opportunities.startTime)),
+  );
+}
+
+export async function findPublishedOpportunityById(
+  oppId: string,
+  tenantId: string,
+  userId: string,
+) {
+  await mockDelay();
+
+  const opportunity = await withTenantContext(tenantId, (tx) =>
+    tx.query.opportunities.findFirst({
+      where: and(
+        eq(opportunities.id, oppId),
+        eq(opportunities.tenantId, tenantId),
+        eq(opportunities.isPublished, true),
+        isNull(opportunities.deletedAt),
+      ),
+      with: {
+        mealOptions: { columns: { id: true, mealName: true } },
+        creator: {
+          columns: { firstName: true, lastName: true, email: true },
+        },
+        signUps: {
+          where: isNull(signUps.deletedAt),
+          columns: { userId: true },
+        },
+      },
+    }),
+  );
+
+  if (!opportunity) return null;
+
+  const { signUps: activeSignups, ...details } = opportunity;
+
+  return {
+    ...details,
+    signupCount: activeSignups.length,
+    isSignedUp: activeSignups.some((s) => s.userId === userId),
+  };
 }
 
 export async function updateOpportunity(

@@ -69,6 +69,8 @@ export function ViewOpportunitySignupsTableRowActions({
           title: 'Could not save signup',
           description: result.message,
         });
+
+        return;
       }
 
       toast.add({ type: 'success', title: 'Signup updated' });

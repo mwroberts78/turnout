@@ -174,3 +174,9 @@
     @apply font-sans;
   }
 }
+
+/* Toasts must sit above sheets and dialogs (both z-50). Kept here, outside
+   any @layer, so it overrides the generated toast.tsx and survives shadcn updates. */
+[data-slot="toast-viewport"] {
+  z-index: 100;
+}

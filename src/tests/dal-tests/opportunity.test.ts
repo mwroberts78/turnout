@@ -7,37 +7,21 @@ import {
   deleteOpportunity,
   findOpportunitiesByTenant,
   findOpportunityById,
+  findPublishedOpportunities,
+  findPublishedOpportunityById,
   MealOptionInUseError,
   OpportunityConflictError,
   togglePublish,
   updateOpportunity,
 } from '@/lib/dal/opportunity';
 import {
+  baseOpportunityInput,
   cleanupTestTenant,
+  createPublished,
   createTestTenantAndAdmin,
   createTestVolunteer,
+  daysFromNow,
 } from './dal-test-utils';
-
-function baseOpportunityInput(
-  overrides: Partial<Parameters<typeof createOpportunity>[2]> = {},
-) {
-  return {
-    title: 'Park Cleanup',
-    description: 'Bring gloves',
-    opportunityType: 'virtual' as const,
-    location: null,
-    imageUrl: null,
-    startTime: new Date('2026-06-01T14:00:00Z'),
-    endTime: new Date('2026-06-01T16:00:00Z'),
-    timeZone: null,
-    hasPhysicalLocation: false,
-    mealProvided: false,
-    mealOptions: [],
-    tshirtProvided: false,
-    maxSignupsAllowed: null,
-    ...overrides,
-  };
-}
 
 describe('opportunity DAL', () => {
   let tenant: Awaited<ReturnType<typeof createTestTenantAndAdmin>>['tenant'];
@@ -356,6 +340,200 @@ describe('opportunity DAL', () => {
         .from(mealOptions)
         .where(eq(mealOptions.opportunityId, oppId));
       expect(after.map((m) => m.mealName).sort()).toEqual(['Fish', 'Vegan']);
+    });
+  });
+
+  describe('findPublishedOpportunities', () => {
+    it('returns only published, non-deleted, upcoming opportunities', async () => {
+      const visible = await createPublished(tenant.id, admin.id);
+
+      await createOpportunity(
+        tenant.id,
+        admin.id,
+        baseOpportunityInput({
+          startTime: daysFromNow(7),
+          endTime: daysFromNow(7, 16),
+        }),
+      ); // draft
+
+      await createPublished(tenant.id, admin.id, {
+        startTime: daysFromNow(-7),
+        endTime: daysFromNow(-7, 16),
+      }); // past
+
+      const deleted = await createPublished(tenant.id, admin.id);
+      await deleteOpportunity(deleted, tenant.id, admin.id);
+
+      const result = await findPublishedOpportunities(tenant.id, admin.id);
+
+      expect(result.map((o) => o.id)).toEqual([visible]);
+    });
+
+    it('orders soonest first', async () => {
+      const later = await createPublished(tenant.id, admin.id, {
+        startTime: daysFromNow(14),
+        endTime: daysFromNow(14, 16),
+      });
+
+      const sooner = await createPublished(tenant.id, admin.id, {
+        startTime: daysFromNow(3),
+        endTime: daysFromNow(3, 16),
+      });
+
+      const result = await findPublishedOpportunities(tenant.id, admin.id);
+
+      expect(result.map((o) => o.id)).toEqual([sooner, later]);
+    });
+
+    it("flags isSignedUp only for the given user's active sign-up", async () => {
+      const me = await createTestVolunteer(tenant.id);
+      const other = await createTestVolunteer(tenant.id);
+      const mine = await createPublished(tenant.id, admin.id);
+      const theirs = await createPublished(tenant.id, admin.id);
+      const cancelled = await createPublished(tenant.id, admin.id);
+
+      await db.insert(signUps).values([
+        {
+          tenantId: tenant.id,
+          userId: me.id,
+          opportunityId: mine,
+          estimatedHours: 2,
+          createdBy: me.id,
+        },
+        {
+          tenantId: tenant.id,
+          userId: other.id,
+          opportunityId: mine,
+          estimatedHours: 2,
+          createdBy: other.id,
+        },
+        {
+          tenantId: tenant.id,
+          userId: other.id,
+          opportunityId: theirs,
+          estimatedHours: 2,
+          createdBy: other.id,
+        },
+        {
+          tenantId: tenant.id,
+          userId: me.id,
+          opportunityId: cancelled,
+          estimatedHours: 2,
+          createdBy: me.id,
+          deletedAt: new Date(),
+          deletedBy: me.id,
+        },
+      ]);
+
+      const result = await findPublishedOpportunities(tenant.id, me.id);
+      const byId = Object.fromEntries(result.map((o) => [o.id, o]));
+
+      expect(byId[mine]).toMatchObject({ isSignedUp: true, signupCount: 2 });
+      expect(byId[theirs]).toMatchObject({ isSignedUp: false, signupCount: 1 });
+      expect(byId[cancelled]).toMatchObject({
+        isSignedUp: false,
+        signupCount: 0,
+      });
+    });
+  });
+
+  describe('findPublishedOpportunityById', () => {
+    it('returns details with meal options, organizer, and sign-up flags', async () => {
+      const me = await createTestVolunteer(tenant.id);
+      const other = await createTestVolunteer(tenant.id);
+      const oppId = await createPublished(tenant.id, admin.id, {
+        mealProvided: true,
+        mealOptions: [{ mealName: 'Vegetarian' }],
+      });
+
+      await db.insert(signUps).values([
+        {
+          tenantId: tenant.id,
+          userId: me.id,
+          opportunityId: oppId,
+          estimatedHours: 2,
+          createdBy: me.id,
+        },
+        {
+          tenantId: tenant.id,
+          userId: other.id,
+          opportunityId: oppId,
+          estimatedHours: 2,
+          createdBy: other.id,
+        },
+      ]);
+
+      const result = await findPublishedOpportunityById(
+        oppId,
+        tenant.id,
+        me.id,
+      );
+
+      expect(result).toMatchObject({
+        id: oppId,
+        signupCount: 2,
+        isSignedUp: true,
+        creator: { firstName: admin.firstName, email: admin.email },
+      });
+      expect(result?.mealOptions.map((m) => m.mealName)).toEqual([
+        'Vegetarian',
+      ]);
+      expect(result).not.toHaveProperty('signUps');
+    });
+
+    it('ignores cancelled sign-ups', async () => {
+      const me = await createTestVolunteer(tenant.id);
+      const oppId = await createPublished(tenant.id, admin.id);
+
+      await db.insert(signUps).values({
+        tenantId: tenant.id,
+        userId: me.id,
+        opportunityId: oppId,
+        estimatedHours: 2,
+        createdBy: me.id,
+        deletedAt: new Date(),
+        deletedBy: me.id,
+      });
+
+      const result = await findPublishedOpportunityById(
+        oppId,
+        tenant.id,
+        me.id,
+      );
+
+      expect(result).toMatchObject({ signupCount: 0, isSignedUp: false });
+    });
+
+    it('returns null for an unpublished opportunity', async () => {
+      const oppId = await createOpportunity(
+        tenant.id,
+        admin.id,
+        baseOpportunityInput(),
+      );
+
+      expect(
+        await findPublishedOpportunityById(oppId, tenant.id, admin.id),
+      ).toBeNull();
+    });
+
+    it('returns null for a soft-deleted opportunity', async () => {
+      const oppId = await createPublished(tenant.id, admin.id);
+      await deleteOpportunity(oppId, tenant.id, admin.id);
+
+      expect(
+        await findPublishedOpportunityById(oppId, tenant.id, admin.id),
+      ).toBeNull();
+    });
+
+    it('still returns a published opportunity that has already happened', async () => {
+      const oppId = await createPublished(tenant.id, admin.id, {
+        startTime: daysFromNow(-7),
+        endTime: daysFromNow(-7, 16),
+      });
+
+      expect(
+        await findPublishedOpportunityById(oppId, tenant.id, admin.id),
+      ).not.toBeNull();
     });
   });
 });
