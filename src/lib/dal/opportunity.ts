@@ -154,7 +154,9 @@ export async function deleteOpportunity(
     tx
       .update(opportunities)
       .set({ deletedAt: new Date(), deletedBy: userId })
-      .where(eq(opportunities.id, oppId)),
+      .where(
+        and(eq(opportunities.id, oppId), eq(opportunities.tenantId, tenantId)),
+      ),
   );
 }
 
@@ -172,7 +174,9 @@ export async function togglePublish(
         isPublished: sql`NOT ${opportunities.isPublished}`,
         updatedBy: userId,
       })
-      .where(eq(opportunities.id, oppId)),
+      .where(
+        and(eq(opportunities.id, oppId), eq(opportunities.tenantId, tenantId)),
+      ),
   );
 }
 
@@ -496,4 +500,24 @@ async function assertNoSignupsWant(
       `${count} signup${count === 1 ? '' : 's'} chose ${label}, so it can't be turned off`,
     );
   }
+}
+
+// Everyone with an active signup, for emails about the opportunity itself.
+export async function findOpportunityRecipients(
+  oppId: string,
+  tenantId: string,
+) {
+  const rows = await withTenantContext(tenantId, (tx) =>
+    tx.query.signUps.findMany({
+      where: and(
+        eq(signUps.opportunityId, oppId),
+        eq(signUps.tenantId, tenantId),
+        isNull(signUps.deletedAt),
+      ),
+      columns: {},
+      with: { user: { columns: { email: true, firstName: true } } },
+    }),
+  );
+
+  return rows.map((row) => row.user);
 }

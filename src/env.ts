@@ -11,6 +11,12 @@ export const env = createEnv({
     PLATFORM_ADMIN_ORG_ID: z.string(),
     RESEND_API_KEY: z.string(),
     BLOB_READ_WRITE_TOKEN: z.string(),
+    // Optional: "log" prints emails instead of sending them. Defaults to
+    // sending in production and logging everywhere else.
+    EMAIL_DELIVERY: z.enum(['resend', 'log']).optional(),
+    EMAIL_FROM: z.string().optional(),
+    // Set automatically by Vercel; used to build links in emails.
+    VERCEL_PROJECT_PRODUCTION_URL: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
@@ -30,5 +36,8 @@ export const env = createEnv({
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
+    EMAIL_DELIVERY: process.env.EMAIL_DELIVERY,
+    EMAIL_FROM: process.env.EMAIL_FROM,
+    VERCEL_PROJECT_PRODUCTION_URL: process.env.VERCEL_PROJECT_PRODUCTION_URL,
   },
 });

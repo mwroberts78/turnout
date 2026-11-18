@@ -10,12 +10,20 @@ import {
   createSignUp,
   deleteSignUp,
   findOwnSignUpById,
+  findSignUpRecipient,
   type OwnSignUpChangeResult,
   type ReportOwnHoursResult,
   reportOwnHours,
   updateOwnSignUp,
   updateSignUp,
 } from '../dal/signUp';
+import { queueEmails } from '../email/queue';
+import {
+  hoursUpdatedEmail,
+  signupCancelledEmail,
+  signupConfirmedEmail,
+  signupRemovedEmail,
+} from '../email/templates';
 import { reportHoursFormSchema } from '../schemas/report-hours-form';
 import { signupEditFormSchema } from '../schemas/signup-edit-form';
 import {
@@ -32,7 +40,13 @@ export async function deleteSignUpAction(oppId: string, signUpId: string) {
     throw new Error('Not authorized');
   }
 
+  const recipient = await findSignUpRecipient(signUpId, appUser.tenantId);
+
   await deleteSignUp(signUpId, appUser.tenantId, appUser.id);
+
+  if (recipient) {
+    queueEmails([signupRemovedEmail(recipient.user, recipient.opportunity)]);
+  }
 
   revalidatePath(`/opportunities/manage/${oppId}`);
 }
@@ -54,7 +68,22 @@ export async function updateSignUpAction(
     return { success: false, message: 'Please fix the errors in the form' };
   }
 
+  const before = await findSignUpRecipient(signUpId, appUser.tenantId);
+
   await updateSignUp(signUpId, appUser.tenantId, appUser.id, parsed.data);
+
+  if (
+    before &&
+    (before.workCompleted !== parsed.data.workCompleted ||
+      before.actualHours !== parsed.data.actualHours)
+  ) {
+    queueEmails([
+      hoursUpdatedEmail(before.user, before.opportunity, {
+        workCompleted: parsed.data.workCompleted,
+        hours: parsed.data.actualHours ?? before.estimatedHours,
+      }),
+    ]);
+  }
 
   revalidatePath(`/opportunities/manage/${oppId}`);
   return { success: true };
@@ -117,6 +146,16 @@ export async function createSignUpAction(
   if (!result.ok) {
     return { success: false, message: signUpFailureMessages[result.reason] };
   }
+
+  queueEmails([
+    signupConfirmedEmail(appUser, opportunity, {
+      estimatedHours: parsed.data.estimatedHours,
+      mealName:
+        opportunity.mealOptions.find((m) => m.id === parsed.data.selectedMeal)
+          ?.mealName ?? null,
+      tshirtSize: parsed.data.tshirtSize,
+    }),
+  ]);
 
   return { success: true };
 }
@@ -196,12 +235,22 @@ export async function cancelOwnSignUpAction(
     return { success: false, message: ownSignUpFailureMessages['not-found'] };
   }
 
+  const signUp = await findOwnSignUpById(
+    signUpId,
+    appUser.tenantId,
+    appUser.id,
+  );
+
   const result = await cancelOwnSignUp(signUpId, appUser.tenantId, appUser.id);
 
   refresh();
 
   if (!result.ok) {
     return { success: false, message: ownSignUpFailureMessages[result.reason] };
+  }
+
+  if (signUp) {
+    queueEmails([signupCancelledEmail(appUser, signUp.opportunity)]);
   }
 
   return { success: true };
