@@ -25,7 +25,7 @@ export async function deleteSignUp(
     tx
       .update(signUps)
       .set({ deletedAt: new Date(), deletedBy: userId })
-      .where(eq(signUps.id, signUpId)),
+      .where(and(eq(signUps.id, signUpId), eq(signUps.tenantId, tenantId))),
   );
 }
 
@@ -45,7 +45,7 @@ export async function updateSignUp(
         actualHours: data.actualHours,
         updatedBy: userId,
       })
-      .where(eq(signUps.id, signUpId)),
+      .where(and(eq(signUps.id, signUpId), eq(signUps.tenantId, tenantId))),
   );
 }
 
@@ -331,4 +331,33 @@ export async function reportOwnHours(
 
     return { ok: true };
   });
+}
+
+const emailOpportunityColumns = {
+  id: true,
+  title: true,
+  startTime: true,
+  endTime: true,
+  timeZone: true,
+  location: true,
+} as const;
+
+// Who to email about a single signup, with what the email needs to say.
+export async function findSignUpRecipient(signUpId: string, tenantId: string) {
+  const row = await withTenantContext(tenantId, (tx) =>
+    tx.query.signUps.findFirst({
+      where: and(
+        eq(signUps.id, signUpId),
+        eq(signUps.tenantId, tenantId),
+        isNull(signUps.deletedAt),
+      ),
+      columns: { workCompleted: true, actualHours: true, estimatedHours: true },
+      with: {
+        user: { columns: { email: true, firstName: true } },
+        opportunity: { columns: emailOpportunityColumns },
+      },
+    }),
+  );
+
+  return row ?? null;
 }

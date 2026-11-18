@@ -12,6 +12,7 @@
     "db:migrate": "dotenv -e .env.local.migrate -- drizzle-kit migrate",
     "db:studio": "dotenv -e .env.local.migrate -- drizzle-kit studio",
     "db:seed": "dotenv -e .env.local.migrate -- tsx src/db/seed.ts",
+    "email:samples": "dotenv -e .env.local -v EMAIL_DELIVERY=resend -- tsx src/scripts/test-email.ts",
     "db:seed:opportunities": "dotenv -e .env.local.migrate -- tsx src/db/seedOpportunities.ts",
     "db:generate:test": "dotenv -e .env.test -- drizzle-kit generate",
     "db:migrate:test": "dotenv -e .env.test -- drizzle-kit migrate",

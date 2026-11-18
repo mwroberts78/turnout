@@ -12,3 +12,7 @@ vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
   refresh: vi.fn(),
 }));
+
+vi.mock('@/lib/email/queue', () => ({
+  queueEmails: vi.fn(),
+}));

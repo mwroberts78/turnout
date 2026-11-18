@@ -95,6 +95,7 @@ Connects to Postgres as the restricted `authenticated` role (RLS-enforced) plus 
 - Clerk keys — from your Clerk dashboard (create a dev instance/application)
 - `PLATFORM_ADMIN_ORG_ID` — the Clerk Organization ID standing in for "Turnout Internal" (platform admins). Ask a maintainer, or create your own org in your dev Clerk instance and use its ID.
 - `RESEND_API_KEY`, `BLOB_READ_WRITE_TOKEN`, PostHog keys — from their respective dashboards
+- Notification emails are printed to the dev server console instead of being sent unless `EMAIL_DELIVERY=resend` is set, so local testing never emails fake addresses. To see the real emails in an inbox, run `pnpm email:samples -- you@example.com`. Links in emails use Vercel's `VERCEL_PROJECT_PRODUCTION_URL` in production and `http://localhost:3000` otherwise.
 
 ### `.env.local.migrate` — used by all `db:*` scripts (not `:test`/`:prod`)
 

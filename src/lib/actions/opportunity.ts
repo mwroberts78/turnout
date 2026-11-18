@@ -7,11 +7,18 @@ import {
   createOpportunity,
   deleteOpportunity,
   findOpportunityById,
+  findOpportunityRecipients,
   MealOptionInUseError,
   OpportunityConflictError,
+  type OpportunityWithDetails,
   togglePublish,
   updateOpportunity,
 } from '../dal/opportunity';
+import { queueEmails } from '../email/queue';
+import {
+  opportunityCancelledEmail,
+  opportunityChangedEmail,
+} from '../email/templates';
 import {
   buildOpportunityFormSchema,
   type OpportunityFormSchema,
@@ -32,9 +39,31 @@ export async function deleteOpportunityAction(oppId: string) {
     throw new Error('Not authorized');
   }
 
+  const existing = await findOpportunityById(oppId, appUser.tenantId);
+  const recipients =
+    existing && existing.startTime > new Date()
+      ? await findOpportunityRecipients(oppId, appUser.tenantId)
+      : [];
+
   await deleteOpportunity(oppId, appUser.tenantId, appUser.id);
 
+  if (existing) {
+    queueEmails(recipients.map((r) => opportunityCancelledEmail(r, existing)));
+  }
+
   revalidatePath('/opportunities/manage');
+}
+
+function scheduleOrPlaceChanged(
+  before: OpportunityWithDetails,
+  after: OpportunityWithDetails,
+) {
+  return (
+    before.startTime.getTime() !== after.startTime.getTime() ||
+    before.endTime.getTime() !== after.endTime.getTime() ||
+    before.location !== after.location ||
+    before.timeZone !== after.timeZone
+  );
 }
 
 export async function togglePublishOpportunityAction(oppId: string) {
@@ -71,8 +100,9 @@ export async function saveOpportunityAction(
 
   let minCapacity = 0;
   let previousImageUrl: string | null = null;
+  let existing: OpportunityWithDetails | undefined;
   if (oppId) {
-    const existing = await findOpportunityById(oppId, appUser.tenantId);
+    existing = await findOpportunityById(oppId, appUser.tenantId);
     if (!existing) return { success: false, message: 'Opportunity not found' };
     minCapacity = existing.signUps.length;
     previousImageUrl = existing.imageUrl;
@@ -102,6 +132,24 @@ export async function saveOpportunityAction(
 
     if (previousImageUrl && previousImageUrl !== parsed.data.imageUrl) {
       await deleteBlobImage(previousImageUrl);
+    }
+
+    // Volunteers hear about it when the time or place changes on something
+    // they're still going to.
+    if (existing && existing.signUps.length > 0) {
+      const updated = await findOpportunityById(id, appUser.tenantId);
+
+      if (
+        updated &&
+        updated.startTime > new Date() &&
+        scheduleOrPlaceChanged(existing, updated)
+      ) {
+        const recipients = await findOpportunityRecipients(
+          id,
+          appUser.tenantId,
+        );
+        queueEmails(recipients.map((r) => opportunityChangedEmail(r, updated)));
+      }
     }
 
     revalidatePath('/opportunities/manage');
