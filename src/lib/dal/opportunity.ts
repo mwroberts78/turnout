@@ -14,6 +14,7 @@ import {
   mealOptions,
   type Opportunity,
   opportunities,
+  projects,
   signUps,
 } from '@/db/schema';
 import {
@@ -169,13 +170,42 @@ export async function createOpportunity(
   tenantId: string,
   userId: string,
   data: OpportunityFormData,
+  options: { projectId?: string } = {},
 ) {
   await mockDelay();
 
   return withTenantContext(tenantId, async (tx) => {
+    let projectId: string | null = null;
+
+    if (options.projectId) {
+      const [project] = await tx
+        .select({ id: projects.id })
+        .from(projects)
+        .where(
+          and(
+            eq(projects.id, options.projectId),
+            eq(projects.tenantId, tenantId),
+            isNull(projects.deletedAt),
+          ),
+        );
+
+      if (!project) {
+        throw new OpportunityConflictError(
+          "That project isn't available anymore",
+        );
+      }
+
+      projectId = project.id;
+    }
+
     const [created] = await tx
       .insert(opportunities)
-      .values({ ...toOpportunityValues(data), tenantId, createdBy: userId })
+      .values({
+        ...toOpportunityValues(data),
+        tenantId,
+        projectId,
+        createdBy: userId,
+      })
       .returning({ id: opportunities.id });
 
     if (data.mealProvided && data.mealOptions.length > 0) {

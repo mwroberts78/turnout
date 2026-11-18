@@ -21,6 +21,7 @@ import {
   createTestTenantAndAdmin,
   createTestVolunteer,
   daysFromNow,
+  insertProject,
 } from './dal-test-utils';
 
 describe('opportunity DAL', () => {
@@ -36,6 +37,34 @@ describe('opportunity DAL', () => {
   });
 
   describe('createOpportunity', () => {
+    it("puts the opportunity in a project, but never another tenant's", async () => {
+      const project = await insertProject(tenant.id, admin.id);
+      const other = await createTestTenantAndAdmin();
+      try {
+        const foreign = await insertProject(other.tenant.id, other.admin.id);
+
+        const oppId = await createOpportunity(
+          tenant.id,
+          admin.id,
+          baseOpportunityInput(),
+          { projectId: project.id },
+        );
+        const [row] = await db
+          .select()
+          .from(opportunities)
+          .where(eq(opportunities.id, oppId));
+        expect(row.projectId).toBe(project.id);
+
+        await expect(
+          createOpportunity(tenant.id, admin.id, baseOpportunityInput(), {
+            projectId: foreign.id,
+          }),
+        ).rejects.toThrow(OpportunityConflictError);
+      } finally {
+        await cleanupTestTenant(other.tenant.id);
+      }
+    });
+
     it('creates an opportunity with the given values', async () => {
       const oppId = await createOpportunity(
         tenant.id,

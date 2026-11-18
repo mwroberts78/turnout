@@ -16,6 +16,7 @@ import {
   cleanupTestTenant,
   createTestTenantAndAdmin,
   createTestVolunteer,
+  insertProject,
 } from '../dal-tests/dal-test-utils';
 
 vi.mock('@/lib/auth', () => ({
@@ -143,6 +144,63 @@ describe('opportunity actions', () => {
   });
 
   describe('saveOpportunityAction', () => {
+    it('creates the opportunity inside the given project', async () => {
+      vi.mocked(getCurrentAppUser).mockResolvedValue(asActiveAppUser(admin));
+      const project = await insertProject(tenant.id, admin.id);
+
+      const result = await saveOpportunityAction(
+        null,
+        baseFormInput(),
+        'UTC',
+        project.id,
+      );
+
+      expect(result.success).toBe(true);
+      if (!result.success) return;
+      const [row] = await db
+        .select()
+        .from(opportunities)
+        .where(eq(opportunities.id, result.id));
+      expect(row.projectId).toBe(project.id);
+    });
+
+    it('refuses a project that is gone, without creating anything', async () => {
+      vi.mocked(getCurrentAppUser).mockResolvedValue(asActiveAppUser(admin));
+      const project = await insertProject(tenant.id, admin.id, {
+        deletedAt: new Date(),
+      });
+
+      const result = await saveOpportunityAction(
+        null,
+        baseFormInput(),
+        'UTC',
+        project.id,
+      );
+
+      expect(result).toEqual({
+        success: false,
+        message: "That project isn't available anymore",
+      });
+      const rows = await db
+        .select()
+        .from(opportunities)
+        .where(eq(opportunities.tenantId, tenant.id));
+      expect(rows).toHaveLength(0);
+    });
+
+    it('rejects a project id that is not a uuid', async () => {
+      vi.mocked(getCurrentAppUser).mockResolvedValue(asActiveAppUser(admin));
+
+      const result = await saveOpportunityAction(
+        null,
+        baseFormInput(),
+        'UTC',
+        'nope',
+      );
+
+      expect(result.success).toBe(false);
+    });
+
     it('throws Not authorized for a non-admin user', async () => {
       const volunteer = await createTestVolunteer(tenant.id);
       vi.mocked(getCurrentAppUser).mockResolvedValue(

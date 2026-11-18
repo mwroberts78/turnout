@@ -1,4 +1,4 @@
-import { Pencil } from 'lucide-react';
+import { Pencil, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { AppBreadcrumb } from '@/components/app-ui/app-breadcrumb';
@@ -158,7 +158,21 @@ export async function ViewProjectSection({
             )}
 
             <div className="space-y-2 border-t pt-4">
-              <p className="text-sm font-medium">Add an existing opportunity</p>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-sm font-medium">Add opportunities</p>
+                <Button
+                  size="sm"
+                  render={
+                    <Link
+                      href={`/opportunities/manage/new?project=${project.id}`}
+                    />
+                  }
+                  nativeButton={false}
+                >
+                  <Plus />
+                  New opportunity
+                </Button>
+              </div>
               <ProjectAddOpportunity
                 projectId={project.id}
                 candidates={candidates}
