@@ -18,6 +18,8 @@ type PageCrumb = { label: string; parent?: string };
 const pageCrumbs: Record<string, PageCrumb> = {
   '/dashboard': { label: 'Dashboard' },
   '/opportunities': { label: 'Opportunities', parent: '/dashboard' },
+  '/my-signups': { label: 'My Signups', parent: '/dashboard' },
+  '/reports': { label: 'Reports', parent: '/dashboard' },
   '/opportunities/view/[id]': {
     label: 'Opportunity',
     parent: '/opportunities',
