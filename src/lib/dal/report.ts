@@ -2,6 +2,7 @@ import {
   and,
   asc,
   count,
+  countDistinct,
   desc,
   eq,
   gt,
@@ -10,7 +11,7 @@ import {
   lte,
   sql,
 } from 'drizzle-orm';
-import { opportunities, signUps, users } from '@/db/schema';
+import { opportunities, projects, signUps, users } from '@/db/schema';
 import { mockDelay } from '../utils/mockDelay';
 import { type ReportRange, reportRangeStart } from '../utils/reportRange';
 import { withTenantContext } from './withTenantContext';
@@ -127,6 +128,26 @@ export async function getTenantReport(
       .groupBy(users.id)
       .orderBy(desc(confirmedHours), asc(users.lastName), asc(users.firstName));
 
+    const byProject = await tx
+      .select({
+        id: projects.id,
+        title: projects.title,
+        opportunityCount: countDistinct(opportunities.id),
+        signupCount: count(signUps.id),
+        volunteerCount: countDistinct(signUps.userId),
+        completedCount,
+        hours: confirmedHours,
+      })
+      .from(projects)
+      .innerJoin(
+        opportunities,
+        and(eq(opportunities.projectId, projects.id), inRange),
+      )
+      .leftJoin(signUps, activeSignUp)
+      .where(and(eq(projects.tenantId, tenantId), isNull(projects.deletedAt)))
+      .groupBy(projects.id)
+      .orderBy(desc(confirmedHours), asc(projects.title));
+
     const [{ activeEmployees }] = await tx
       .select({ activeEmployees: count() })
       .from(users)
@@ -168,6 +189,7 @@ export async function getTenantReport(
       },
       byOpportunity,
       byVolunteer,
+      byProject,
     };
   });
 }

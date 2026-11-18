@@ -98,6 +98,7 @@ export async function findOpportunityById(oppId: string, tenantId: string) {
         updater: {
           columns: { firstName: true, lastName: true, email: true },
         },
+        project: { columns: { id: true, title: true } },
         signUps: {
           where: isNull(signUps.deletedAt),
           columns: {
@@ -195,6 +196,7 @@ export async function createOpportunity(
 export async function findPublishedOpportunities(
   tenantId: string,
   userId: string,
+  options: { projectId?: string } = {},
 ): Promise<(Opportunity & { signupCount: number; isSignedUp: boolean })[]> {
   await mockDelay();
 
@@ -219,6 +221,9 @@ export async function findPublishedOpportunities(
           isNull(opportunities.deletedAt),
           eq(opportunities.isPublished, true),
           gt(opportunities.startTime, new Date()),
+          options.projectId
+            ? eq(opportunities.projectId, options.projectId)
+            : undefined,
         ),
       )
       .groupBy(opportunities.id)
@@ -250,16 +255,29 @@ export async function findPublishedOpportunityById(
           where: isNull(signUps.deletedAt),
           columns: { userId: true },
         },
+        project: {
+          columns: {
+            id: true,
+            title: true,
+            isPublished: true,
+            deletedAt: true,
+          },
+        },
       },
     }),
   );
 
   if (!opportunity) return null;
 
-  const { signUps: activeSignups, ...details } = opportunity;
+  const { signUps: activeSignups, project, ...details } = opportunity;
 
   return {
     ...details,
+    // Only link to the project when employees can actually open it.
+    project:
+      project?.isPublished && project.deletedAt === null
+        ? { id: project.id, title: project.title }
+        : null,
     signupCount: activeSignups.length,
     isSignedUp: activeSignups.some((s) => s.userId === userId),
   };

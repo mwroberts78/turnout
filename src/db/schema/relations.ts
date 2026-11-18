@@ -1,6 +1,7 @@
 import { relations } from 'drizzle-orm';
 import { mealOptions } from './meal-options';
 import { opportunities } from './opportunities';
+import { projects } from './projects';
 import { signUps } from './signups';
 import { users } from './users';
 
@@ -9,6 +10,10 @@ export const opportunitiesRelations = relations(
   ({ one, many }) => ({
     signUps: many(signUps),
     mealOptions: many(mealOptions),
+    project: one(projects, {
+      fields: [opportunities.projectId],
+      references: [projects.id],
+    }),
     creator: one(users, {
       fields: [opportunities.createdBy],
       references: [users.id],
@@ -44,4 +49,18 @@ export const mealOptionsRelations = relations(mealOptions, ({ one, many }) => ({
     references: [opportunities.id],
   }),
   signUps: many(signUps),
+}));
+
+export const projectsRelations = relations(projects, ({ one, many }) => ({
+  opportunities: many(opportunities),
+  creator: one(users, {
+    fields: [projects.createdBy],
+    references: [users.id],
+    relationName: 'projectCreator',
+  }),
+  updater: one(users, {
+    fields: [projects.updatedBy],
+    references: [users.id],
+    relationName: 'projectUpdater',
+  }),
 }));
