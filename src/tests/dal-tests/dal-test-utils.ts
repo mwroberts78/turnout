@@ -121,3 +121,24 @@ export async function createPublished(
 
   return oppId;
 }
+
+export async function insertSignUp(
+  tenantId: string,
+  userId: string,
+  opportunityId: string,
+  overrides: Partial<typeof signUps.$inferInsert> = {},
+) {
+  const [signUp] = await db
+    .insert(signUps)
+    .values({
+      tenantId,
+      userId,
+      opportunityId,
+      estimatedHours: 2,
+      createdBy: userId,
+      ...overrides,
+    })
+    .returning();
+
+  return signUp;
+}
