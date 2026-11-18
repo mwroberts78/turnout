@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: 'Sign up' };
 
 export default function SignUpPage(): React.ReactNode {
   return (
-    <div>
+    <div className="flex flex-1 justify-center px-4 py-12">
       <SignUp fallbackRedirectUrl="/dashboard" />
     </div>
   );
