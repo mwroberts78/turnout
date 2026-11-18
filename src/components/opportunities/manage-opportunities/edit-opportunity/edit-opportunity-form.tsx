@@ -1,5 +1,6 @@
 'use client';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { FolderKanban } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo, useTransition } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -19,8 +20,12 @@ import { EditOpportunityOverviewFields } from './edit-opportunity-overview-field
 
 export function EditOpportunityForm({
   opportunity,
+  project,
 }: {
   opportunity?: OpportunityWithDetails;
+  // When creating from a project's page, the new opportunity joins that
+  // project and the admin is sent back there afterwards.
+  project?: { id: string; title: string };
 }) {
   const router = useRouter();
   const [isSaving, startSaving] = useTransition();
@@ -94,6 +99,7 @@ export function EditOpportunityForm({
           opportunity?.id ?? null,
           form.getValues(),
           browserTimeZone,
+          project?.id ?? null,
         );
 
         if (!result.success) {
@@ -109,7 +115,11 @@ export function EditOpportunityForm({
           type: 'success',
           title: opportunity ? 'Opportunity saved' : 'Opportunity created',
         });
-        router.push(`/opportunities/manage/${result.id}`);
+        router.push(
+          project
+            ? `/projects/manage/${project.id}`
+            : `/opportunities/manage/${result.id}`,
+        );
       } catch {
         toast.add({
           type: 'error',
@@ -146,10 +156,16 @@ export function EditOpportunityForm({
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="mb-4 flex flex-col justify-between space-y-4 @min-[1100px]:flex-row @min-[1100px]:items-center @min-[1100px]:space-y-2">
-            <div className="flex items-center gap-4">
+            <div className="space-y-1">
               <h1 className="text-2xl font-bold">
                 {opportunity ? 'Edit' : 'New'} Opportunity
               </h1>
+              {project && (
+                <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <FolderKanban className="size-4" />
+                  Will be added to {project.title}
+                </p>
+              )}
             </div>
             <div className="flex gap-2">
               <Button

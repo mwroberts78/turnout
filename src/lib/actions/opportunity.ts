@@ -18,6 +18,7 @@ import {
 } from '../schemas/opportunity-form';
 import { isAdminUser } from '../types/appUser';
 import { deleteBlobImage } from '../utils/blob';
+import { isUuid } from '../utils/isUuid';
 import { isValidTimeZone } from '../utils/isValidTimeZone';
 
 export type SaveOpportunityResult =
@@ -52,6 +53,7 @@ export async function saveOpportunityAction(
   oppId: string | null,
   input: z.input<OpportunityFormSchema>,
   browserTimeZone: string,
+  projectId: string | null = null,
 ): Promise<SaveOpportunityResult> {
   const appUser = await getCurrentAppUser();
 
@@ -61,6 +63,10 @@ export async function saveOpportunityAction(
 
   if (!isValidTimeZone(browserTimeZone)) {
     return { success: false, message: 'Invalid time zone' };
+  }
+
+  if (projectId !== null && !isUuid(projectId)) {
+    return { success: false, message: "That project isn't available anymore" };
   }
 
   let minCapacity = 0;
@@ -88,7 +94,9 @@ export async function saveOpportunityAction(
           appUser.id,
           parsed.data,
         )
-      : await createOpportunity(appUser.tenantId, appUser.id, parsed.data);
+      : await createOpportunity(appUser.tenantId, appUser.id, parsed.data, {
+          projectId: projectId ?? undefined,
+        });
 
     if (!id) return { success: false, message: 'Opportunity not found' };
 

@@ -19,6 +19,15 @@ const pageCrumbs: Record<string, PageCrumb> = {
   '/dashboard': { label: 'Dashboard' },
   '/opportunities': { label: 'Opportunities', parent: '/dashboard' },
   '/my-signups': { label: 'My Signups', parent: '/dashboard' },
+  '/projects': { label: 'Projects', parent: '/dashboard' },
+  '/projects/[id]': { label: 'Project', parent: '/projects' },
+  '/projects/manage': { label: 'Manage Projects', parent: '/dashboard' },
+  '/projects/manage/new': { label: 'New', parent: '/projects/manage' },
+  '/projects/manage/[id]': { label: 'Project', parent: '/projects/manage' },
+  '/projects/manage/[id]/edit': {
+    label: 'Edit',
+    parent: '/projects/manage/[id]',
+  },
   '/reports': { label: 'Reports', parent: '/dashboard' },
   '/opportunities/view/[id]': {
     label: 'Opportunity',

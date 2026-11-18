@@ -26,10 +26,9 @@ function opportunitySearchFilter(
   filterValue: unknown,
 ) {
   const search = String(filterValue).toLowerCase();
-  const { description, location } = row.original;
-  return (
-    description?.toLowerCase().includes(search) ||
-    (location ?? '').toLowerCase().includes(search)
+  const { title, description, location, projectTitle } = row.original;
+  return [title, description, location, projectTitle].some((field) =>
+    (field ?? '').toLowerCase().includes(search),
   );
 }
 

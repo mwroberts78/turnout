@@ -1,7 +1,7 @@
 'use client';
 
 import { createColumnHelper } from '@tanstack/react-table';
-import { ArrowUpDown } from 'lucide-react';
+import { ArrowUpDown, FolderKanban } from 'lucide-react';
 import type { z } from 'zod';
 import { AppCapacityDisplay } from '@/components/app-ui/app-capacity-display';
 import { AppDateTime } from '@/components/app-ui/app-date-time';
@@ -43,6 +43,14 @@ export const opportunitiesTableColumns = columnHelper.columns([
             <div className="text-muted-foreground text-xs">
               {info.row.original.location}
             </div>
+            {info.row.original.projectTitle && (
+              <div className="text-muted-foreground flex items-center gap-1 text-xs">
+                <FolderKanban className="size-3 shrink-0" />
+                <span className="truncate">
+                  {info.row.original.projectTitle}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       );

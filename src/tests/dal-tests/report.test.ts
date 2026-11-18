@@ -9,7 +9,9 @@ import {
   createTestTenantAndAdmin,
   createTestVolunteer,
   daysFromNow,
+  insertProject,
   insertSignUp,
+  setOpportunityProject,
 } from './dal-test-utils';
 
 describe('report DAL', () => {
@@ -223,6 +225,45 @@ describe('report DAL', () => {
       } finally {
         await cleanupTestTenant(other.tenant.id);
       }
+    });
+
+    it('rolls opportunities up by project', async () => {
+      const avery = await createTestVolunteer(tenant.id);
+      const blake = await createTestVolunteer(tenant.id);
+      const project = await insertProject(tenant.id, admin.id, {
+        title: 'Earth Week',
+      });
+      const day1 = await pastOpportunity(4, 'Day 1');
+      const day2 = await pastOpportunity(3, 'Day 2');
+      const quiet = await pastOpportunity(2, 'Quiet day');
+      await pastOpportunity(2, 'Not in a project');
+      for (const oppId of [day1, day2, quiet]) {
+        await setOpportunityProject(oppId, project.id);
+      }
+
+      await insertSignUp(tenant.id, avery.id, day1, {
+        workCompleted: true,
+        actualHours: 3,
+      });
+      await insertSignUp(tenant.id, avery.id, day2, {
+        workCompleted: true,
+        actualHours: 2,
+      });
+      await insertSignUp(tenant.id, blake.id, day2);
+
+      const report = await getTenantReport(tenant.id, '30d');
+
+      expect(report.byProject).toEqual([
+        {
+          id: project.id,
+          title: 'Earth Week',
+          opportunityCount: 3,
+          signupCount: 3,
+          volunteerCount: 2,
+          completedCount: 2,
+          hours: 5,
+        },
+      ]);
     });
   });
 });

@@ -1,7 +1,11 @@
 import type { TenantReport } from '../dal/report';
 import { toCsv } from '../utils/toCsv';
 
-export const reportExportTypes = ['volunteers', 'opportunities'] as const;
+export const reportExportTypes = [
+  'volunteers',
+  'opportunities',
+  'projects',
+] as const;
 
 export type ReportExportType = (typeof reportExportTypes)[number];
 
@@ -10,6 +14,27 @@ export function isReportExportType(value: unknown): value is ReportExportType {
 }
 
 export function reportToCsv(report: TenantReport, type: ReportExportType) {
+  if (type === 'projects') {
+    return toCsv(
+      [
+        'Project',
+        'Opportunities',
+        'Signups',
+        'Volunteers',
+        'Completed',
+        'Hours',
+      ],
+      report.byProject.map((p) => [
+        p.title,
+        p.opportunityCount,
+        p.signupCount,
+        p.volunteerCount,
+        p.completedCount,
+        p.hours,
+      ]),
+    );
+  }
+
   if (type === 'volunteers') {
     return toCsv(
       ['First name', 'Last name', 'Email', 'Signups', 'Completed', 'Hours'],

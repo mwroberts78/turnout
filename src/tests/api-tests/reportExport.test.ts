@@ -8,7 +8,9 @@ import {
   createTestTenantAndAdmin,
   createTestVolunteer,
   daysFromNow,
+  insertProject,
   insertSignUp,
+  setOpportunityProject,
 } from '../dal-tests/dal-test-utils';
 
 vi.mock('@/lib/auth', () => ({
@@ -102,5 +104,28 @@ describe('GET /api/reports/export', () => {
       'Opportunity,Type,Start (UTC),Capacity,Signups,Completed,Hours',
     );
     expect(row).toMatch(/^"Cleanup, part 2",virtual,.+Z,10,0,0,0$/);
+  });
+
+  it('downloads the project rollup', async () => {
+    vi.mocked(getCurrentAppUser).mockResolvedValue(asActiveAppUser(admin));
+    const project = await insertProject(tenant.id, admin.id, {
+      title: 'Earth Week',
+    });
+    const oppId = await createPublished(tenant.id, admin.id, {
+      startTime: daysFromNow(-3),
+      endTime: daysFromNow(-3, 16),
+    });
+    await setOpportunityProject(oppId, project.id);
+    await insertSignUp(tenant.id, admin.id, oppId, {
+      workCompleted: true,
+      actualHours: 1.5,
+    });
+
+    const response = await GET(exportRequest('type=projects&range=30d'));
+
+    expect(await response.text()).toBe(
+      'Project,Opportunities,Signups,Volunteers,Completed,Hours\r\n' +
+        'Earth Week,1,1,1,1,1.5',
+    );
   });
 });

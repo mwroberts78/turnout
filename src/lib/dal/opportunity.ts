@@ -14,6 +14,7 @@ import {
   mealOptions,
   type Opportunity,
   opportunities,
+  projects,
   signUps,
 } from '@/db/schema';
 import {
@@ -56,7 +57,9 @@ function toOpportunityValues(data: OpportunityFormData) {
 
 export async function findOpportunitiesByTenant(
   tenantId: string,
-): Promise<(Opportunity & { signupCount: number })[]> {
+): Promise<
+  (Opportunity & { signupCount: number; projectTitle: string | null })[]
+> {
   await mockDelay();
 
   return withTenantContext(tenantId, (tx) =>
@@ -64,6 +67,7 @@ export async function findOpportunitiesByTenant(
       .select({
         ...getTableColumns(opportunities),
         signupCount: sql<number>`count(${signUps.id})`.mapWith(Number),
+        projectTitle: projects.title,
       })
       .from(opportunities)
       .leftJoin(
@@ -73,13 +77,20 @@ export async function findOpportunitiesByTenant(
           isNull(signUps.deletedAt),
         ),
       )
+      .leftJoin(
+        projects,
+        and(
+          eq(projects.id, opportunities.projectId),
+          isNull(projects.deletedAt),
+        ),
+      )
       .where(
         and(
           eq(opportunities.tenantId, tenantId),
           isNull(opportunities.deletedAt),
         ),
       )
-      .groupBy(opportunities.id)
+      .groupBy(opportunities.id, projects.id)
       .orderBy(desc(opportunities.startTime)),
   );
 }
@@ -98,6 +109,7 @@ export async function findOpportunityById(oppId: string, tenantId: string) {
         updater: {
           columns: { firstName: true, lastName: true, email: true },
         },
+        project: { columns: { id: true, title: true } },
         signUps: {
           where: isNull(signUps.deletedAt),
           columns: {
@@ -168,13 +180,42 @@ export async function createOpportunity(
   tenantId: string,
   userId: string,
   data: OpportunityFormData,
+  options: { projectId?: string } = {},
 ) {
   await mockDelay();
 
   return withTenantContext(tenantId, async (tx) => {
+    let projectId: string | null = null;
+
+    if (options.projectId) {
+      const [project] = await tx
+        .select({ id: projects.id })
+        .from(projects)
+        .where(
+          and(
+            eq(projects.id, options.projectId),
+            eq(projects.tenantId, tenantId),
+            isNull(projects.deletedAt),
+          ),
+        );
+
+      if (!project) {
+        throw new OpportunityConflictError(
+          "That project isn't available anymore",
+        );
+      }
+
+      projectId = project.id;
+    }
+
     const [created] = await tx
       .insert(opportunities)
-      .values({ ...toOpportunityValues(data), tenantId, createdBy: userId })
+      .values({
+        ...toOpportunityValues(data),
+        tenantId,
+        projectId,
+        createdBy: userId,
+      })
       .returning({ id: opportunities.id });
 
     if (data.mealProvided && data.mealOptions.length > 0) {
@@ -195,7 +236,14 @@ export async function createOpportunity(
 export async function findPublishedOpportunities(
   tenantId: string,
   userId: string,
-): Promise<(Opportunity & { signupCount: number; isSignedUp: boolean })[]> {
+  options: { projectId?: string } = {},
+): Promise<
+  (Opportunity & {
+    signupCount: number;
+    isSignedUp: boolean;
+    projectTitle: string | null;
+  })[]
+> {
   await mockDelay();
 
   return withTenantContext(tenantId, (tx) =>
@@ -204,6 +252,7 @@ export async function findPublishedOpportunities(
         ...getTableColumns(opportunities),
         signupCount: sql<number>`count(${signUps.id})`.mapWith(Number),
         isSignedUp: sql<boolean>`coalesce(bool_or(${signUps.userId} = ${userId}), false)`,
+        projectTitle: projects.title,
       })
       .from(opportunities)
       .leftJoin(
@@ -213,15 +262,27 @@ export async function findPublishedOpportunities(
           isNull(signUps.deletedAt),
         ),
       )
+      // Employees only see the project name when they can open the project.
+      .leftJoin(
+        projects,
+        and(
+          eq(projects.id, opportunities.projectId),
+          eq(projects.isPublished, true),
+          isNull(projects.deletedAt),
+        ),
+      )
       .where(
         and(
           eq(opportunities.tenantId, tenantId),
           isNull(opportunities.deletedAt),
           eq(opportunities.isPublished, true),
           gt(opportunities.startTime, new Date()),
+          options.projectId
+            ? eq(opportunities.projectId, options.projectId)
+            : undefined,
         ),
       )
-      .groupBy(opportunities.id)
+      .groupBy(opportunities.id, projects.id)
       .orderBy(asc(opportunities.startTime)),
   );
 }
@@ -250,16 +311,29 @@ export async function findPublishedOpportunityById(
           where: isNull(signUps.deletedAt),
           columns: { userId: true },
         },
+        project: {
+          columns: {
+            id: true,
+            title: true,
+            isPublished: true,
+            deletedAt: true,
+          },
+        },
       },
     }),
   );
 
   if (!opportunity) return null;
 
-  const { signUps: activeSignups, ...details } = opportunity;
+  const { signUps: activeSignups, project, ...details } = opportunity;
 
   return {
     ...details,
+    // Only link to the project when employees can actually open it.
+    project:
+      project?.isPublished && project.deletedAt === null
+        ? { id: project.id, title: project.title }
+        : null,
     signupCount: activeSignups.length,
     isSignedUp: activeSignups.some((s) => s.userId === userId),
   };

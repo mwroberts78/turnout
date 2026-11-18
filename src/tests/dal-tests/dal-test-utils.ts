@@ -3,6 +3,7 @@ import { db } from '@/db/index';
 import {
   mealOptions,
   opportunities,
+  projects,
   signUps,
   tenants,
   type User,
@@ -67,6 +68,7 @@ export async function cleanupTestTenant(tenantId: string) {
   await db.delete(signUps).where(eq(signUps.tenantId, tenantId));
   await db.delete(mealOptions).where(eq(mealOptions.tenantId, tenantId));
   await db.delete(opportunities).where(eq(opportunities.tenantId, tenantId));
+  await db.delete(projects).where(eq(projects.tenantId, tenantId));
   await db.delete(users).where(eq(users.tenantId, tenantId));
   await db.delete(tenants).where(eq(tenants.id, tenantId));
 }
@@ -141,4 +143,27 @@ export async function insertSignUp(
     .returning();
 
   return signUp;
+}
+
+export async function insertProject(
+  tenantId: string,
+  createdBy: string,
+  overrides: Partial<typeof projects.$inferInsert> = {},
+) {
+  const [project] = await db
+    .insert(projects)
+    .values({ tenantId, createdBy, title: 'Service Week', ...overrides })
+    .returning();
+
+  return project;
+}
+
+export async function setOpportunityProject(
+  oppId: string,
+  projectId: string | null,
+) {
+  await db
+    .update(opportunities)
+    .set({ projectId })
+    .where(eq(opportunities.id, oppId));
 }

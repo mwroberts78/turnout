@@ -1,5 +1,6 @@
 import {
   CalendarClock,
+  FolderKanban,
   MapPin,
   Pencil,
   Shirt,
@@ -96,6 +97,15 @@ export async function ViewOpportunity({
               }
             >
               <div className="flex flex-col space-y-4 text-sm">
+                {opportunity.project && (
+                  <Link
+                    href={`/projects/manage/${opportunity.project.id}`}
+                    className="inline-flex items-center gap-2 hover:underline"
+                  >
+                    <FolderKanban className="text-muted-foreground size-4" />
+                    {opportunity.project.title}
+                  </Link>
+                )}
                 {opportunity.location && opportunity.location.length > 0 && (
                   <p className="inline-flex items-center gap-2">
                     <MapPin className="text-muted-foreground size-4" />
