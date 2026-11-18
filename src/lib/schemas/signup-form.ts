@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { tshirtSizesEnum } from '@/db/schema';
+import { requiredHoursString } from './numeric-string';
 
 export function buildSignupFormSchema(opportunity: {
   mealProvided: boolean;
@@ -11,17 +12,7 @@ export function buildSignupFormSchema(opportunity: {
 
   return z
     .object({
-      estimatedHours: z
-        .string()
-        .trim()
-        .min(1, { message: 'Estimated hours is required' })
-        .transform(Number)
-        .pipe(
-          z
-            .number({ message: 'Hours must be a number' })
-            .positive({ message: 'Hours must be more than 0' })
-            .max(24, { message: 'Hours must be 24 or less' }),
-        ),
+      estimatedHours: requiredHoursString('Estimated hours is required'),
       wantsMeal: z.boolean(),
       selectedMeal: z.string().nullable(),
       wantsTShirt: z.boolean(),

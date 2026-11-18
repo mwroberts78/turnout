@@ -2,7 +2,17 @@ import { and, count, eq, isNull } from 'drizzle-orm';
 import { mealOptions, opportunities, signUps } from '@/db/schema';
 import type { SignupFormOutput } from '../schemas/signup-form';
 import { mockDelay } from '../utils/mockDelay';
-import { withTenantContext } from './withTenantContext';
+import { type Tx, withTenantContext } from './withTenantContext';
+
+export type OwnSignUp = Awaited<ReturnType<typeof findSignUpsForUser>>[number];
+
+export type OwnSignUpChangeResult =
+  | { ok: true }
+  | { ok: false; reason: 'not-found' | 'started' | 'invalid-meal' };
+
+export type ReportOwnHoursResult =
+  | { ok: true }
+  | { ok: false; reason: 'not-found' | 'not-started' };
 
 export async function deleteSignUp(
   signUpId: string,
@@ -134,5 +144,191 @@ export async function createSignUp(
       .returning({ id: signUps.id });
 
     return { ok: true, signUpId: created.id };
+  });
+}
+
+const ownSignUpRelations = {
+  selectedMealOption: { columns: { id: true, mealName: true } },
+  opportunity: {
+    columns: {
+      id: true,
+      title: true,
+      opportunityType: true,
+      location: true,
+      imageUrl: true,
+      startTime: true,
+      endTime: true,
+      timeZone: true,
+      mealProvided: true,
+      tshirtProvided: true,
+      deletedAt: true,
+    },
+    with: { mealOptions: { columns: { id: true, mealName: true } } },
+  },
+} as const;
+
+// Signups whose opportunity was deleted are hidden from the volunteer; the
+// relational query API can't filter on a related table, so it happens here.
+export async function findSignUpsForUser(tenantId: string, userId: string) {
+  await mockDelay();
+
+  const rows = await withTenantContext(tenantId, (tx) =>
+    tx.query.signUps.findMany({
+      where: and(
+        eq(signUps.tenantId, tenantId),
+        eq(signUps.userId, userId),
+        isNull(signUps.deletedAt),
+      ),
+      with: ownSignUpRelations,
+    }),
+  );
+
+  return rows
+    .filter((row) => row.opportunity.deletedAt === null)
+    .sort(
+      (a, b) =>
+        a.opportunity.startTime.getTime() - b.opportunity.startTime.getTime(),
+    );
+}
+
+export async function findOwnSignUpById(
+  signUpId: string,
+  tenantId: string,
+  userId: string,
+) {
+  await mockDelay();
+
+  const row = await withTenantContext(tenantId, (tx) =>
+    tx.query.signUps.findFirst({
+      where: and(
+        eq(signUps.id, signUpId),
+        eq(signUps.tenantId, tenantId),
+        eq(signUps.userId, userId),
+        isNull(signUps.deletedAt),
+      ),
+      with: ownSignUpRelations,
+    }),
+  );
+
+  if (!row || row.opportunity.deletedAt !== null) return null;
+  return row;
+}
+
+async function lockOwnSignUp(
+  tx: Tx,
+  signUpId: string,
+  tenantId: string,
+  userId: string,
+) {
+  const [row] = await tx
+    .select({
+      id: signUps.id,
+      opportunityId: opportunities.id,
+      startTime: opportunities.startTime,
+    })
+    .from(signUps)
+    .innerJoin(opportunities, eq(opportunities.id, signUps.opportunityId))
+    .where(
+      and(
+        eq(signUps.id, signUpId),
+        eq(signUps.tenantId, tenantId),
+        eq(signUps.userId, userId),
+        isNull(signUps.deletedAt),
+        isNull(opportunities.deletedAt),
+      ),
+    )
+    .for('update', { of: signUps });
+
+  return row ?? null;
+}
+
+export async function updateOwnSignUp(
+  signUpId: string,
+  tenantId: string,
+  userId: string,
+  input: SignupFormOutput,
+): Promise<OwnSignUpChangeResult> {
+  await mockDelay();
+
+  return withTenantContext(tenantId, async (tx) => {
+    const signUp = await lockOwnSignUp(tx, signUpId, tenantId, userId);
+
+    if (!signUp) return { ok: false, reason: 'not-found' };
+    if (signUp.startTime <= new Date()) return { ok: false, reason: 'started' };
+
+    if (input.selectedMeal) {
+      const [meal] = await tx
+        .select({ id: mealOptions.id })
+        .from(mealOptions)
+        .where(
+          and(
+            eq(mealOptions.id, input.selectedMeal),
+            eq(mealOptions.opportunityId, signUp.opportunityId),
+          ),
+        );
+
+      if (!meal) return { ok: false, reason: 'invalid-meal' };
+    }
+
+    await tx
+      .update(signUps)
+      .set({ ...input, updatedBy: userId })
+      .where(eq(signUps.id, signUpId));
+
+    return { ok: true };
+  });
+}
+
+export async function cancelOwnSignUp(
+  signUpId: string,
+  tenantId: string,
+  userId: string,
+): Promise<OwnSignUpChangeResult> {
+  await mockDelay();
+
+  return withTenantContext(tenantId, async (tx) => {
+    const signUp = await lockOwnSignUp(tx, signUpId, tenantId, userId);
+
+    if (!signUp) return { ok: false, reason: 'not-found' };
+    if (signUp.startTime <= new Date()) return { ok: false, reason: 'started' };
+
+    await tx
+      .update(signUps)
+      .set({ deletedAt: new Date(), deletedBy: userId })
+      .where(eq(signUps.id, signUpId));
+
+    return { ok: true };
+  });
+}
+
+// Volunteers log their own hours once the opportunity has started. Logging
+// marks the work completed, so the hours count toward reports immediately;
+// admins can still correct them from the opportunity's signup table.
+export async function reportOwnHours(
+  signUpId: string,
+  tenantId: string,
+  userId: string,
+  data: { actualHours: number },
+): Promise<ReportOwnHoursResult> {
+  await mockDelay();
+
+  return withTenantContext(tenantId, async (tx) => {
+    const signUp = await lockOwnSignUp(tx, signUpId, tenantId, userId);
+
+    if (!signUp) return { ok: false, reason: 'not-found' };
+    if (signUp.startTime > new Date()) {
+      return { ok: false, reason: 'not-started' };
+    }
+
+    await tx
+      .update(signUps)
+      .set({
+        workCompleted: true,
+        actualHours: data.actualHours,
+        updatedBy: userId,
+      })
+      .where(eq(signUps.id, signUpId));
+
+    return { ok: true };
   });
 }

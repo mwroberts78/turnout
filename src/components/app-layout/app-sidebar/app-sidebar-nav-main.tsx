@@ -1,9 +1,12 @@
 'use client';
 
 import {
+  BarChart3Icon,
+  CalendarCheckIcon,
   ChevronRight,
   ClipboardListIcon,
   HandHeartIcon,
+  LayoutDashboardIcon,
   type LucideIcon,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -56,14 +59,30 @@ export const navItems: NavGroup[] = [
     title: 'Programs',
     items: [
       {
+        title: 'Dashboard',
+        href: '/dashboard',
+        icon: LayoutDashboardIcon,
+      },
+      {
         title: 'Opportunities',
         href: '/opportunities',
         icon: HandHeartIcon,
       },
       {
+        title: 'My Signups',
+        href: '/my-signups',
+        icon: CalendarCheckIcon,
+      },
+      {
         title: 'Manage Opportunities',
         href: '/opportunities/manage',
         icon: ClipboardListIcon,
+        adminOnly: true,
+      },
+      {
+        title: 'Reports',
+        href: '/reports',
+        icon: BarChart3Icon,
         adminOnly: true,
       },
     ],
