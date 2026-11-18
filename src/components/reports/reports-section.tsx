@@ -100,8 +100,8 @@ export async function ReportsSection({
           description={`${totals.signups} signups`}
         />
         <AppStatCard
-          label="Awaiting confirmation"
-          value={totals.awaitingConfirmation}
+          label="Hours not logged"
+          value={totals.notLogged}
           icon={Hourglass}
           description="Past signups not marked completed"
         />

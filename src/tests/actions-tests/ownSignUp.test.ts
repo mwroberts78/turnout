@@ -5,6 +5,7 @@ import { db } from '@/db';
 import { signUps } from '@/db/schema';
 import {
   cancelOwnSignUpAction,
+  reportOwnHoursAction,
   updateOwnSignUpAction,
 } from '@/lib/actions/signUp';
 import { getCurrentAppUser } from '@/lib/auth';
@@ -14,6 +15,7 @@ import {
   createPublished,
   createTestTenantAndAdmin,
   createTestVolunteer,
+  daysFromNow,
   insertSignUp,
 } from '../dal-tests/dal-test-utils';
 
@@ -159,6 +161,67 @@ describe('own signUp actions', () => {
 
       expect(result.success).toBe(false);
       expect((await findRow()).deletedAt).toBeNull();
+    });
+  });
+
+  describe('reportOwnHoursAction', () => {
+    async function pastSignUpId() {
+      const oppId = await createPublished(tenant.id, admin.id, {
+        startTime: daysFromNow(-2),
+        endTime: daysFromNow(-2, 16),
+      });
+      return (await insertSignUp(tenant.id, volunteer.id, oppId)).id;
+    }
+
+    it('throws Not authorized for a user who is not active', async () => {
+      vi.mocked(getCurrentAppUser).mockResolvedValue({ status: 'no-org' });
+
+      await expect(
+        reportOwnHoursAction(signUpId, { actualHours: '2' }),
+      ).rejects.toThrow('Not authorized');
+    });
+
+    it('logs hours for the current user and refreshes the page', async () => {
+      const id = await pastSignUpId();
+      vi.mocked(getCurrentAppUser).mockResolvedValue(
+        asActiveAppUser(volunteer),
+      );
+
+      const result = await reportOwnHoursAction(id, { actualHours: '4' });
+
+      expect(result).toEqual({ success: true });
+      const [row] = await db.select().from(signUps).where(eq(signUps.id, id));
+      expect(row).toMatchObject({ workCompleted: true, actualHours: 4 });
+      expect(refresh).toHaveBeenCalled();
+    });
+
+    it('rejects invalid hours without writing', async () => {
+      const id = await pastSignUpId();
+      vi.mocked(getCurrentAppUser).mockResolvedValue(
+        asActiveAppUser(volunteer),
+      );
+
+      const result = await reportOwnHoursAction(id, { actualHours: '30' });
+
+      expect(result).toEqual({
+        success: false,
+        message: 'Please fix the errors in the form',
+      });
+      const [row] = await db.select().from(signUps).where(eq(signUps.id, id));
+      expect(row.workCompleted).toBe(false);
+    });
+
+    it('explains that hours open once the opportunity starts', async () => {
+      vi.mocked(getCurrentAppUser).mockResolvedValue(
+        asActiveAppUser(volunteer),
+      );
+
+      const result = await reportOwnHoursAction(signUpId, { actualHours: '2' });
+
+      expect(result).toEqual({
+        success: false,
+        message: 'You can log hours once the opportunity has started.',
+      });
     });
   });
 });

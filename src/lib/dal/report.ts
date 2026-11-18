@@ -18,8 +18,9 @@ import { withTenantContext } from './withTenantContext';
 export type VolunteerSummary = Awaited<ReturnType<typeof getVolunteerSummary>>;
 export type TenantReport = Awaited<ReturnType<typeof getTenantReport>>;
 
-// Hours only count once an admin marks the work completed. Actual hours win
-// when recorded; otherwise the volunteer's estimate stands in.
+// Hours only count once the work is marked completed, by the volunteer logging
+// their hours or by an admin. Actual hours win when recorded; otherwise the
+// volunteer's estimate stands in.
 const confirmedHours =
   sql<number>`coalesce(sum(coalesce(${signUps.actualHours}, ${signUps.estimatedHours})) filter (where ${signUps.workCompleted}), 0)`.mapWith(
     Number,
@@ -51,7 +52,7 @@ export async function getVolunteerSummary(
           sql<number>`count(${signUps.id}) filter (where ${opportunities.startTime} > ${now.toISOString()}::timestamptz)`.mapWith(
             Number,
           ),
-        awaitingCount:
+        notLoggedCount:
           sql<number>`count(${signUps.id}) filter (where ${opportunities.startTime} <= ${now.toISOString()}::timestamptz and not ${signUps.workCompleted})`.mapWith(
             Number,
           ),
@@ -158,7 +159,7 @@ export async function getTenantReport(
         opportunities: byOpportunity.length,
         signups: signupCount,
         completed,
-        awaitingConfirmation: signupCount - completed,
+        notLogged: signupCount - completed,
         volunteers: byVolunteer.length,
         activeEmployees,
         participationRate:

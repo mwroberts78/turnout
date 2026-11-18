@@ -11,9 +11,12 @@ import {
   deleteSignUp,
   findOwnSignUpById,
   type OwnSignUpChangeResult,
+  type ReportOwnHoursResult,
+  reportOwnHours,
   updateOwnSignUp,
   updateSignUp,
 } from '../dal/signUp';
+import { reportHoursFormSchema } from '../schemas/report-hours-form';
 import { signupEditFormSchema } from '../schemas/signup-edit-form';
 import {
   buildSignupFormSchema,
@@ -199,6 +202,53 @@ export async function cancelOwnSignUpAction(
 
   if (!result.ok) {
     return { success: false, message: ownSignUpFailureMessages[result.reason] };
+  }
+
+  return { success: true };
+}
+
+const reportHoursFailureMessages: Record<
+  Extract<ReportOwnHoursResult, { ok: false }>['reason'],
+  string
+> = {
+  'not-found': "This signup isn't available anymore.",
+  'not-started': 'You can log hours once the opportunity has started.',
+};
+
+export async function reportOwnHoursAction(
+  signUpId: string,
+  input: z.input<typeof reportHoursFormSchema>,
+): Promise<ActionResult> {
+  const appUser = await getCurrentAppUser();
+
+  if (appUser.status !== 'active') {
+    throw new Error('Not authorized');
+  }
+
+  if (!isUuid(signUpId)) {
+    return { success: false, message: reportHoursFailureMessages['not-found'] };
+  }
+
+  const parsed = reportHoursFormSchema.safeParse(input);
+
+  if (!parsed.success) {
+    return { success: false, message: 'Please fix the errors in the form' };
+  }
+
+  const result = await reportOwnHours(
+    signUpId,
+    appUser.tenantId,
+    appUser.id,
+    parsed.data,
+  );
+
+  refresh();
+
+  if (!result.ok) {
+    return {
+      success: false,
+      message: reportHoursFailureMessages[result.reason],
+    };
   }
 
   return { success: true };

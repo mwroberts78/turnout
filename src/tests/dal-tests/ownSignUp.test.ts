@@ -6,6 +6,7 @@ import {
   cancelOwnSignUp,
   findOwnSignUpById,
   findSignUpsForUser,
+  reportOwnHours,
   updateOwnSignUp,
 } from '@/lib/dal/signUp';
 import type { SignupFormOutput } from '@/lib/schemas/signup-form';
@@ -296,6 +297,68 @@ describe('own signUp DAL', () => {
       } finally {
         await cleanupTestTenant(other.tenant.id);
       }
+    });
+  });
+
+  describe('reportOwnHours', () => {
+    async function pastSignUp(userId = volunteer.id) {
+      const oppId = await createPublished(tenant.id, admin.id, {
+        startTime: daysFromNow(-1),
+        endTime: daysFromNow(-1, 16),
+      });
+      return insertSignUp(tenant.id, userId, oppId);
+    }
+
+    it('marks the work completed with the logged hours', async () => {
+      const signUp = await pastSignUp();
+
+      expect(
+        await reportOwnHours(signUp.id, tenant.id, volunteer.id, {
+          actualHours: 3.5,
+        }),
+      ).toEqual({ ok: true });
+      expect(await findRow(signUp.id)).toMatchObject({
+        workCompleted: true,
+        actualHours: 3.5,
+        updatedBy: volunteer.id,
+      });
+    });
+
+    it('lets the volunteer correct hours already logged', async () => {
+      const signUp = await pastSignUp();
+      await reportOwnHours(signUp.id, tenant.id, volunteer.id, {
+        actualHours: 3,
+      });
+
+      await reportOwnHours(signUp.id, tenant.id, volunteer.id, {
+        actualHours: 2,
+      });
+
+      expect((await findRow(signUp.id)).actualHours).toBe(2);
+    });
+
+    it('returns not-started before the opportunity begins', async () => {
+      const oppId = await createPublished(tenant.id, admin.id);
+      const signUp = await insertSignUp(tenant.id, volunteer.id, oppId);
+
+      expect(
+        await reportOwnHours(signUp.id, tenant.id, volunteer.id, {
+          actualHours: 2,
+        }),
+      ).toEqual({ ok: false, reason: 'not-started' });
+      expect((await findRow(signUp.id)).workCompleted).toBe(false);
+    });
+
+    it("returns not-found for another user's signup", async () => {
+      const other = await createTestVolunteer(tenant.id);
+      const signUp = await pastSignUp(other.id);
+
+      expect(
+        await reportOwnHours(signUp.id, tenant.id, volunteer.id, {
+          actualHours: 2,
+        }),
+      ).toEqual({ ok: false, reason: 'not-found' });
+      expect((await findRow(signUp.id)).workCompleted).toBe(false);
     });
   });
 });

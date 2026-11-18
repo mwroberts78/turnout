@@ -32,7 +32,7 @@ export default async function ReportsPage({
         </div>
         <p className="text-sm text-muted-foreground">
           Covers opportunities that started in the selected period. Hours count
-          once an admin marks the work completed.
+          once the volunteer logs them or an admin marks the work completed.
         </p>
         <Suspense key={range} fallback={<ReportsSkeleton />}>
           <ReportsSection tenantId={appUser.tenantId} range={range} />

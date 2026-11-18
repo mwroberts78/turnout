@@ -23,7 +23,7 @@ export async function DashboardStatsSection({
         label="Hours volunteered"
         value={formatHours(summary.hours)}
         icon={Clock}
-        description="Confirmed by an admin"
+        description="From completed signups"
       />
       <AppStatCard
         label="Completed"
@@ -38,10 +38,10 @@ export async function DashboardStatsSection({
         description="Signups ahead of you"
       />
       <AppStatCard
-        label="Awaiting confirmation"
-        value={summary.awaitingCount}
+        label="Hours not logged"
+        value={summary.notLoggedCount}
         icon={Hourglass}
-        description="Past, not yet confirmed"
+        description="Past signups to log"
       />
     </div>
   );

@@ -40,7 +40,7 @@ describe('report DAL', () => {
         hours: 0,
         completedCount: 0,
         upcomingCount: 0,
-        awaitingCount: 0,
+        notLoggedCount: 0,
       });
     });
 
@@ -69,7 +69,7 @@ describe('report DAL', () => {
         hours: 5.5,
         completedCount: 2,
         upcomingCount: 1,
-        awaitingCount: 1,
+        notLoggedCount: 1,
       });
     });
 
@@ -124,7 +124,7 @@ describe('report DAL', () => {
         opportunities: 2,
         signups: 3,
         completed: 2,
-        awaitingConfirmation: 1,
+        notLogged: 1,
         volunteers: 2,
         activeEmployees: 4,
         participationRate: 0.5,

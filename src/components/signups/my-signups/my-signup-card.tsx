@@ -9,6 +9,7 @@ import { SignupReadOnlySummary } from '@/components/signups/signup-readonly-summ
 import type { OwnSignUp } from '@/lib/dal/signUp';
 import { formatHours } from '@/lib/utils/formatHours';
 import { MySignupActions } from './my-signup-actions';
+import { MySignupLogHours } from './my-signup-log-hours';
 
 function PastStatus({ signUp }: { signUp: OwnSignUp }) {
   if (signUp.workCompleted) {
@@ -23,7 +24,7 @@ function PastStatus({ signUp }: { signUp: OwnSignUp }) {
   return (
     <Badge variant="outline" className="gap-1 text-muted-foreground">
       <Hourglass />
-      Awaiting confirmation
+      Hours not logged
     </Badge>
   );
 }
@@ -92,8 +93,9 @@ export function MySignupCard({
             <MySignupActions signUp={signUp} />
           </>
         ) : (
-          <div>
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <PastStatus signUp={signUp} />
+            <MySignupLogHours signUp={signUp} />
           </div>
         )}
       </div>

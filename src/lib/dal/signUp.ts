@@ -10,6 +10,10 @@ export type OwnSignUpChangeResult =
   | { ok: true }
   | { ok: false; reason: 'not-found' | 'started' | 'invalid-meal' };
 
+export type ReportOwnHoursResult =
+  | { ok: true }
+  | { ok: false; reason: 'not-found' | 'not-started' };
+
 export async function deleteSignUp(
   signUpId: string,
   tenantId: string,
@@ -291,6 +295,38 @@ export async function cancelOwnSignUp(
     await tx
       .update(signUps)
       .set({ deletedAt: new Date(), deletedBy: userId })
+      .where(eq(signUps.id, signUpId));
+
+    return { ok: true };
+  });
+}
+
+// Volunteers log their own hours once the opportunity has started. Logging
+// marks the work completed, so the hours count toward reports immediately;
+// admins can still correct them from the opportunity's signup table.
+export async function reportOwnHours(
+  signUpId: string,
+  tenantId: string,
+  userId: string,
+  data: { actualHours: number },
+): Promise<ReportOwnHoursResult> {
+  await mockDelay();
+
+  return withTenantContext(tenantId, async (tx) => {
+    const signUp = await lockOwnSignUp(tx, signUpId, tenantId, userId);
+
+    if (!signUp) return { ok: false, reason: 'not-found' };
+    if (signUp.startTime > new Date()) {
+      return { ok: false, reason: 'not-started' };
+    }
+
+    await tx
+      .update(signUps)
+      .set({
+        workCompleted: true,
+        actualHours: data.actualHours,
+        updatedBy: userId,
+      })
       .where(eq(signUps.id, signUpId));
 
     return { ok: true };
