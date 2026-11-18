@@ -1,4 +1,5 @@
 import { BarChart3, ClipboardList } from 'lucide-react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
@@ -15,6 +16,8 @@ import {
 } from '@/components/dashboard/dashboard-upcoming-section';
 import { getCurrentAppUser } from '@/lib/auth';
 import { isAdminUser } from '@/lib/types/appUser';
+
+export const metadata: Metadata = { title: 'Dashboard' };
 
 export default async function DashboardPage() {
   const appUser = await getCurrentAppUser();

@@ -16,6 +16,7 @@ import {
   findPublishedProjectById,
   findPublishedProjects,
   findUnassignedOpportunities,
+  moveOpportunityToProject,
   removeOpportunityFromProject,
   toggleProjectPublish,
   updateProject,
@@ -290,6 +291,72 @@ describe('project DAL', () => {
         ),
       ).toBe(false);
       expect(await findOpportunityProjectId(oppId)).toBe(project.id);
+    });
+  });
+
+  describe('moveOpportunityToProject', () => {
+    it('moves between projects and ungroups with null', async () => {
+      const first = await insertProject(tenant.id, admin.id);
+      const second = await insertProject(tenant.id, admin.id);
+      const oppId = await createPublished(tenant.id, admin.id);
+      await setOpportunityProject(oppId, first.id);
+
+      expect(
+        await moveOpportunityToProject(oppId, second.id, tenant.id, admin.id),
+      ).toEqual({ ok: true });
+      expect(await findOpportunityProjectId(oppId)).toBe(second.id);
+
+      expect(
+        await moveOpportunityToProject(oppId, null, tenant.id, admin.id),
+      ).toEqual({ ok: true });
+      expect(await findOpportunityProjectId(oppId)).toBeNull();
+    });
+
+    it("rejects a deleted or another tenant's project", async () => {
+      const deleted = await insertProject(tenant.id, admin.id, {
+        deletedAt: new Date(),
+      });
+      const oppId = await createPublished(tenant.id, admin.id);
+      const other = await createTestTenantAndAdmin();
+      try {
+        const foreign = await insertProject(other.tenant.id, other.admin.id);
+
+        for (const projectId of [deleted.id, foreign.id]) {
+          expect(
+            await moveOpportunityToProject(
+              oppId,
+              projectId,
+              tenant.id,
+              admin.id,
+            ),
+          ).toEqual({ ok: false, reason: 'project-not-found' });
+        }
+        expect(await findOpportunityProjectId(oppId)).toBeNull();
+      } finally {
+        await cleanupTestTenant(other.tenant.id);
+      }
+    });
+
+    it("rejects another tenant's opportunity", async () => {
+      const project = await insertProject(tenant.id, admin.id);
+      const other = await createTestTenantAndAdmin();
+      try {
+        const foreignOpp = await createPublished(
+          other.tenant.id,
+          other.admin.id,
+        );
+
+        expect(
+          await moveOpportunityToProject(
+            foreignOpp,
+            project.id,
+            tenant.id,
+            admin.id,
+          ),
+        ).toEqual({ ok: false, reason: 'opportunity-not-found' });
+      } finally {
+        await cleanupTestTenant(other.tenant.id);
+      }
     });
   });
 

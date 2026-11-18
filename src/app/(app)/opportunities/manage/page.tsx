@@ -1,4 +1,5 @@
 import { Plus } from 'lucide-react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
@@ -12,6 +13,8 @@ import { Card, CardContent } from '@/components/base-ui/card';
 import { ManageOpportunitiesSection } from '@/components/opportunities/manage-opportunities/manage-opportunities-section';
 import { ManageOpportunitiesSkeleton } from '@/components/opportunities/manage-opportunities/manage-opportunities-skeleton';
 import { getCurrentAppUser } from '@/lib/auth';
+
+export const metadata: Metadata = { title: 'Manage Opportunities' };
 
 export default async function ManageOpportunitiesPage() {
   const appUser = await getCurrentAppUser();

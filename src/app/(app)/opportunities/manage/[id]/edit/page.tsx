@@ -1,9 +1,12 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { EditOpportunitySection } from '@/components/opportunities/manage-opportunities/edit-opportunity/edit-opportunity-section';
 import { EditOpportunitySkeleton } from '@/components/opportunities/manage-opportunities/edit-opportunity/edit-opportunity-skeleton';
 import { getCurrentAppUser } from '@/lib/auth';
 import { isUuid } from '@/lib/utils/isUuid';
+
+export const metadata: Metadata = { title: 'Edit Opportunity' };
 
 export default async function EditOpportunityPage({
   params,

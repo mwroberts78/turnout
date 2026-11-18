@@ -1,9 +1,12 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { AppBreadcrumb } from '@/components/app-ui/app-breadcrumb';
 import { ProjectForm } from '@/components/projects/manage-projects/project-form';
 import { getCurrentAppUser } from '@/lib/auth';
 import { findProjectById } from '@/lib/dal/project';
 import { isUuid } from '@/lib/utils/isUuid';
+
+export const metadata: Metadata = { title: 'Edit Project' };
 
 export default async function EditProjectPage({
   params,

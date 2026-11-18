@@ -19,7 +19,7 @@ export function TableSearchInput({
 
   useEffect(() => {
     setIsMac(/Mac/.test(navigator.platform));
-  });
+  }, []);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {

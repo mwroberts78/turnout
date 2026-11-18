@@ -1,9 +1,12 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { AppBreadcrumb } from '@/components/app-ui/app-breadcrumb';
 import { BrowseProjectsSection } from '@/components/projects/browse-projects/browse-projects-section';
 import { BrowseProjectsSkeleton } from '@/components/projects/browse-projects/browse-projects-skeleton';
 import { getCurrentAppUser } from '@/lib/auth';
+
+export const metadata: Metadata = { title: 'Projects' };
 
 export default async function ProjectsPage() {
   const appUser = await getCurrentAppUser();

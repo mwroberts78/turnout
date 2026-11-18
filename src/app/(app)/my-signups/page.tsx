@@ -1,9 +1,12 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { AppBreadcrumb } from '@/components/app-ui/app-breadcrumb';
 import { MySignupsSection } from '@/components/signups/my-signups/my-signups-section';
 import { MySignupsSkeleton } from '@/components/signups/my-signups/my-signups-skeleton';
 import { getCurrentAppUser } from '@/lib/auth';
+
+export const metadata: Metadata = { title: 'My Signups' };
 
 export default async function MySignupsPage() {
   const appUser = await getCurrentAppUser();

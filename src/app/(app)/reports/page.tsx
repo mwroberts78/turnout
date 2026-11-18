@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { AppBreadcrumb } from '@/components/app-ui/app-breadcrumb';
@@ -6,6 +7,8 @@ import { ReportsSection } from '@/components/reports/reports-section';
 import { ReportsSkeleton } from '@/components/reports/reports-skeleton';
 import { getCurrentAppUser } from '@/lib/auth';
 import { parseReportRange } from '@/lib/utils/reportRange';
+
+export const metadata: Metadata = { title: 'Reports' };
 
 export default async function ReportsPage({
   searchParams,

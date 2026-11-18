@@ -6,6 +6,7 @@ import { opportunities, projects } from '@/db/schema';
 import {
   addOpportunityToProjectAction,
   deleteProjectAction,
+  moveOpportunityToProjectAction,
   removeOpportunityFromProjectAction,
   saveProjectAction,
   toggleProjectPublishAction,
@@ -69,6 +70,9 @@ describe('project actions', () => {
       ).rejects.toThrow('Not authorized');
       await expect(
         removeOpportunityFromProjectAction(project.id, oppId),
+      ).rejects.toThrow('Not authorized');
+      await expect(
+        moveOpportunityToProjectAction(oppId, project.id),
       ).rejects.toThrow('Not authorized');
 
       expect(await projectCount()).toBe(1);
@@ -186,6 +190,37 @@ describe('project actions', () => {
         (await addOpportunityToProjectAction(project.id, 'nope')).success,
       ).toBe(false);
       expect((await deleteProjectAction('nope')).success).toBe(false);
+    });
+  });
+
+  describe('moveOpportunityToProjectAction', () => {
+    it('moves an opportunity and refreshes the page', async () => {
+      vi.mocked(getCurrentAppUser).mockResolvedValue(asActiveAppUser(admin));
+      const project = await insertProject(tenant.id, admin.id);
+      const oppId = await createPublished(tenant.id, admin.id);
+
+      expect(await moveOpportunityToProjectAction(oppId, project.id)).toEqual({
+        success: true,
+      });
+      expect(refresh).toHaveBeenCalled();
+
+      const [row] = await db
+        .select()
+        .from(opportunities)
+        .where(eq(opportunities.id, oppId));
+      expect(row.projectId).toBe(project.id);
+    });
+
+    it('rejects ids that are not uuids', async () => {
+      vi.mocked(getCurrentAppUser).mockResolvedValue(asActiveAppUser(admin));
+      const oppId = await createPublished(tenant.id, admin.id);
+
+      expect(
+        (await moveOpportunityToProjectAction(oppId, 'nope')).success,
+      ).toBe(false);
+      expect((await moveOpportunityToProjectAction('nope', null)).success).toBe(
+        false,
+      );
     });
   });
 
