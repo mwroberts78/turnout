@@ -5,6 +5,8 @@ import {
   CalendarCheckIcon,
   ChevronRight,
   ClipboardListIcon,
+  FolderKanbanIcon,
+  FoldersIcon,
   HandHeartIcon,
   LayoutDashboardIcon,
   type LucideIcon,
@@ -69,6 +71,11 @@ export const navItems: NavGroup[] = [
         icon: HandHeartIcon,
       },
       {
+        title: 'Projects',
+        href: '/projects',
+        icon: FolderKanbanIcon,
+      },
+      {
         title: 'My Signups',
         href: '/my-signups',
         icon: CalendarCheckIcon,
@@ -77,6 +84,12 @@ export const navItems: NavGroup[] = [
         title: 'Manage Opportunities',
         href: '/opportunities/manage',
         icon: ClipboardListIcon,
+        adminOnly: true,
+      },
+      {
+        title: 'Manage Projects',
+        href: '/projects/manage',
+        icon: FoldersIcon,
         adminOnly: true,
       },
       {

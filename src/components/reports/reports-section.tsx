@@ -73,10 +73,8 @@ export async function ReportsSection({
   tenantId: string;
   range: ReportRange;
 }) {
-  const { totals, byOpportunity, byVolunteer } = await getTenantReport(
-    tenantId,
-    range,
-  );
+  const { totals, byOpportunity, byVolunteer, byProject } =
+    await getTenantReport(tenantId, range);
 
   return (
     <div className="space-y-6">
@@ -170,6 +168,51 @@ export async function ReportsSection({
           </TableBody>
         </Table>
       </AppInfoCard>
+
+      {byProject.length > 0 && (
+        <AppInfoCard
+          title="By project"
+          action={<ExportButton type="projects" range={range} />}
+        >
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Project</TableHead>
+                <TableHead className="text-right">Opportunities</TableHead>
+                <TableHead className="text-right">Signups</TableHead>
+                <TableHead className="text-right">Volunteers</TableHead>
+                <TableHead className="text-right">Hours</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {byProject.map((p) => (
+                <TableRow key={p.id}>
+                  <TableCell className="max-w-64 truncate font-medium">
+                    <Link
+                      href={`/projects/manage/${p.id}`}
+                      className="hover:underline"
+                    >
+                      {p.title}
+                    </Link>
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {p.opportunityCount}
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {p.signupCount}
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {p.volunteerCount}
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {p.hours}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </AppInfoCard>
+      )}
 
       <AppInfoCard
         title="By volunteer"

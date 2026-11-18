@@ -1,6 +1,7 @@
 import {
   CalendarClock,
   CircleCheck,
+  FolderKanban,
   Mail,
   MapPin,
   Shirt,
@@ -8,6 +9,7 @@ import {
   Users,
   UtensilsCrossed,
 } from 'lucide-react';
+import Link from 'next/link';
 import type React from 'react';
 import { AppCapacityDisplay } from '@/components/app-ui/app-capacity-display';
 import { AppDateTime } from '@/components/app-ui/app-date-time';
@@ -69,6 +71,17 @@ export function BrowseOpportunityDetails({
                 {opportunity.location || 'Remote'}
               </span>
             </div>
+            {opportunity.project && (
+              <Link
+                href={`/projects/${opportunity.project.id}`}
+                className="mt-1 flex items-center gap-1 text-sm text-primary hover:underline"
+              >
+                <FolderKanban className="size-3 shrink-0" />
+                <span className="truncate">
+                  Part of {opportunity.project.title}
+                </span>
+              </Link>
+            )}
           </div>
           <div className="shrink-0">
             <AppOpportunityBadge
