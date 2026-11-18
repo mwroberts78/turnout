@@ -43,6 +43,10 @@ export function ViewOpportunitySignupsTableRowActions({
     },
   });
 
+  // watch (unlike getValues) re-renders when the switch flips, so the hours
+  // field enables as soon as the work is marked completed.
+  const workCompleted = form.watch('workCompleted');
+
   async function handleConfirmDelete() {
     setIsDeleting(true);
 
@@ -148,7 +152,7 @@ export function ViewOpportunitySignupsTableRowActions({
                 min={0}
                 step="0.5"
                 {...form.register('actualHours')}
-                disabled={!form.getValues('workCompleted')}
+                disabled={!workCompleted}
               />
             </Field>
             <SheetFooter className="flex-row justify-end gap-2 px-0">

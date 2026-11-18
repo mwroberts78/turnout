@@ -25,6 +25,8 @@
     "test": "pnpm db:migrate:test && vitest run",
     "test:watch": "vitest",
     "test:coverage": "pnpm vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "tunnel": "cloudflared tunnel run turnout-dev"
   },
   "dependencies": {
@@ -62,6 +64,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
+    "@clerk/testing": "^2.3.1",
+    "@playwright/test": "^1.65.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

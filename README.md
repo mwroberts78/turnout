@@ -188,6 +188,21 @@ pnpm test:coverage   # coverage report (v8), written to ./coverage as text + HTM
 
 No OS-specific differences.
 
+### End-to-end tests (Playwright)
+
+```bash
+pnpm exec playwright install chromium webkit   # once, downloads the browsers
+pnpm test:e2e                                   # headless run
+pnpm test:e2e:ui                                # Playwright's interactive UI
+```
+
+Drives the real app in desktop Chrome and mobile Safari (WebKit, iPhone 13 viewport): the landing page, signing up from the side sheet, editing/cancelling and logging hours on My Signups, admin-only pages being hidden from employees, building and publishing a project, marking a volunteer complete, and reports with CSV download. Every test also fails on uncaught page errors or React hydration warnings.
+
+Setup:
+- Copy `.env.e2e.example` to `.env.e2e` and fill it in. The two emails must be existing users in your Clerk **development** instance, members of the same organization, and already synced into the local database (`pnpm db:sync:clerk` if not). Sign-in uses `@clerk/testing`, which refuses to run against a production Clerk instance.
+- Uses `pnpm dev` on port 3000 (an already-running dev server is reused) and the local `turnout_dev` database. Tests create their own rows titled `E2E …` and delete them before and after each run, so your other dev data is left alone.
+- Failures save a screenshot and trace under `test-results/`; open a trace with `pnpm exec playwright show-trace <path>`.
+
 ## Troubleshooting
 
 **`permission denied for table ...` errors from Postgres** — migrations haven't been run yet, or you're pointing at the wrong env file/role. The app (`.env.local`) connects as the restricted `authenticated` role; only migrations (`.env.local.migrate`, `turnout` role) can create tables/roles/grants. Run `pnpm db:migrate` first.

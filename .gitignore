@@ -49,3 +49,8 @@ coverage/
 
 # Local-only staging folder for handing test builds to testers (contains real secrets, never commit)
 /TestBuild_LocalSetup/
+
+# Playwright
+/e2e/.auth/
+/playwright-report/
+/test-results/
