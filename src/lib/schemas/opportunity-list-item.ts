@@ -15,4 +15,5 @@ export const opportunityListItem = z.object({
   maxSignupsAllowed: z.number().nullable(),
   signupCount: z.number(),
   isPublished: z.boolean(),
+  projectTitle: z.string().nullable(),
 });

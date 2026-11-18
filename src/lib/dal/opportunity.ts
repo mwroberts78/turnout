@@ -57,7 +57,9 @@ function toOpportunityValues(data: OpportunityFormData) {
 
 export async function findOpportunitiesByTenant(
   tenantId: string,
-): Promise<(Opportunity & { signupCount: number })[]> {
+): Promise<
+  (Opportunity & { signupCount: number; projectTitle: string | null })[]
+> {
   await mockDelay();
 
   return withTenantContext(tenantId, (tx) =>
@@ -65,6 +67,7 @@ export async function findOpportunitiesByTenant(
       .select({
         ...getTableColumns(opportunities),
         signupCount: sql<number>`count(${signUps.id})`.mapWith(Number),
+        projectTitle: projects.title,
       })
       .from(opportunities)
       .leftJoin(
@@ -74,13 +77,20 @@ export async function findOpportunitiesByTenant(
           isNull(signUps.deletedAt),
         ),
       )
+      .leftJoin(
+        projects,
+        and(
+          eq(projects.id, opportunities.projectId),
+          isNull(projects.deletedAt),
+        ),
+      )
       .where(
         and(
           eq(opportunities.tenantId, tenantId),
           isNull(opportunities.deletedAt),
         ),
       )
-      .groupBy(opportunities.id)
+      .groupBy(opportunities.id, projects.id)
       .orderBy(desc(opportunities.startTime)),
   );
 }
@@ -227,7 +237,13 @@ export async function findPublishedOpportunities(
   tenantId: string,
   userId: string,
   options: { projectId?: string } = {},
-): Promise<(Opportunity & { signupCount: number; isSignedUp: boolean })[]> {
+): Promise<
+  (Opportunity & {
+    signupCount: number;
+    isSignedUp: boolean;
+    projectTitle: string | null;
+  })[]
+> {
   await mockDelay();
 
   return withTenantContext(tenantId, (tx) =>
@@ -236,6 +252,7 @@ export async function findPublishedOpportunities(
         ...getTableColumns(opportunities),
         signupCount: sql<number>`count(${signUps.id})`.mapWith(Number),
         isSignedUp: sql<boolean>`coalesce(bool_or(${signUps.userId} = ${userId}), false)`,
+        projectTitle: projects.title,
       })
       .from(opportunities)
       .leftJoin(
@@ -243,6 +260,15 @@ export async function findPublishedOpportunities(
         and(
           eq(signUps.opportunityId, opportunities.id),
           isNull(signUps.deletedAt),
+        ),
+      )
+      // Employees only see the project name when they can open the project.
+      .leftJoin(
+        projects,
+        and(
+          eq(projects.id, opportunities.projectId),
+          eq(projects.isPublished, true),
+          isNull(projects.deletedAt),
         ),
       )
       .where(
@@ -256,7 +282,7 @@ export async function findPublishedOpportunities(
             : undefined,
         ),
       )
-      .groupBy(opportunities.id)
+      .groupBy(opportunities.id, projects.id)
       .orderBy(asc(opportunities.startTime)),
   );
 }

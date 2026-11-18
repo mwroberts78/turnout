@@ -49,6 +49,7 @@ export async function BrowseProjectSection({
               <BrowseOpportunityCard
                 key={opportunity.id}
                 opportunity={opportunity}
+                showProject={false}
               />
             ))}
           </div>

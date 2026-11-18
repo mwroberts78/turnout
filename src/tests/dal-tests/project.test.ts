@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { db } from '@/db';
 import { opportunities, projects } from '@/db/schema';
 import {
+  findOpportunitiesByTenant,
   findPublishedOpportunities,
   findPublishedOpportunityById,
 } from '@/lib/dal/opportunity';
@@ -400,6 +401,56 @@ describe('project DAL', () => {
       });
 
       expect(result.map((o) => o.title)).toEqual(['Inside']);
+    });
+
+    it('names the project on listed opportunities only once it is published', async () => {
+      const volunteer = await createTestVolunteer(tenant.id);
+      const project = await insertProject(tenant.id, admin.id, {
+        title: 'Earth Week',
+      });
+      const oppId = await createPublished(tenant.id, admin.id);
+      await setOpportunityProject(oppId, project.id);
+
+      const [beforePublish] = await findPublishedOpportunities(
+        tenant.id,
+        volunteer.id,
+      );
+      expect(beforePublish.projectTitle).toBeNull();
+
+      await toggleProjectPublish(project.id, tenant.id, admin.id);
+
+      const [afterPublish] = await findPublishedOpportunities(
+        tenant.id,
+        volunteer.id,
+      );
+      expect(afterPublish.projectTitle).toBe('Earth Week');
+    });
+
+    it('always names the project in the admin list, but not a deleted one', async () => {
+      const project = await insertProject(tenant.id, admin.id, {
+        title: 'Draft Project',
+      });
+      const gone = await insertProject(tenant.id, admin.id, {
+        title: 'Gone',
+        deletedAt: new Date(),
+      });
+      const inDraft = await createPublished(tenant.id, admin.id, {
+        title: 'In draft project',
+      });
+      const inGone = await createPublished(tenant.id, admin.id, {
+        title: 'In deleted project',
+      });
+      await setOpportunityProject(inDraft, project.id);
+      await setOpportunityProject(inGone, gone.id);
+
+      const rows = await findOpportunitiesByTenant(tenant.id);
+
+      expect(
+        Object.fromEntries(rows.map((r) => [r.title, r.projectTitle])),
+      ).toEqual({
+        'In draft project': 'Draft Project',
+        'In deleted project': null,
+      });
     });
 
     it('links an opportunity to its project only when the project is published', async () => {

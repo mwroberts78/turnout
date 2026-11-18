@@ -1,5 +1,6 @@
 import {
   CircleCheck,
+  FolderKanban,
   MapPin,
   Shirt,
   Users,
@@ -21,8 +22,11 @@ function spotsLabel(signupCount: number, max: number | null) {
 
 export function BrowseOpportunityCard({
   opportunity,
+  showProject = true,
 }: {
   opportunity: PublishedOpportunity;
+  // Off on a project's own page, where every card is in the same project.
+  showProject?: boolean;
 }) {
   return (
     <Link
@@ -63,6 +67,12 @@ export function BrowseOpportunityCard({
                   {opportunity.location || 'Remote'}
                 </span>
               </div>
+              {showProject && opportunity.projectTitle && (
+                <div className="mt-0.5 flex items-center gap-1 text-sm text-muted-foreground">
+                  <FolderKanban className="size-3 shrink-0" />
+                  <span className="truncate">{opportunity.projectTitle}</span>
+                </div>
+              )}
             </div>
             <div className="shrink-0">
               <AppOpportunityBadge
