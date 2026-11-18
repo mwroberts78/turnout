@@ -26,6 +26,10 @@ export type PublishedProject = Awaited<
   ReturnType<typeof findPublishedProjects>
 >[number];
 
+export type MoveOpportunityResult =
+  | { ok: true }
+  | { ok: false; reason: 'project-not-found' | 'opportunity-not-found' };
+
 export type AssignOpportunityResult =
   | { ok: true }
   | {
@@ -294,6 +298,44 @@ export async function removeOpportunityFromProject(
   );
 
   return updated !== undefined;
+}
+
+// Sets an opportunity's project from the opportunity's own page, where moving
+// it between projects is an explicit choice. Passing null ungroups it.
+export async function moveOpportunityToProject(
+  oppId: string,
+  projectId: string | null,
+  tenantId: string,
+  userId: string,
+): Promise<MoveOpportunityResult> {
+  await mockDelay();
+
+  return withTenantContext(tenantId, async (tx) => {
+    if (projectId !== null) {
+      const [project] = await tx
+        .select({ id: projects.id })
+        .from(projects)
+        .where(liveProject(projectId, tenantId));
+
+      if (!project) return { ok: false, reason: 'project-not-found' };
+    }
+
+    const [updated] = await tx
+      .update(opportunities)
+      .set({ projectId, updatedBy: userId })
+      .where(
+        and(
+          eq(opportunities.id, oppId),
+          eq(opportunities.tenantId, tenantId),
+          isNull(opportunities.deletedAt),
+        ),
+      )
+      .returning({ id: opportunities.id });
+
+    if (!updated) return { ok: false, reason: 'opportunity-not-found' };
+
+    return { ok: true };
+  });
 }
 
 // Published projects with at least one upcoming published opportunity,

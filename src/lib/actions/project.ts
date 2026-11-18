@@ -7,6 +7,8 @@ import {
   assignOpportunityToProject,
   createProject,
   deleteProject,
+  type MoveOpportunityResult,
+  moveOpportunityToProject,
   removeOpportunityFromProject,
   toggleProjectPublish,
   updateProject,
@@ -158,4 +160,43 @@ export async function removeOpportunityFromProjectAction(
         success: false,
         message: "That opportunity isn't in this project anymore.",
       };
+}
+
+const moveFailureMessages: Record<
+  Extract<MoveOpportunityResult, { ok: false }>['reason'],
+  string
+> = {
+  'project-not-found': projectNotFound.message,
+  'opportunity-not-found': "That opportunity isn't available anymore.",
+};
+
+export async function moveOpportunityToProjectAction(
+  oppId: string,
+  projectId: string | null,
+): Promise<ActionResult> {
+  const appUser = await requireAdmin();
+
+  if (!isUuid(oppId)) {
+    return {
+      success: false,
+      message: moveFailureMessages['opportunity-not-found'],
+    };
+  }
+
+  if (projectId !== null && !isUuid(projectId)) return projectNotFound;
+
+  const result = await moveOpportunityToProject(
+    oppId,
+    projectId,
+    appUser.tenantId,
+    appUser.id,
+  );
+
+  refresh();
+
+  if (!result.ok) {
+    return { success: false, message: moveFailureMessages[result.reason] };
+  }
+
+  return { success: true };
 }

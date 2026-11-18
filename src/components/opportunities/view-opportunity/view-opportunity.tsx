@@ -22,7 +22,9 @@ import {
 } from '@/components/app-ui/data-table/table-refresh-context';
 import { Button } from '@/components/base-ui/button';
 import type { OpportunityWithDetails } from '@/lib/dal/opportunity';
+import { findProjectsByTenant } from '@/lib/dal/project';
 import { type AppUser, isAdminUser } from '@/lib/types/appUser';
+import { ViewOpportunityProjectSelect } from './view-opportunity-project-select';
 import { ViewOpportunityPublishButton } from './view-opportunity-publish-button';
 import { ViewOpportunitySignupsTableSection } from './view-opportunity-signups/view-opportunity-signups-table-section';
 import { ViewOpportunitiesSignupsTableSkeleton } from './view-opportunity-signups/view-opportunity-signups-table-skeleton';
@@ -39,6 +41,12 @@ export async function ViewOpportunity({
   }
 
   const isAdmin: boolean = isAdminUser(appUser);
+  const projectOptions = isAdmin
+    ? (await findProjectsByTenant(appUser.tenantId)).map(({ id, title }) => ({
+        id,
+        title,
+      }))
+    : [];
 
   return (
     <>
@@ -97,14 +105,19 @@ export async function ViewOpportunity({
               }
             >
               <div className="flex flex-col space-y-4 text-sm">
-                {opportunity.project && (
-                  <Link
-                    href={`/projects/manage/${opportunity.project.id}`}
-                    className="inline-flex items-center gap-2 hover:underline"
-                  >
-                    <FolderKanban className="text-muted-foreground size-4" />
-                    {opportunity.project.title}
-                  </Link>
+                {isAdmin ? (
+                  <ViewOpportunityProjectSelect
+                    opportunityId={opportunity.id}
+                    projectId={opportunity.project?.id ?? null}
+                    projects={projectOptions}
+                  />
+                ) : (
+                  opportunity.project && (
+                    <p className="inline-flex items-center gap-2">
+                      <FolderKanban className="text-muted-foreground size-4" />
+                      {opportunity.project.title}
+                    </p>
+                  )
                 )}
                 {opportunity.location && opportunity.location.length > 0 && (
                   <p className="inline-flex items-center gap-2">
