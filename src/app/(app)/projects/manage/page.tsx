@@ -1,4 +1,5 @@
 import { Plus } from 'lucide-react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
@@ -7,6 +8,8 @@ import { Button } from '@/components/base-ui/button';
 import { ManageProjectsSection } from '@/components/projects/manage-projects/manage-projects-section';
 import { ManageProjectsSkeleton } from '@/components/projects/manage-projects/manage-projects-skeleton';
 import { getCurrentAppUser } from '@/lib/auth';
+
+export const metadata: Metadata = { title: 'Manage Projects' };
 
 export default async function ManageProjectsPage() {
   const appUser = await getCurrentAppUser();

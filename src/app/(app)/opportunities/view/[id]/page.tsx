@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { AppBreadcrumb } from '@/components/app-ui/app-breadcrumb';
@@ -6,6 +7,8 @@ import { BrowseOpportunityDetailsSection } from '@/components/opportunities/brow
 import { BrowseOpportunityDetailsSkeleton } from '@/components/opportunities/browse-opportunities/browse-opportunity-details-skeleton';
 import { getCurrentAppUser } from '@/lib/auth';
 import { isUuid } from '@/lib/utils/isUuid';
+
+export const metadata: Metadata = { title: 'Opportunity' };
 
 export default async function OpportunityPage({
   params,

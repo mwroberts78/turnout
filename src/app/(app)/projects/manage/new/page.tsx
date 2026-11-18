@@ -1,5 +1,8 @@
+import type { Metadata } from 'next';
 import { AppBreadcrumb } from '@/components/app-ui/app-breadcrumb';
 import { ProjectForm } from '@/components/projects/manage-projects/project-form';
+
+export const metadata: Metadata = { title: 'New Project' };
 
 export default function NewProjectPage() {
   return (

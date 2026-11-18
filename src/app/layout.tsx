@@ -4,6 +4,7 @@ import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import { ThemeProvider } from 'next-themes';
 import type React from 'react';
+import { APP_NAME, APP_TAGLINE } from '@/lib/constants/app';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -16,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Turnout',
-  description: 'Corporate volunteerism portal',
+  title: { template: `%s | ${APP_NAME}`, default: APP_NAME },
+  description: APP_TAGLINE,
 };
 
 export default function RootLayout({

@@ -24,6 +24,7 @@ import {
   useSidebar,
 } from '@/components/base-ui/sidebar';
 import { useIsTablet } from '@/hooks/use-mobile';
+import { APP_NAME } from '@/lib/constants/app';
 import type { SidebarCollapsible, SidebarVariant } from '@/lib/themes';
 
 export function AppSidebar({
@@ -66,14 +67,14 @@ export function AppSidebar({
               <Avatar className="size-6 rounded-md">
                 <AvatarImage
                   src={organization?.imageUrl}
-                  alt={organization?.name ?? 'Turnout'}
+                  alt={organization?.name ?? APP_NAME}
                 />
                 <AvatarFallback className="rounded-md text-xs">
-                  {organization?.name?.charAt(0) ?? 'T'}
+                  {(organization?.name ?? APP_NAME).charAt(0)}
                 </AvatarFallback>
               </Avatar>
               <span className="text-foreground font-semibold">
-                {organization?.name ?? 'Turnout'}
+                {organization?.name ?? APP_NAME}
               </span>
             </SidebarMenuButton>
           </SidebarMenuItem>

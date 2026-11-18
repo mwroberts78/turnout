@@ -1,9 +1,12 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { ViewOpportunitySection } from '@/components/opportunities/view-opportunity/view-opportunity-section';
 import { ViewOpportunitySkeleton } from '@/components/opportunities/view-opportunity/view-opportunity-skeleton';
 import { getCurrentAppUser } from '@/lib/auth';
 import { isUuid } from '@/lib/utils/isUuid';
+
+export const metadata: Metadata = { title: 'Opportunity' };
 
 export default async function ManageOpportunityPage({
   params,

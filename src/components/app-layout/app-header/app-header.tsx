@@ -18,7 +18,6 @@ export function AppHeader({ appUser }: { appUser: AppUser }) {
         </Button>
 
         <div className="ml-auto flex items-center gap-2">
-          {/* <Notifications /> */}
           <Separator
             orientation="vertical"
             className="mx-2 data-[orientation=vertical]:h-4 data-[orientation=vertical]:self-center"

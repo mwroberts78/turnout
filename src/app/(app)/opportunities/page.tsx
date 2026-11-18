@@ -1,9 +1,12 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { AppBreadcrumb } from '@/components/app-ui/app-breadcrumb';
 import { BrowseOpportunitiesSection } from '@/components/opportunities/browse-opportunities/browse-opportunities-section';
 import { BrowseOpportunitiesSkeleton } from '@/components/opportunities/browse-opportunities/browse-opportunities-skeleton';
 import { getCurrentAppUser } from '@/lib/auth';
+
+export const metadata: Metadata = { title: 'Opportunities' };
 
 export default async function OpportunitiesPage() {
   const appUser = await getCurrentAppUser();
